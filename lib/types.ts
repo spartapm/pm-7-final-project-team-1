@@ -23,6 +23,12 @@ export type Product = {
   concerns: SkinConcern[];
   fit: number;
   ingredients: string[];
+  badges: ProductBadge[];
+};
+
+export type ProductBadge = {
+  label: string;
+  tone: "warn" | "muted";
 };
 
 export type Review = {
@@ -45,6 +51,12 @@ export type WishlistItem = {
   savedAt: number;
 };
 
+export type CartItem = {
+  productId: string;
+  qty: number;
+  addedAt: number;
+};
+
 export type Account = {
   id: string;
   provider: Provider;
@@ -62,6 +74,7 @@ export type AppState = {
   loginAt: number | null;
   nicknameSeq: number;
   wishlist: WishlistItem[];
+  cart: CartItem[];
   reviews: Review[];
   viewed: string[];
   pendingProvider: Provider | null;

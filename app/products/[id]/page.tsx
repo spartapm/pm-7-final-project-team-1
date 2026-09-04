@@ -7,15 +7,17 @@ import { IconBack, IconHeart, IconUp } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { formatPrice } from "@/lib/ranking";
+import { BadgeRow, productBadges } from "@/lib/badges";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { hydrated, account, addView, isWished, toggleWish } = useStore();
+  const { hydrated, account, addView, isWished, toggleWish, isInCart, addToCart, showToast } = useStore();
   const product = productById(id);
   const [more, setMore] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
   const wished = product ? isWished(product.id) : false;
+  const inCart = product ? isInCart(product.id) : false;
 
   useEffect(() => {
     if (!hydrated) return;
@@ -42,7 +44,7 @@ export default function ProductPage() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        <div className="page-scroll" ref={scroller}>
+        <div className="page-scroll bleed" ref={scroller}>
           <div
             className="product-hero"
             style={{ backgroundImage: `url("${product.detailImage ?? product.image}")` }}
@@ -57,6 +59,7 @@ export default function ProductPage() {
             </div>
             <h1>{product.name}</h1>
             <div className="price">{formatPrice(product.price)}</div>
+            <BadgeRow badges={productBadges(product, account?.skinType ?? null, account?.concerns ?? [])} />
           </div>
           <div className="seg">
             <button className="cat on" type="button">
@@ -97,10 +100,25 @@ export default function ProductPage() {
             <IconHeart filled={wished} />
             찜하기
           </button>
-          <button className="btn-disabled" type="button">
-            장바구니 담기
+          <button
+            className={inCart ? "btn-line" : "btn-primary"}
+            type="button"
+            onClick={() => {
+              if (inCart) {
+                router.push("/cart");
+                return;
+              }
+              const result = addToCart(product.id);
+              if (!result.ok) {
+                showToast("일시적인 오류입니다. 잠시 후 다시 시도해주세요");
+                return;
+              }
+              showToast("장바구니에 담았어요");
+            }}
+          >
+            {inCart ? "장바구니 보기" : "장바구니 담기"}
           </button>
-          <button className="btn-disabled" type="button">
+          <button className="btn-disabled" type="button" disabled>
             바로 구매
           </button>
         </div>

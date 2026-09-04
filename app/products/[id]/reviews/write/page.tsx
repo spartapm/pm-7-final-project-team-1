@@ -97,8 +97,8 @@ function WriteInner() {
           <div className="write-product">
             <Thumb src={product.image} alt={product.name} />
             <div>
-              <h3>{product.name}</h3>
               <p>{product.brand}</p>
+              <h3>{product.name}</h3>
             </div>
           </div>
           <div className="field-label">별점 (필수)</div>
@@ -140,7 +140,7 @@ function WriteInner() {
               onChange={(e) => onFiles(e.target.files)}
             />
           </div>
-          <button className="btn-primary" type="button" disabled={!enabled || busy} onClick={submit}>
+          <button className="btn-primary soft" type="button" disabled={!enabled || busy} onClick={submit}>
             등록하기
           </button>
         </div>

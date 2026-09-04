@@ -21,6 +21,8 @@ import type {
   SkinType,
 } from "./types";
 
+const CART_MAX = 10;
+
 const KEY = "onebeauty:v1";
 const SESSION_MS = 30 * 24 * 60 * 60 * 1000;
 
@@ -31,6 +33,7 @@ function empty(): AppState {
     loginAt: null,
     nicknameSeq: 1000,
     wishlist: [],
+    cart: [],
     reviews: SEED_REVIEWS,
     viewed: [],
     pendingProvider: null,
@@ -49,6 +52,7 @@ function load(): AppState {
       ...fallback,
       ...parsed,
       reviews: parsed.reviews?.length ? parsed.reviews : SEED_REVIEWS,
+      cart: parsed.cart ?? [],
     };
     if (next.currentId && next.loginAt && Date.now() - next.loginAt > SESSION_MS) {
       next.currentId = null;
@@ -74,6 +78,10 @@ type Store = AppState & {
   withdraw: () => void;
   toggleWish: (productId: string) => boolean;
   isWished: (productId: string) => boolean;
+  addToCart: (productId: string) => { ok: boolean; qty: number; existed: boolean };
+  setCartQty: (productId: string, qty: number) => void;
+  removeFromCart: (productId: string) => void;
+  isInCart: (productId: string) => boolean;
   addView: (productId: string) => void;
   upsertReview: (review: Omit<Review, "id" | "createdAt" | "nickname" | "skinType" | "concerns" | "accountId"> & { id?: string }) => Review | null;
   myReviewFor: (productId: string) => Review | undefined;
@@ -87,6 +95,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = useRef<number | null>(null);
   const wishBusy = useRef(false);
+  const cartBusy = useRef(false);
   const reviewBusy = useRef(false);
 
   useEffect(() => {
@@ -176,6 +185,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             : r
         ),
         wishlist: [],
+        cart: [],
         viewed: [],
       };
     });
@@ -207,6 +217,55 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const isWished = useCallback(
     (productId: string) => state.wishlist.some((w) => w.productId === productId),
     [state.wishlist]
+  );
+
+  const addToCart = useCallback((productId: string) => {
+    if (cartBusy.current) {
+      const cur = state.cart.find((c) => c.productId === productId);
+      return { ok: false, qty: cur?.qty ?? 0, existed: !!cur };
+    }
+    cartBusy.current = true;
+    window.setTimeout(() => {
+      cartBusy.current = false;
+    }, 250);
+    let result = { ok: true, qty: 1, existed: false };
+    setState((s) => {
+      const found = s.cart.find((c) => c.productId === productId);
+      if (found) {
+        if (found.qty >= CART_MAX) {
+          result = { ok: false, qty: found.qty, existed: true };
+          return s;
+        }
+        const qty = found.qty + 1;
+        result = { ok: true, qty, existed: true };
+        return {
+          ...s,
+          cart: s.cart.map((c) => (c.productId === productId ? { ...c, qty } : c)),
+        };
+      }
+      result = { ok: true, qty: 1, existed: false };
+      return { ...s, cart: [{ productId, qty: 1, addedAt: Date.now() }, ...s.cart] };
+    });
+    return result;
+  }, [state.cart]);
+
+  const setCartQty = useCallback((productId: string, qty: number) => {
+    setState((s) => {
+      if (qty < 1) return { ...s, cart: s.cart.filter((c) => c.productId !== productId) };
+      return {
+        ...s,
+        cart: s.cart.map((c) => (c.productId === productId ? { ...c, qty: Math.min(CART_MAX, qty) } : c)),
+      };
+    });
+  }, []);
+
+  const removeFromCart = useCallback((productId: string) => {
+    setState((s) => ({ ...s, cart: s.cart.filter((c) => c.productId !== productId) }));
+  }, []);
+
+  const isInCart = useCallback(
+    (productId: string) => state.cart.some((c) => c.productId === productId),
+    [state.cart]
   );
 
   const addView = useCallback((productId: string) => {
@@ -278,6 +337,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       withdraw,
       toggleWish,
       isWished,
+      addToCart,
+      setCartQty,
+      removeFromCart,
+      isInCart,
       addView,
       upsertReview,
       myReviewFor,
@@ -297,6 +360,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       withdraw,
       toggleWish,
       isWished,
+      addToCart,
+      setCartQty,
+      removeFromCart,
+      isInCart,
       addView,
       upsertReview,
       myReviewFor,

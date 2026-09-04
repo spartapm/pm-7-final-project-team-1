@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PhoneShell, Stars, Thumb } from "@/components/ui";
 import { IconBack, IconPen } from "@/components/icons";
@@ -12,7 +12,6 @@ export default function ReviewsPage() {
   const router = useRouter();
   const { hydrated, account, reviews, showToast } = useStore();
   const [mine, setMine] = useState(true);
-  const [open, setOpen] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     if (!hydrated) return;
@@ -45,18 +44,17 @@ export default function ReviewsPage() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        <div className="topbar">
+        <div className="topbar review">
           <button className="side" type="button" onClick={() => router.back()} aria-label="뒤로">
             <IconBack />
           </button>
           <h1>제품 리뷰</h1>
-          <span />
-        </div>
-        <div className="toggle-row">
-          내 피부 맞춤
-          <button className={`toggle${mine ? " on" : ""}`} type="button" onClick={() => setMine((v) => !v)} aria-label="내 피부 맞춤">
-            <i />
-          </button>
+          <div className="toggle-inline">
+            내 피부 맞춤
+            <button className={`toggle${mine ? " on" : ""}`} type="button" onClick={() => setMine((v) => !v)} aria-label="내 피부 맞춤">
+              <i />
+            </button>
+          </div>
         </div>
         <div className="review-list">
           {list.length === 0 ? (
@@ -66,8 +64,6 @@ export default function ReviewsPage() {
             </div>
           ) : null}
           {list.map((r) => {
-            const long = r.text.length > 90;
-            const expanded = open[r.id];
             return (
               <article key={r.id} className="review-card">
                 <div className="review-user">
@@ -89,16 +85,7 @@ export default function ReviewsPage() {
                     </div>
                   </div>
                 </div>
-                {r.text ? (
-                  <>
-                    <p className={`review-text${long && !expanded ? " clamp" : ""}`}>{r.text}</p>
-                    {long && !expanded ? (
-                      <button className="more" type="button" onClick={() => setOpen((o) => ({ ...o, [r.id]: true }))}>
-                        더보기 &gt;
-                      </button>
-                    ) : null}
-                  </>
-                ) : null}
+                {r.text ? <ClampedReview text={r.text} /> : null}
                 {r.photos.length ? (
                   <div className="review-photos">
                     {r.photos.map((src, i) => (
@@ -120,5 +107,30 @@ export default function ReviewsPage() {
         </button>
       </div>
     </PhoneShell>
+  );
+}
+
+function ClampedReview({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || expanded) return;
+    setShowMore(el.scrollHeight - el.clientHeight > 1);
+  }, [text, expanded]);
+
+  return (
+    <>
+      <p ref={ref} className={`review-text${expanded ? "" : " clamp"}`}>
+        {text}
+      </p>
+      {showMore && !expanded ? (
+        <button className="more" type="button" onClick={() => setExpanded(true)}>
+          더보기 &gt;
+        </button>
+      ) : null}
+    </>
   );
 }

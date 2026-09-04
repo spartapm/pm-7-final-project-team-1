@@ -41,7 +41,7 @@ export default function WishlistPage() {
   return (
     <PhoneShell>
       <div className="page">
-        <div className="page-scroll" ref={scroller} onScroll={() => {
+        <div className="page-scroll bleed" ref={scroller} onScroll={() => {
           const el = scroller.current;
           if (!el) return;
           if (el.scrollTop + el.clientHeight >= el.scrollHeight - 80) setShown((n) => n + PAGE);
@@ -58,7 +58,9 @@ export default function WishlistPage() {
           </div>
           {items.length === 0 ? (
             <div className="empty">
-              <div className="icon-wrap">♡</div>
+              <div className="icon-wrap">
+                <IconHeart />
+              </div>
               {wishlist.length === 0 ? (
                 <>
                   <h2>아직 찜한 제품이 없어요</h2>
@@ -90,10 +92,9 @@ export default function WishlistPage() {
                   </div>
                   <button type="button" onClick={() => router.push(`/products/${p.id}`)} style={{ width: "100%", textAlign: "left" }}>
                     <div className="body">
+                      <p className="brand-name">{p.brand}</p>
                       <h3>{p.name}</h3>
-                      <p>
-                        {p.brand} · ★{p.rating.toFixed(1)}
-                      </p>
+                      <p>★ {p.rating.toFixed(1)}</p>
                       <strong>{formatPrice(p.price)}</strong>
                     </div>
                   </button>

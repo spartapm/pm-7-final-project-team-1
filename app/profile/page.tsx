@@ -9,7 +9,7 @@ import { formatPrice } from "@/lib/ranking";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { hydrated, account, wishlist, reviews, viewed, logout, withdraw } = useStore();
+  const { hydrated, account, wishlist, cart, reviews, viewed, logout, withdraw } = useStore();
   const [out, setOut] = useState(false);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export default function ProfilePage() {
     () => reviews.filter((r) => r.accountId === account?.id),
     [reviews, account]
   );
-  const recent = viewed.map(productById).filter((p): p is NonNullable<typeof p> => !!p).slice(0, 8);
+  const recent = viewed.map(productById).filter((p): p is NonNullable<typeof p> => !!p).slice(0, 5);
 
   if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
 
@@ -55,6 +55,11 @@ export default function ProfilePage() {
             </button>
           </div>
 
+          <button className="menu-row" type="button" onClick={() => router.push("/cart")}>
+            <span>장바구니</span>
+            <span>{cart.reduce((n, c) => n + c.qty, 0)}개 ›</span>
+          </button>
+
           <div className="section-label">최근 본 제품 · {recent.length}</div>
           <div className="viewed">
             {recent.map((p) => (
@@ -65,15 +70,14 @@ export default function ProfilePage() {
           </div>
 
           <div className="section-label">찜한 제품 · {wished.length}</div>
-          <div className="wish-grid" style={{ paddingLeft: 0, paddingRight: 0 }}>
+          <div className="wish-h">
             {wished.slice(0, 5).map((p) => (
               <button key={p.id} className="wish-card" type="button" onClick={() => router.push(`/products/${p.id}`)}>
                 <div className="thumb" style={{ width: "100%", height: 100, borderRadius: 0, backgroundImage: `url("${p.image}")` }} />
                 <div className="body">
+                  <p className="brand-name">{p.brand}</p>
                   <h3>{p.name}</h3>
-                  <p>
-                    {p.brand} · ★{p.rating.toFixed(1)}
-                  </p>
+                  <p>★ {p.rating.toFixed(1)}</p>
                   <strong>{formatPrice(p.price)}</strong>
                 </div>
               </button>
