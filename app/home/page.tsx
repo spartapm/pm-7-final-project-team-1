@@ -1,0 +1,212 @@
+"use client";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { PhoneShell, TabBar, Thumb } from "@/components/ui";
+import { IconFilter, IconSearch, LogoMark } from "@/components/icons";
+import { useStore } from "@/lib/store";
+import { CATEGORIES, type Category, type PriceRange, type SortKey } from "@/lib/types";
+import { rankProducts } from "@/lib/ranking";
+
+const PAGE = 10;
+
+export default function HomePage() {
+  const router = useRouter();
+  const { hydrated, account } = useStore();
+  const [category, setCategory] = useState<Category>("크림");
+  const [sort, setSort] = useState<SortKey>("match");
+  const [price, setPrice] = useState<PriceRange>("all");
+  const [draftSort, setDraftSort] = useState<SortKey>("match");
+  const [draftPrice, setDraftPrice] = useState<PriceRange>("under30");
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [error, setError] = useState(false);
+  const [shown, setShown] = useState(PAGE);
+  const scroller = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (!account) router.replace("/login");
+    else if (!account.onboardingDone) router.replace("/onboarding");
+  }, [hydrated, account, router]);
+
+  const ranked = useMemo(
+    () =>
+      rankProducts({
+        category,
+        skinType: account?.skinType ?? null,
+        concerns: account?.concerns ?? [],
+        sort,
+        price,
+      }),
+    [category, account, sort, price]
+  );
+
+  useEffect(() => {
+    setShown(PAGE);
+    setError(false);
+  }, [category, sort, price]);
+
+  const visible = ranked.slice(0, shown);
+  const concernText = (account?.concerns ?? []).join(" · ");
+  const title = `${account?.skinType ?? ""} · ${concernText}을 위한 ${category}`;
+
+  const onScroll = () => {
+    const el = scroller.current;
+    if (!el) return;
+    if (el.scrollTop + el.clientHeight >= el.scrollHeight - 80) {
+      setShown((n) => Math.min(ranked.length, n + PAGE));
+    }
+  };
+
+  if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
+
+  if (error) {
+    return (
+      <PhoneShell>
+        <div className="page">
+          <div className="empty">
+            <div className="icon-wrap">⚠</div>
+            <h2>랭킹을 불러오지 못했어요</h2>
+            <p>네트워크 상태를 확인하고 다시 시도해주세요.</p>
+            <button className="btn-primary" type="button" onClick={() => setError(false)}>
+              다시 시도
+            </button>
+          </div>
+          <TabBar />
+        </div>
+      </PhoneShell>
+    );
+  }
+
+  return (
+    <PhoneShell>
+      <div className="page" style={{ position: "relative" }}>
+        <div className="page-scroll" ref={scroller} onScroll={onScroll}>
+          <div className="home-head">
+            <div className="brand">
+              <LogoMark className="logo" color="#C85C78" />
+              ONE&BEAUTY
+            </div>
+          </div>
+          <div className="mytype">MY Type</div>
+          <div className="tags">
+            {account.skinType ? <span className="tag">{account.skinType}</span> : null}
+            {account.concerns.map((c) => (
+              <span className="tag" key={c}>
+                {c}
+              </span>
+            ))}
+          </div>
+          <div className="cats">
+            {CATEGORIES.map((c) => (
+              <button key={c} className={`cat${category === c ? " on" : ""}`} type="button" onClick={() => setCategory(c)}>
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="rank-meta">“피부타입/피부 고민 기반 적합 성분 순위에 따른 ”</div>
+          <div className="rank-title">
+            <span>{title}</span>
+            <button className="filter-btn" type="button" aria-label="필터" onClick={() => { setDraftSort(sort); setDraftPrice(price === "all" ? "under30" : price); setFilterOpen(true); }}>
+              <IconFilter />
+            </button>
+          </div>
+
+          {visible.length === 0 ? (
+            <div className="empty" style={{ paddingTop: 40 }}>
+              <div className="icon-wrap">
+                <IconSearch />
+              </div>
+              <h2>조건에 맞는 제품이 아직 없어요</h2>
+              <p>다른 피부 타입이나 카테고리를 선택해 보세요</p>
+              <button className="btn-primary" type="button" onClick={() => { setPrice("all"); setSort("match"); setFilterOpen(true); }}>
+                필터 변경하기
+              </button>
+            </div>
+          ) : (
+            <div className="rank-list">
+              {visible.map((row, i) => (
+                <button
+                  key={row.product.id}
+                  className="rank-card"
+                  type="button"
+                  onClick={() => router.push(`/products/${row.product.id}`)}
+                >
+                  <span className="rank-no">{i + 1}</span>
+                  <Thumb src={row.product.image} alt={row.product.name} />
+                  <div>
+                    <h3>{row.product.name}</h3>
+                    <p>
+                      ★ {row.product.rating.toFixed(1)} · {row.product.brand}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <TabBar />
+
+        {filterOpen ? (
+          <div className="dim" onClick={() => setFilterOpen(false)}>
+            <div className="sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="sheet-handle" />
+              <div className="sheet-head">
+                <h2>필터</h2>
+                <button
+                  className="reset"
+                  type="button"
+                  onClick={() => {
+                    setDraftSort("match");
+                    setDraftPrice("under30");
+                  }}
+                >
+                  초기화
+                </button>
+              </div>
+              <div className="filter-label">정렬 기준</div>
+              <div className="filter-row">
+                {(
+                  [
+                    ["match", "맞춤순"],
+                    ["rating", "평점순"],
+                    ["reviews", "리뷰순"],
+                  ] as const
+                ).map(([k, label]) => (
+                  <button key={k} className={`pill${draftSort === k ? " on-line" : ""}`} type="button" onClick={() => setDraftSort(k)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="filter-label">가격대</div>
+              <div className="filter-row">
+                {(
+                  [
+                    ["under30", "3만원 이하"],
+                    ["30to50", "3~5만원"],
+                    ["over50", "5만원 이상"],
+                  ] as const
+                ).map(([k, label]) => (
+                  <button key={k} className={`pill${draftPrice === k ? " on-fill" : ""}`} type="button" onClick={() => setDraftPrice(k)}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <button
+                className="btn-primary"
+                type="button"
+                onClick={() => {
+                  setSort(draftSort);
+                  setPrice(draftPrice);
+                  setFilterOpen(false);
+                }}
+              >
+                적용하기
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </PhoneShell>
+  );
+}
