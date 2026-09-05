@@ -140,6 +140,8 @@ export default function HomePage() {
                 {t}
               </button>
             ))}
+          </div>
+          <div className="tags wrap" style={{ paddingTop: 0 }}>
             {SKIN_CONCERNS.map((c) => {
               const on = viewConcerns.includes(c);
               return (
@@ -156,14 +158,14 @@ export default function HomePage() {
               );
             })}
           </div>
-          <div className="cats">
+          <div className="cat-bar">
             {CATEGORIES.map((c) => (
               <button key={c} className={`cat${category === c ? " on" : ""}`} type="button" onClick={() => setCategory(c)}>
                 {c}
               </button>
             ))}
           </div>
-          <div className="rank-meta">“피부타입/피부 고민 기반 적합 성분 순위에 따른 안내”</div>
+          <div className="rank-meta">“피부타입/피부 고민 기반 적합 성분 순위에 따른 ”</div>
           <div className="rank-title">
             <span>{title}</span>
             <button className="filter-btn" type="button" aria-label="필터" onClick={() => { setDraftSort(sort); setDraftPrice(price === "all" ? "under30" : price); setFilterOpen(true); }}>

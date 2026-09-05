@@ -61,7 +61,7 @@ export default function ProductPage() {
             <div className="price">{formatPrice(product.price)}</div>
             <BadgeRow badges={productBadges(product, account?.skinType ?? null, account?.concerns ?? [])} />
           </div>
-          <div className="seg">
+          <div className="cat-bar tabs">
             <button className="cat on" type="button">
               제품 상세보기
             </button>

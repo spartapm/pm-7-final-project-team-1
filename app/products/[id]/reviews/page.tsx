@@ -70,7 +70,7 @@ export default function ReviewsPage() {
                   <div className="avatar" />
                   <div>
                     <strong>{r.nickname}</strong>
-                    <div className="tags" style={{ padding: "6px 0 0" }}>
+                    <div className="tags">
                       <span className="tag">{r.skinType}</span>
                       {r.concerns.map((c) => (
                         <span className="tag" key={c}>

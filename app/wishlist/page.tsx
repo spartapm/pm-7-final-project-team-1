@@ -47,11 +47,11 @@ export default function WishlistPage() {
           if (el.scrollTop + el.clientHeight >= el.scrollHeight - 80) setShown((n) => n + PAGE);
         }}>
           <div className="home-head">
-            <h1 style={{ margin: 0, fontSize: 20 }}>찜한 제품</h1>
+            <h1>찜한 제품</h1>
           </div>
           <div className="cats">
             {FILTERS.map((c) => (
-              <button key={c} className={`chip${cat === c ? " on" : ""}`} type="button" onClick={() => setCat(c)}>
+              <button key={c} className={`chip soft${cat === c ? " on" : ""}`} type="button" onClick={() => setCat(c)}>
                 {c === "클렌징 폼" ? "클렌징폼" : c}
               </button>
             ))}
@@ -92,9 +92,8 @@ export default function WishlistPage() {
                   </div>
                   <button type="button" onClick={() => router.push(`/products/${p.id}`)} style={{ width: "100%", textAlign: "left" }}>
                     <div className="body">
-                      <p className="brand-name">{p.brand}</p>
                       <h3>{p.name}</h3>
-                      <p>★ {p.rating.toFixed(1)}</p>
+                      <p>{p.brand} · ★ {p.rating.toFixed(1)}</p>
                       <strong>{formatPrice(p.price)}</strong>
                     </div>
                   </button>

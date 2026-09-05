@@ -23,8 +23,8 @@ export default function SplashPage() {
   return (
     <PhoneShell splash>
       <div className="splash">
-        <LogoMark className="logo" color="#ffffff" />
-        <h1>ONE&BEAUTY</h1>
+        <LogoMark className="logo" color="#C85C78" />
+        <h1>ONE & BEAUTY</h1>
         <p>ONE & MATCH, YOUR BEAUTY</p>
       </div>
     </PhoneShell>

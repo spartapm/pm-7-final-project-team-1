@@ -115,8 +115,8 @@ export function IconRefresh() {
 
 export function IconFilter() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    <svg width="15" height="12" viewBox="0 0 15 12" fill="none">
+      <path d="M1 1.5h13L9.2 6.6V10l-3.4 1.2V6.6L1 1.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   );
 }

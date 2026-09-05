@@ -89,16 +89,14 @@ function WriteInner() {
             취소
           </button>
           <h1>{existing ? "리뷰 수정" : "리뷰 작성"}</h1>
-          <button className={`side accent`} type="button" onClick={submit} disabled={busy}>
-            등록
-          </button>
+          <span className="side" />
         </div>
         <div className="write">
           <div className="write-product">
             <Thumb src={product.image} alt={product.name} />
             <div>
-              <p>{product.brand}</p>
               <h3>{product.name}</h3>
+              <p>{product.brand}</p>
             </div>
           </div>
           <div className="field-label">별점 (필수)</div>

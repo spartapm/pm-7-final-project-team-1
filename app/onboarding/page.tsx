@@ -79,7 +79,7 @@ function OnboardingInner() {
             })}
           </div>
           <button className="btn-primary" type="button" disabled={!canSubmit} onClick={submit}>
-            {edit ? "저장하기" : "선택하고 추천받기"}
+            {edit ? "저장하기" : "선택하고 가입완료"}
           </button>
         </div>
 

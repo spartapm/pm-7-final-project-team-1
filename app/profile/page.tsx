@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Stars, TabBar, Thumb } from "@/components/ui";
+import { IconHeart } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { formatPrice } from "@/lib/ranking";
@@ -35,7 +36,7 @@ export default function ProfilePage() {
       <div className="page" style={{ position: "relative" }}>
         <div className="page-scroll">
           <div className="home-head">
-            <h1 style={{ margin: 0, fontSize: 20 }}>마이페이지</h1>
+            <h1>마이페이지</h1>
           </div>
           <div className="profile-card">
             <div className="avatar" />
@@ -49,10 +50,10 @@ export default function ProfilePage() {
                   </span>
                 ))}
               </div>
+              <button className="skin-link" type="button" onClick={() => router.push("/onboarding?edit=1")}>
+                피부 프로필 ›
+              </button>
             </div>
-            <button className="skin-link" type="button" onClick={() => router.push("/onboarding?edit=1")}>
-              피부 프로필 ›
-            </button>
           </div>
 
           <button className="menu-row" type="button" onClick={() => router.push("/cart")}>
@@ -73,11 +74,12 @@ export default function ProfilePage() {
           <div className="wish-h">
             {wished.slice(0, 5).map((p) => (
               <button key={p.id} className="wish-card" type="button" onClick={() => router.push(`/products/${p.id}`)}>
-                <div className="thumb" style={{ width: "100%", height: 100, borderRadius: 0, backgroundImage: `url("${p.image}")` }} />
+                <div className="thumb" style={{ width: "100%", height: 100, borderRadius: 0, backgroundImage: `url("${p.image}")` }}>
+                  <span className="heart"><IconHeart filled size={18} /></span>
+                </div>
                 <div className="body">
-                  <p className="brand-name">{p.brand}</p>
                   <h3>{p.name}</h3>
-                  <p>★ {p.rating.toFixed(1)}</p>
+                  <p>{p.brand} · ★ {p.rating.toFixed(1)}</p>
                   <strong>{formatPrice(p.price)}</strong>
                 </div>
               </button>

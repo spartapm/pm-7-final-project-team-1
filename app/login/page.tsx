@@ -150,7 +150,7 @@ export default function LoginPage() {
                     </button>
                   ))}
                   <button className={`btn-primary${allOn ? "" : " off"}`} type="button" disabled={!allOn} onClick={afterAgree}>
-                    동의하고 가입하기
+                    동의하고 계속하기
                   </button>
                 </>
               )}
