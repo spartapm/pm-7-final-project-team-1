@@ -56,13 +56,13 @@ function WriteInner() {
       });
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!enabled || busy || !product) {
       if (!enabled) showToast("별점을 입력해 주세요");
       return;
     }
     setBusy(true);
-    const saved = upsertReview({
+    const saved = await upsertReview({
       id: existing?.id,
       productId: product.id,
       rating,
@@ -70,7 +70,6 @@ function WriteInner() {
       photos,
     });
     if (!saved) {
-      showToast("일시적인 오류입니다. 잠시 후 다시 시도해주세요");
       setBusy(false);
       return;
     }

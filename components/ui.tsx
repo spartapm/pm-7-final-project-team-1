@@ -9,7 +9,7 @@ import { useStore } from "@/lib/store";
 export function PhoneShell({ children, splash }: { children?: ReactNode; splash?: boolean }) {
   return (
     <div className={`shell${splash ? " shell-splash" : ""}`}>
-      <div className="shell-body">{children}</div>
+      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><i /></div>}</div>
     </div>
   );
 }

@@ -18,7 +18,7 @@ const PAGE = 10;
 
 export default function HomePage() {
   const router = useRouter();
-  const { hydrated, account, cart } = useStore();
+  const { hydrated, account, cart, reviews, bootError, retryBoot } = useStore();
   const [category, setCategory] = useState<Category>("크림");
   const [sort, setSort] = useState<SortKey>("match");
   const [price, setPrice] = useState<PriceRange>("all");
@@ -57,8 +57,9 @@ export default function HomePage() {
         concerns: viewConcerns,
         sort,
         price,
+        reviews,
       }),
-    [category, viewSkin, viewConcerns, sort, price]
+    [category, viewSkin, viewConcerns, sort, price, reviews]
   );
 
   useEffect(() => {
@@ -87,9 +88,9 @@ export default function HomePage() {
     }
   };
 
-  if (!hydrated || !account?.onboardingDone || !viewSkin) return <PhoneShell />;
+  if (!hydrated) return <PhoneShell />;
 
-  if (error) {
+  if (bootError || error) {
     return (
       <PhoneShell>
         <div className="page">
@@ -97,7 +98,14 @@ export default function HomePage() {
             <div className="icon-wrap">⚠</div>
             <h2>랭킹을 불러오지 못했어요</h2>
             <p>네트워크 상태를 확인하고 다시 시도해주세요.</p>
-            <button className="btn-primary" type="button" onClick={() => setError(false)}>
+            <button
+              className="btn-primary"
+              type="button"
+              onClick={() => {
+                setError(false);
+                retryBoot();
+              }}
+            >
               다시 시도
             </button>
           </div>
@@ -106,6 +114,8 @@ export default function HomePage() {
       </PhoneShell>
     );
   }
+
+  if (!account?.onboardingDone || !viewSkin) return <PhoneShell />;
 
   return (
     <PhoneShell>

@@ -1,4 +1,4 @@
-import type { Category, PriceRange, Product, SkinConcern, SkinType, SortKey } from "./types";
+import type { Category, PriceRange, Product, Review, SkinConcern, SkinType, SortKey } from "./types";
 import { PRODUCTS } from "./products";
 
 export function matchScore(product: Product, skinType: SkinType | null, concerns: SkinConcern[]) {
@@ -23,12 +23,23 @@ export function rankProducts(opts: {
   concerns: SkinConcern[];
   sort: SortKey;
   price: PriceRange;
+  reviews?: Review[];
 }) {
+  const similar = (opts.reviews ?? []).filter(
+    (r) =>
+      (opts.skinType && r.skinType === opts.skinType) ||
+      r.concerns.some((c) => opts.concerns.includes(c))
+  );
+  const similarAvg = (productId: string) => {
+    const rows = similar.filter((r) => r.productId === productId);
+    if (!rows.length) return 0;
+    return rows.reduce((sum, r) => sum + r.rating, 0) / rows.length;
+  };
   const scored = PRODUCTS.filter((p) => p.category === opts.category)
     .filter((p) => inPrice(p, opts.price))
     .map((p) => ({
       product: p,
-      score: matchScore(p, opts.skinType, opts.concerns),
+      score: matchScore(p, opts.skinType, opts.concerns) + similarAvg(p.id) * 4,
     }));
 
   scored.sort((a, b) => {

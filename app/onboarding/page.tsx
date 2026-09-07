@@ -36,9 +36,10 @@ function OnboardingInner() {
   }, [hydrated, account, edit, router]);
 
   const canSubmit = !!skin && concerns.length > 0;
-  const submit = () => {
+  const submit = async () => {
     if (!skin || !canSubmit) return;
-    saveProfile(skin, concerns);
+    const ok = await saveProfile(skin, concerns);
+    if (!ok) return;
     router.replace("/home");
   };
 

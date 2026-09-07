@@ -20,6 +20,7 @@ export default function LoginPage() {
   const [sheet, setSheet] = useState<"signup" | "after-social" | "pick" | null>(null);
   const [checks, setChecks] = useState<Record<string, boolean>>({});
   const [providerLabel, setProviderLabel] = useState("카카오");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -39,21 +40,27 @@ export default function LoginPage() {
     cancelAuth();
   };
 
-  const afterAgree = () => {
-    if (!allOn) return;
+  const afterAgree = async () => {
+    if (!allOn || busy) return;
     if (sheet === "signup") {
       beginSignup();
       setSheet("pick");
       return;
     }
-    completeTermsAndJoin();
+    setBusy(true);
+    const ok = await completeTermsAndJoin();
+    setBusy(false);
+    if (!ok) return;
     showToast("회원가입이 완료되었습니다");
     router.replace("/onboarding");
   };
 
-  const onSocial = (provider: Provider) => {
-    const result = startSocial(provider);
+  const onSocial = async (provider: Provider) => {
+    if (busy) return;
     setProviderLabel(provider === "kakao" ? "카카오" : "구글");
+    setBusy(true);
+    const result = await startSocial(provider);
+    setBusy(false);
     if (result.kind === "login") {
       showToast(result.isNew ? "회원가입이 완료되었습니다" : "로그인되었어요");
       return;
@@ -78,11 +85,11 @@ export default function LoginPage() {
             </p>
           </div>
           <div className="login-actions">
-            <button className="btn-kakao" type="button" onClick={() => onSocial("kakao")}>
+            <button className="btn-kakao" type="button" disabled={busy} onClick={() => onSocial("kakao")}>
               <IconKakao />
               카카오로 시작하기
             </button>
-            <button className="btn-google" type="button" onClick={() => onSocial("google")}>
+            <button className="btn-google" type="button" disabled={busy} onClick={() => onSocial("google")}>
               <IconGoogle />
               구글로 시작하기
             </button>
@@ -114,12 +121,12 @@ export default function LoginPage() {
                     <br />
                     선택해 주세요
                   </h2>
-                  <button className="btn-kakao" type="button" onClick={() => onSocial("kakao")}>
+                  <button className="btn-kakao" type="button" disabled={busy} onClick={() => onSocial("kakao")}>
                     <IconKakao />
                     카카오로 시작하기
                   </button>
                   <div style={{ height: 10 }} />
-                  <button className="btn-google" type="button" onClick={() => onSocial("google")}>
+                  <button className="btn-google" type="button" disabled={busy} onClick={() => onSocial("google")}>
                     <IconGoogle />
                     구글로 시작하기
                   </button>
@@ -149,7 +156,7 @@ export default function LoginPage() {
                       </span>
                     </button>
                   ))}
-                  <button className={`btn-primary${allOn ? "" : " off"}`} type="button" disabled={!allOn} onClick={afterAgree}>
+                  <button className={`btn-primary${allOn ? "" : " off"}`} type="button" disabled={!allOn || busy} onClick={afterAgree}>
                     동의하고 계속하기
                   </button>
                 </>

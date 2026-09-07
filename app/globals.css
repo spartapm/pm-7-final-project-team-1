@@ -56,6 +56,20 @@ img { display: block; max-width: 100%; }
   flex-direction: column;
   min-height: 100dvh;
 }
+.boot-loading {
+  flex: 1;
+  display: grid;
+  place-items: center;
+}
+.boot-loading i {
+  width: 28px;
+  height: 28px;
+  border: 2.5px solid var(--chip);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .toast {
   position: fixed;

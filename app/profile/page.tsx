@@ -111,8 +111,8 @@ export default function ProfilePage() {
           <button
             className="btn-ghost logout"
             type="button"
-            onClick={() => {
-              logout();
+            onClick={async () => {
+              await logout();
               router.replace("/login");
             }}
           >
@@ -137,8 +137,9 @@ export default function ProfilePage() {
                 className="btn-primary"
                 style={{ marginTop: 18 }}
                 type="button"
-                onClick={() => {
-                  withdraw();
+                onClick={async () => {
+                  const ok = await withdraw();
+                  if (!ok) return;
                   router.replace("/login");
                 }}
               >

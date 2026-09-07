@@ -1,24 +1,40 @@
 # ONE&BEAUTY — 1조
 
-피부 타입·고민 기반 개인화 스킨케어 랭킹. 1차(9/1) 와이어프레임과 기능 명세서 기준으로 구현했습니다.
+피부 타입·고민 기반 개인화 스킨케어 랭킹. 계정·리뷰·찜·장바구니는 Supabase에 저장됩니다.
 
-## 실행
+## 로컬 실행
 
-```bash
-npm install
-npm run dev
+`.env.local`에 아래를 넣고 `npm install && npm run dev` 합니다.
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ```
 
 브라우저에서 http://localhost:3000  
-화면은 390px 폭 + 레터박스입니다. 개발자 도구 모바일 뷰(390×844)로 보는 것이 가장 가깝습니다.
+화면은 390px 폭 + 레터박스입니다.
+
+## 최초 1회: Supabase SQL
+
+대시보드 → **SQL Editor**에 `supabase/schema.sql` 전체를 붙여 실행합니다.
+
+그리고 **Authentication → Providers → Email**에서 **Confirm email**을 끕니다. 켜져 있으면 가입 세션이 안 나옵니다.
 
 ## 플로우
 
-앱 진입(1.5초 스플래시) → 카카오/구글 로그인(데모) → 약관 동의 → 피부 프로필 → 맞춤 랭킹 → 상세/리뷰/찜/장바구니/마이페이지
+앱 진입(1.5초 스플래시) → 카카오/구글 시작 → 약관 동의 → 피부 프로필 → 맞춤 랭킹 → 상세/리뷰/찜/장바구니/마이페이지
 
-- 카카오·구글은 데모용으로 버튼만 동작합니다(실제 OAuth 없음).
-- 세션은 30일, 자동 로그인입니다.
-- 닉네임은 `beautyuser1001`부터 순차 발급됩니다.
-- 장바구니는 담기·수량 변경까지 되고, 주문/결제·바로 구매는 비활성입니다.
+- 닉네임은 서버에서 `beautyuser1001`부터 순차 발급됩니다.
+- 리뷰·찜·장바구니·최근 본 제품·피부 프로필은 계정에 묶여 서버에 저장됩니다.
+- 탈퇴 시 계정은 삭제되고, 리뷰는 “탈퇴한 회원의 리뷰 입니다”로 남습니다.
+- 장바구니 주문/결제·바로 구매는 명세상 비활성입니다.
+- 카카오/구글 콘솔 키가 없어 실제 OAuth 화면은 열리지 않습니다. 같은 브라우저에서는 제공자별로 계정이 유지됩니다.
 
-데이터는 이 브라우저 `localStorage`에 저장됩니다.
+## Vercel 환경변수
+
+| Name | 값 |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | Project URL (`https://xxxx.supabase.co`) |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Publishable key (`sb_publishable_...`) |
+
+**넣지 말 것:** DB password, Direct connection string. 둘 다 서버 루트 권한이라 클라이언트/Vercel에 올리면 안 됩니다.
