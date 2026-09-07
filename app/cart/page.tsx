@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Thumb } from "@/components/ui";
-import { IconBack, IconMinus, IconPlus } from "@/components/icons";
+import { IconBack, IconCart, IconMinus, IconPlus } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { formatPrice } from "@/lib/ranking";
@@ -48,7 +48,9 @@ export default function CartPage() {
 
         {rows.length === 0 ? (
           <div className="empty">
-            <div className="icon-wrap">🛒</div>
+            <div className="icon-wrap">
+              <IconCart />
+            </div>
             <h2>아직 담긴 제품이 없어요</h2>
             <p>마음에 드는 제품을 담아 모아보세요</p>
             <button className="btn-primary" type="button" onClick={() => router.push("/home")}>

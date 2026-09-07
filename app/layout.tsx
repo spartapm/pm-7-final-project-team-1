@@ -1,10 +1,18 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: "ONE&BEAUTY",
   description: "피부 타입과 고민에 맞춘 개인화 스킨케어 랭킹",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: "cover",
+  themeColor: "#fdf2f4",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

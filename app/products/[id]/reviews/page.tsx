@@ -2,7 +2,7 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { PhoneShell, Stars, Thumb } from "@/components/ui";
+import { Avatar, PhoneShell, Stars, Thumb } from "@/components/ui";
 import { IconBack, IconPen } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { formatDate } from "@/lib/ranking";
@@ -41,6 +41,8 @@ export default function ReviewsPage() {
     }
   }, [hydrated, account, reviews, id, mine, showToast]);
 
+  if (!hydrated) return <PhoneShell />;
+
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
@@ -56,9 +58,13 @@ export default function ReviewsPage() {
             </button>
           </div>
         </div>
+        <div className="page-scroll bleed">
         <div className="review-list">
           {list.length === 0 ? (
             <div className="empty" style={{ paddingTop: 48 }}>
+              <div className="icon-wrap">
+                <IconPen />
+              </div>
               <h2>아직 리뷰가 없어요</h2>
               <p>첫 리뷰를 남겨보세요</p>
             </div>
@@ -67,7 +73,7 @@ export default function ReviewsPage() {
             return (
               <article key={r.id} className="review-card">
                 <div className="review-user">
-                  <div className="avatar" />
+                  <Avatar name={r.nickname} />
                   <div>
                     <strong>{r.nickname}</strong>
                     <div className="tags">
@@ -96,6 +102,7 @@ export default function ReviewsPage() {
               </article>
             );
           })}
+        </div>
         </div>
         <button
           className="fab-pen"

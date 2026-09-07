@@ -101,11 +101,9 @@ export default function LoginPage() {
 
         {sheet ? (
           <div className="dim">
-            <div className="x-btn" style={{ position: "absolute" }}>
-              <button type="button" onClick={closeSheet} aria-label="닫기">
-                <IconClose />
-              </button>
-            </div>
+            <button className="x-btn light" type="button" onClick={closeSheet} aria-label="닫기">
+              <IconClose />
+            </button>
             {sheet === "after-social" ? (
               <div className="terms-head">
                 <h1>{providerLabel} 인증이 완료됐어요</h1>

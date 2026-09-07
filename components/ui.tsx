@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
-import { IconHeart, IconHome, IconUser } from "./icons";
+import { IconHeart, IconHome, IconUser, LogoMark } from "./icons";
 import { useStore } from "@/lib/store";
 
 export function PhoneShell({ children, splash }: { children?: ReactNode; splash?: boolean }) {
   return (
     <div className={`shell${splash ? " shell-splash" : ""}`}>
-      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><i /></div>}</div>
+      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><LogoMark className="logo" color="#C85C78" /><i /></div>}</div>
+      <ToastHost />
     </div>
   );
 }
@@ -68,4 +69,13 @@ export function Stars({ value, size = 14 }: { value: number; size?: number }) {
 
 export function Thumb({ src, alt, className }: { src: string; alt: string; className?: string }) {
   return <div className={`thumb ${className ?? ""}`} style={{ backgroundImage: `url("${src}")` }} role="img" aria-label={alt} />;
+}
+
+export function Avatar({ name, className }: { name?: string; className?: string }) {
+  const letter = (name ?? "").trim().slice(0, 1).toUpperCase() || "B";
+  return (
+    <div className={`avatar${className ? ` ${className}` : ""}`} aria-hidden>
+      {letter}
+    </div>
+  );
 }

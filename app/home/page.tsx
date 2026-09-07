@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, TabBar, Thumb } from "@/components/ui";
-import { IconCart, IconFilter, IconRefresh, IconSearch, LogoMark } from "@/components/icons";
+import { IconCart, IconFilter, IconRefresh, IconSearch, IconWarn, LogoMark } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { CATEGORIES, SKIN_CONCERNS, SKIN_TYPES, type Category, type PriceRange, type SkinConcern, type SkinType, type SortKey } from "@/lib/types";
 import { rankProducts } from "@/lib/ranking";
@@ -95,7 +95,9 @@ export default function HomePage() {
       <PhoneShell>
         <div className="page">
           <div className="empty">
-            <div className="icon-wrap">⚠</div>
+            <div className="icon-wrap">
+              <IconWarn />
+            </div>
             <h2>랭킹을 불러오지 못했어요</h2>
             <p>네트워크 상태를 확인하고 다시 시도해주세요.</p>
             <button
@@ -175,10 +177,15 @@ export default function HomePage() {
               </button>
             ))}
           </div>
-          <div className="rank-meta">“피부타입/피부 고민 기반 적합 성분 순위에 따른 ”</div>
+          <div className="rank-meta">피부타입·피부 고민 기반 적합 성분 순위</div>
           <div className="rank-title">
             <span>{title}</span>
-            <button className="filter-btn" type="button" aria-label="필터" onClick={() => { setDraftSort(sort); setDraftPrice(price === "all" ? "under30" : price); setFilterOpen(true); }}>
+            <button
+              className={`filter-btn${sort !== "match" || price !== "all" ? " on" : ""}`}
+              type="button"
+              aria-label="필터"
+              onClick={() => { setDraftSort(sort); setDraftPrice(price); setFilterOpen(true); }}
+            >
               <IconFilter />
             </button>
           </div>
@@ -203,7 +210,7 @@ export default function HomePage() {
                   type="button"
                   onClick={() => router.push(`/products/${row.product.id}`)}
                 >
-                  <span className="rank-no">{i + 1}</span>
+                  <span className={`rank-no${i < 3 ? " top" : ""}`}>{i + 1}</span>
                   <Thumb src={row.product.image} alt={row.product.name} />
                   <div>
                     <h3>{row.product.name}</h3>
@@ -230,7 +237,7 @@ export default function HomePage() {
                   type="button"
                   onClick={() => {
                     setDraftSort("match");
-                    setDraftPrice("under30");
+                    setDraftPrice("all");
                   }}
                 >
                   <IconRefresh />
@@ -255,6 +262,7 @@ export default function HomePage() {
               <div className="filter-row">
                 {(
                   [
+                    ["all", "전체"],
                     ["under30", "3만원 이하"],
                     ["30to50", "3~5만원"],
                     ["over50", "5만원 이상"],

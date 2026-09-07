@@ -121,6 +121,16 @@ export function IconFilter() {
   );
 }
 
+export function IconWarn() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+      <path d="M12 4.8 3.4 19.4h17.2L12 4.8Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="M12 10.2v5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="12" cy="17.3" r="1" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function IconSearch() {
   return (
     <svg width="36" height="36" viewBox="0 0 24 24" fill="none">

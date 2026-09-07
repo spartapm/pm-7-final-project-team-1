@@ -49,14 +49,14 @@ function OnboardingInner() {
         <button className="x-btn" type="button" aria-label="닫기" onClick={() => (edit ? router.back() : setExit(true))}>
           <IconClose />
         </button>
-        <div className="onboard">
+        <div className="page-scroll onboard">
           <div className="onboard-hero">
             <Rabbit />
             <h1>피부 타입을 알려주세요</h1>
             <p>선택한 정보로 맞춤 랭킹과 리뷰를 보여드려요.</p>
           </div>
           <div className="field-label">피부 타입 (택 1)</div>
-          <div className="chips">
+          <div className="chips types">
             {SKIN_TYPES.map((t) => (
               <button key={t} className={`chip${skin === t ? " on" : ""}`} type="button" onClick={() => setSkin(t)}>
                 {t}
@@ -64,7 +64,7 @@ function OnboardingInner() {
             ))}
           </div>
           <div className="field-label">피부 고민 (중복 선택)</div>
-          <div className="chips">
+          <div className="chips concerns">
             {SKIN_CONCERNS.map((t) => {
               const on = concerns.includes(t);
               return (

@@ -90,7 +90,7 @@ function WriteInner() {
           <h1>{existing ? "리뷰 수정" : "리뷰 작성"}</h1>
           <span className="side" />
         </div>
-        <div className="write">
+        <div className="page-scroll write">
           <div className="write-product">
             <Thumb src={product.image} alt={product.name} />
             <div>
@@ -114,6 +114,7 @@ function WriteInner() {
             placeholder="사용감, 피부 변화 등을 입력"
             onChange={(e) => setText(e.target.value)}
           />
+          <div className="char-count">{text.length}/1,000</div>
           <div className="field-label">사진 등록 (선택 · 최대 3장)</div>
           <div className="photos">
             {photos.map((src, i) => (
