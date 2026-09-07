@@ -8,3 +8,4 @@ out
 !.env.example
 .figma-audit
 .vercel
+supabase/.temp
