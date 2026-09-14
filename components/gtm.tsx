@@ -1,6 +1,7 @@
 import Script from "next/script";
 
-export const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-W44BQ7DV";
+export const GTM_ID = "GTM-W44BQ7DV";
+export const GA4_MEASUREMENT_ID = "G-EY6SBKRBM5";
 
 export function GtmScript() {
   return (

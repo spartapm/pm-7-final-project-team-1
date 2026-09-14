@@ -4,15 +4,10 @@
 
 ## 로컬 실행
 
-`.env.local`에 아래를 넣고 `npm install && npm run dev` 합니다.
-
-```
-NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
-```
+`npm install && npm run dev`
 
 브라우저에서 http://localhost:3000  
-화면은 390px 폭 + 레터박스입니다.
+화면은 390px 폭 + 레터박스입니다. Supabase·GTM 값은 코드에 들어 있어 `.env.local`이 필요 없습니다.
 
 ## 최초 1회: Supabase SQL
 
@@ -30,11 +25,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 - 장바구니 주문/결제·바로 구매는 명세상 비활성입니다.
 - 카카오/구글 콘솔 키가 없어 실제 OAuth 화면은 열리지 않습니다. 같은 브라우저에서는 제공자별로 계정이 유지됩니다.
 
-## Vercel 환경변수
+## Vercel
 
-| Name | 값 |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Project URL (`https://xxxx.supabase.co`) |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Publishable key (`sb_publishable_...`) |
-
-**넣지 말 것:** DB password, Direct connection string. 둘 다 서버 루트 권한이라 클라이언트/Vercel에 올리면 안 됩니다.
+환경변수는 넣지 않아도 됩니다. **넣지 말 것:** DB password, Direct connection string. 둘 다 서버 루트 권한이라 클라이언트/Vercel에 올리면 안 됩니다.
