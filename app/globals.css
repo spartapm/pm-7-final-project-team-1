@@ -490,9 +490,10 @@ img { display: block; max-width: 100%; }
   width: 60px;
   height: 60px;
   border-radius: 10px;
-  background-size: cover;
+  background-size: contain;
+  background-repeat: no-repeat;
   background-position: center;
-  background-color: #f3c9d2;
+  background-color: #fff6f4;
 }
 
 .empty {
@@ -553,7 +554,7 @@ img { display: block; max-width: 100%; }
 .product-hero {
   position: relative;
   height: 280px;
-  background: #d7e8f2 center/cover no-repeat;
+  background: #fff6f4 center/contain no-repeat;
 }
 .back-fab {
   position: absolute;

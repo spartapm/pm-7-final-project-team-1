@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Providers } from "./providers";
+import { GtmNoscript, GtmScript } from "@/components/gtm";
 
 export const metadata: Metadata = {
   title: "ONE&BEAUTY",
@@ -26,6 +27,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" href="/favicon.svg" />
       </head>
       <body>
+        <GtmNoscript />
+        <GtmScript />
         <Providers>{children}</Providers>
       </body>
     </html>
