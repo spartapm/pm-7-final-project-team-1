@@ -7,7 +7,7 @@
 `npm install && npm run dev`
 
 브라우저에서 http://localhost:3000  
-화면은 390px 폭 + 레터박스입니다. Supabase·GTM 값은 코드에 들어 있어 `.env.local`이 필요 없습니다.
+화면은 390px 폭 + 레터박스입니다. Supabase·GA4 값은 코드에 들어 있어 `.env.local`이 필요 없습니다.
 
 ## 최초 1회: Supabase SQL
 

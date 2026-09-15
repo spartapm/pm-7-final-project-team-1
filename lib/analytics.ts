@@ -2,14 +2,29 @@ export type AnalyticsParams = Record<string, string | number | boolean | string[
 
 declare global {
   interface Window {
-    dataLayer?: Record<string, unknown>[];
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
+}
+
+function send(...args: unknown[]) {
+  if (typeof window === "undefined") return;
+  window.dataLayer = window.dataLayer || [];
+  if (typeof window.gtag !== "function") {
+    window.gtag = function gtag() {
+      window.dataLayer!.push(arguments);
+    };
+  }
+  window.gtag(...args);
 }
 
 export function track(event: string, params: AnalyticsParams = {}) {
   if (typeof window === "undefined") return;
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event, ...params });
+  const payload: Record<string, string | number | boolean | string[]> = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined) payload[key] = value;
+  }
+  send("event", event, payload);
 }
 
 const SOURCE_KEY = "ob:source_screen";
