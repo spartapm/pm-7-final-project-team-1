@@ -572,7 +572,16 @@ img { display: block; max-width: 100%; }
 .product-info .price { margin-top: 18px; color: var(--muted); font-size: 20px; font-weight: 400; }
 .product-info .badges { margin-top: 10px; }
 .seg { display: flex; gap: 8px; padding: 8px 16px 14px; }
-.detail-img { width: 100%; background: #b9d6ea; min-height: 220px; }
+.detail-gallery { width: 100%; background: #fff; }
+.detail-gallery.collapsed {
+  max-height: 320px;
+  overflow: hidden;
+}
+.detail-img {
+  width: 100%;
+  display: block;
+  background: #fff6f4;
+}
 .detail-banner {
   background: #7eb7d8;
   color: #fff;

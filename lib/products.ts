@@ -1,4 +1,5 @@
 import type { Category, Product, ProductBadge, Review, SkinConcern, SkinType } from "./types";
+import { PRODUCT_GALLERY } from "./product-gallery";
 
 const B = {
   moist: { label: "촉촉함", tone: "muted" } satisfies ProductBadge,
@@ -38,6 +39,7 @@ function p(
     ingredients,
     image,
     detailImage,
+    detailGallery: PRODUCT_GALLERY[id] ?? [],
     badges,
   };
 }

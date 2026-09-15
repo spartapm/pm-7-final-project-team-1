@@ -19,6 +19,7 @@ export type Product = {
   reviewCount: number;
   image: string;
   detailImage?: string;
+  detailGallery: string[];
   skinTypes: SkinType[];
   concerns: SkinConcern[];
   fit: number;

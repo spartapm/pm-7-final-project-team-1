@@ -80,15 +80,18 @@ export default function ProductPage() {
               {product.ingredients.join(" · ")} 성분을 담아 {product.concerns.join("·")}에 맞춰 설계된 제품입니다.
             </p>
           </div>
-          {more ? (
-            <div style={{ padding: 20, fontSize: 13, lineHeight: 1.7, color: "var(--text)" }}>
-              전성분 {product.ingredients.join(", ")} 외 보습·진정 베이스. 피부 타입 {product.skinTypes.join(", ")}에
-              적합하도록 적합 성분을 배치했습니다. 사용감은 가벼운 제형부터 장벽 케어까지 제품별로 다릅니다.
+          {product.detailGallery.length > 0 ? (
+            <div className={`detail-gallery${more ? "" : " collapsed"}`}>
+              {(more ? product.detailGallery : product.detailGallery.slice(0, 1)).map((src) => (
+                <img key={src} className="detail-img" src={src} alt="" referrerPolicy="no-referrer" />
+              ))}
             </div>
           ) : null}
-          <button className="more-btn" type="button" onClick={() => setMore((v) => !v)}>
-            {more ? "상세 접기" : "상세 더보기"}
-          </button>
+          {product.detailGallery.length > 0 ? (
+            <button className="more-btn" type="button" onClick={() => setMore((v) => !v)}>
+              {more ? "상세 접기" : "상세 더보기"}
+            </button>
+          ) : null}
         </div>
         {more ? (
           <button className="up-fab" type="button" aria-label="맨 위로" onClick={() => scroller.current?.scrollTo({ top: 0, behavior: "smooth" })}>
