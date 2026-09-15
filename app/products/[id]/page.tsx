@@ -8,6 +8,7 @@ import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { formatPrice } from "@/lib/ranking";
 import { BadgeRow, productBadges } from "@/lib/badges";
+import { consumeSourceScreen, track, trackViewItem } from "@/lib/analytics";
 
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,6 +29,16 @@ export default function ProductPage() {
   useEffect(() => {
     if (product) addView(product.id);
   }, [product, addView]);
+
+  useEffect(() => {
+    if (!product) return;
+    trackViewItem({
+      item_id: product.id,
+      item_name: product.name,
+      price: product.price,
+      source_screen: consumeSourceScreen("product"),
+    });
+  }, [product?.id]);
 
   if (!hydrated || !product) {
     return (
@@ -99,7 +110,20 @@ export default function ProductPage() {
           </button>
         ) : null}
         <div className="buybar">
-          <button className={`wish-btn${wished ? " on" : ""}`} type="button" onClick={() => toggleWish(product.id)}>
+          <button
+            className={`wish-btn${wished ? " on" : ""}`}
+            type="button"
+            onClick={() => {
+              const on = toggleWish(product.id);
+              if (on) {
+                track("add_to_wishlist", {
+                  item_id: product.id,
+                  item_name: product.name,
+                  price: product.price,
+                });
+              }
+            }}
+          >
             <IconHeart filled={wished} />
             찜하기
           </button>
@@ -116,12 +140,19 @@ export default function ProductPage() {
                 showToast("일시적인 오류입니다. 잠시 후 다시 시도해주세요");
                 return;
               }
+              track("add_to_cart", { item_id: product.id, price: product.price });
               showToast("장바구니에 담았어요");
             }}
           >
             {inCart ? "장바구니 보기" : "장바구니 담기"}
           </button>
-          <button className="btn-disabled" type="button" disabled>
+          <button
+            className="btn-disabled"
+            type="button"
+            onClick={() => {
+              track("begin_checkout", { item_id: product.id, price: product.price });
+            }}
+          >
             바로 구매
           </button>
         </div>

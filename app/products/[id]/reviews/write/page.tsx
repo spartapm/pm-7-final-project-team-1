@@ -6,6 +6,7 @@ import { PhoneShell, Thumb } from "@/components/ui";
 import { IconStar } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
+import { track } from "@/lib/analytics";
 
 export default function WriteReviewPage() {
   return (
@@ -74,6 +75,11 @@ function WriteInner() {
       return;
     }
     showToast("리뷰가 등록 되었습니다");
+    track("write_review_complete", {
+      item_id: product.id,
+      rating,
+      tag_list: account ? [account.skinType, ...account.concerns].filter((x): x is string => !!x) : [],
+    });
     if (existing) router.replace("/profile");
     else router.replace(`/products/${product.id}/reviews`);
   };

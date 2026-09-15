@@ -6,6 +6,7 @@ import { PhoneShell } from "@/components/ui";
 import { IconClose, Rabbit } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { SKIN_CONCERNS, SKIN_TYPES, type SkinConcern, type SkinType } from "@/lib/types";
+import { track } from "@/lib/analytics";
 
 export default function OnboardingPage() {
   return (
@@ -40,6 +41,9 @@ function OnboardingInner() {
     if (!skin || !canSubmit) return;
     const ok = await saveProfile(skin, concerns);
     if (!ok) return;
+    if (!edit) {
+      track("onboarding_complete", { skin_type: skin, skin_concern_list: concerns });
+    }
     router.replace("/home");
   };
 
@@ -97,6 +101,7 @@ function OnboardingInner() {
                   className="sub"
                   type="button"
                   onClick={() => {
+                    track("onboarding_exit");
                     logout();
                     router.replace("/login");
                   }}

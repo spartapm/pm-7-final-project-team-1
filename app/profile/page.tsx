@@ -7,6 +7,7 @@ import { IconHeart } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { formatPrice } from "@/lib/ranking";
+import { setSourceScreen } from "@/lib/analytics";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -67,7 +68,10 @@ export default function ProfilePage() {
           ) : (
             <div className="viewed">
               {recent.map((p) => (
-                <button key={p.id} type="button" onClick={() => router.push(`/products/${p.id}`)}>
+                <button key={p.id} type="button" onClick={() => {
+                  setSourceScreen("profile");
+                  router.push(`/products/${p.id}`);
+                }}>
                   <Thumb src={p.image} alt={p.name} />
                 </button>
               ))}
@@ -80,7 +84,10 @@ export default function ProfilePage() {
           ) : (
             <div className="wish-h">
               {wished.slice(0, 5).map((p) => (
-                <button key={p.id} className="wish-card" type="button" onClick={() => router.push(`/products/${p.id}`)}>
+                <button key={p.id} className="wish-card" type="button" onClick={() => {
+                  setSourceScreen("profile");
+                  router.push(`/products/${p.id}`);
+                }}>
                   <div className="thumb" style={{ width: "100%", height: 100, borderRadius: 0, backgroundImage: `url("${p.image}")` }}>
                     <span className="heart"><IconHeart filled size={18} /></span>
                   </div>

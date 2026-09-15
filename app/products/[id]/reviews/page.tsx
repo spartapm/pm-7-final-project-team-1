@@ -6,6 +6,7 @@ import { Avatar, PhoneShell, Stars, Thumb } from "@/components/ui";
 import { IconBack, IconPen } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { formatDate } from "@/lib/ranking";
+import { track } from "@/lib/analytics";
 
 export default function ReviewsPage() {
   const { id } = useParams<{ id: string }>();
@@ -108,7 +109,10 @@ export default function ReviewsPage() {
           className="fab-pen"
           type="button"
           aria-label="리뷰 작성"
-          onClick={() => router.push(`/products/${id}/reviews/write`)}
+          onClick={() => {
+            track("click_write_review", { item_id: id });
+            router.push(`/products/${id}/reviews/write`);
+          }}
         >
           <IconPen />
         </button>

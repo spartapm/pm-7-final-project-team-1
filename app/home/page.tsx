@@ -9,6 +9,7 @@ import { CATEGORIES, SKIN_CONCERNS, SKIN_TYPES, type Category, type PriceRange, 
 import { rankProducts } from "@/lib/ranking";
 import { BadgeRow, productBadges } from "@/lib/badges";
 import { readRankingView, writeRankingView } from "@/lib/ranking-view";
+import { setSourceScreen, track } from "@/lib/analytics";
 
 function sameConcerns(a: SkinConcern[], b: SkinConcern[]) {
   return a.length === b.length && a.every((x) => b.includes(x));
@@ -184,7 +185,12 @@ export default function HomePage() {
               className={`filter-btn${sort !== "match" || price !== "all" ? " on" : ""}`}
               type="button"
               aria-label="필터"
-              onClick={() => { setDraftSort(sort); setDraftPrice(price); setFilterOpen(true); }}
+              onClick={() => {
+                track("click_filter_button");
+                setDraftSort(sort);
+                setDraftPrice(price);
+                setFilterOpen(true);
+              }}
             >
               <IconFilter />
             </button>
@@ -197,7 +203,12 @@ export default function HomePage() {
               </div>
               <h2>조건에 맞는 제품이 아직 없어요</h2>
               <p>다른 피부 타입이나 카테고리를 선택해 보세요</p>
-              <button className="btn-primary" type="button" onClick={() => { setPrice("all"); setSort("match"); setFilterOpen(true); }}>
+              <button className="btn-primary" type="button" onClick={() => {
+                track("click_filter_button");
+                setPrice("all");
+                setSort("match");
+                setFilterOpen(true);
+              }}>
                 필터 변경하기
               </button>
             </div>
@@ -208,7 +219,14 @@ export default function HomePage() {
                   key={row.product.id}
                   className="rank-card"
                   type="button"
-                  onClick={() => router.push(`/products/${row.product.id}`)}
+                  onClick={() => {
+                    track("select_item", {
+                      item_id: row.product.id,
+                      item_list_name: category,
+                    });
+                    setSourceScreen(sort !== "match" || price !== "all" ? "home_filter" : "home_ranking");
+                    router.push(`/products/${row.product.id}`);
+                  }}
                 >
                   <span className={`rank-no${i < 3 ? " top" : ""}`}>{i + 1}</span>
                   <Thumb src={row.product.image} alt={row.product.name} />
@@ -277,6 +295,10 @@ export default function HomePage() {
                 className="btn-primary apply"
                 type="button"
                 onClick={() => {
+                  track("apply_filter", {
+                    sort_type: draftSort,
+                    price_range_list: [draftPrice],
+                  });
                   setSort(draftSort);
                   setPrice(draftPrice);
                   setFilterOpen(false);

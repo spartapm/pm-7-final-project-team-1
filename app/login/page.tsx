@@ -6,6 +6,7 @@ import { PhoneShell } from "@/components/ui";
 import { IconCheck, IconClose, IconGoogle, IconKakao, LogoMark } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import type { Provider } from "@/lib/types";
+import { track } from "@/lib/analytics";
 
 const TERMS = [
   { id: "service", label: "(필수) 서비스 이용약관 동의" },
@@ -51,6 +52,7 @@ export default function LoginPage() {
     const ok = await completeTermsAndJoin();
     setBusy(false);
     if (!ok) return;
+    track("sign_up", { method: providerLabel === "구글" ? "google" : "kakao" });
     showToast("회원가입이 완료되었습니다");
     router.replace("/onboarding");
   };
@@ -62,6 +64,7 @@ export default function LoginPage() {
     const result = await startSocial(provider);
     setBusy(false);
     if (result.kind === "login") {
+      if (result.isNew) track("sign_up", { method: provider });
       showToast(result.isNew ? "회원가입이 완료되었습니다" : "로그인되었어요");
       return;
     }

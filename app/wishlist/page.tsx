@@ -8,6 +8,7 @@ import { useStore } from "@/lib/store";
 import { CATEGORIES } from "@/lib/types";
 import { productById } from "@/lib/products";
 import { formatPrice } from "@/lib/ranking";
+import { setSourceScreen } from "@/lib/analytics";
 
 const PAGE = 10;
 const FILTERS = ["전체", ...CATEGORIES] as const;
@@ -90,7 +91,10 @@ export default function WishlistPage() {
                       <IconHeart filled />
                     </button>
                   </div>
-                  <button type="button" onClick={() => router.push(`/products/${p.id}`)} style={{ width: "100%", textAlign: "left" }}>
+                  <button type="button" onClick={() => {
+                    setSourceScreen("wishlist");
+                    router.push(`/products/${p.id}`);
+                  }} style={{ width: "100%", textAlign: "left" }}>
                     <div className="body">
                       <h3>{p.name}</h3>
                       <p>{p.brand} · ★ {p.rating.toFixed(1)}</p>

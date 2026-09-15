@@ -7,6 +7,7 @@ import { IconBack, IconCart, IconMinus, IconPlus } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { formatPrice } from "@/lib/ranking";
+import { setSourceScreen } from "@/lib/analytics";
 
 export default function CartPage() {
   const router = useRouter();
@@ -63,14 +64,20 @@ export default function CartPage() {
               <div className="cart-list">
                 {rows.map((row) => (
                   <div key={row.productId} className="cart-row">
-                    <button type="button" onClick={() => router.push(`/products/${row.product.id}`)}>
+                    <button type="button" onClick={() => {
+                      setSourceScreen("cart");
+                      router.push(`/products/${row.product.id}`);
+                    }}>
                       <Thumb src={row.product.image} alt={row.product.name} />
                     </button>
                     <div>
                       <button
                         type="button"
                         className="cart-info"
-                        onClick={() => router.push(`/products/${row.product.id}`)}
+                        onClick={() => {
+                          setSourceScreen("cart");
+                          router.push(`/products/${row.product.id}`);
+                        }}
                       >
                         <p className="cart-brand">{row.product.brand}</p>
                         <h3>{row.product.name}</h3>
