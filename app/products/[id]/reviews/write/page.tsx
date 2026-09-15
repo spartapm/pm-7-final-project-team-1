@@ -78,7 +78,10 @@ function WriteInner() {
     track("write_review_complete", {
       item_id: product.id,
       rating,
-      tag_list: account ? [account.skinType, ...account.concerns].filter((x): x is string => !!x) : [],
+      tag_list: [
+        ...(account?.skinType ? [account.skinType] : []),
+        ...(account?.concerns ?? []),
+      ],
     });
     if (existing) router.replace("/profile");
     else router.replace(`/products/${product.id}/reviews`);
