@@ -1,6 +1,5 @@
 import Script from "next/script";
-
-export const GA4_MEASUREMENT_ID = "G-EY6SBKRBM5";
+import { GA4_MEASUREMENT_ID } from "@/lib/analytics";
 
 export function GaScript() {
   return (

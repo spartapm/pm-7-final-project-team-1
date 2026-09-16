@@ -1,3 +1,5 @@
+export const GA4_MEASUREMENT_ID = "G-EY6SBKRBM5";
+
 export type AnalyticsParams = Record<string, string | number | boolean | string[] | undefined>;
 
 declare global {
@@ -18,11 +20,17 @@ function send(...args: unknown[]) {
   window.gtag(...args);
 }
 
+function flatten(value: string | number | boolean | string[]) {
+  return Array.isArray(value) ? value.join(",") : value;
+}
+
 export function track(event: string, params: AnalyticsParams = {}) {
   if (typeof window === "undefined") return;
-  const payload: Record<string, string | number | boolean | string[]> = {};
+  const payload: Record<string, string | number | boolean> = {
+    send_to: GA4_MEASUREMENT_ID,
+  };
   for (const [key, value] of Object.entries(params)) {
-    if (value !== undefined) payload[key] = value;
+    if (value !== undefined) payload[key] = flatten(value);
   }
   send("event", event, payload);
 }
