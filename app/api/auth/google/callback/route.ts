@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   const saved = await readOAuthState(url.searchParams.get("state") ?? "");
   if (!code || !saved) return failLogin(req, "google-state");
 
-  const redirectUri = saved.redirectUri || `${authOrigin(req)}/api/auth/google/callback`;
+  const redirectUri = saved.redirectUri || `${authOrigin()}/api/auth/google/callback`;
   const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },

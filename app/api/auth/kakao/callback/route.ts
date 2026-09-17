@@ -7,7 +7,7 @@ export async function GET(req: Request) {
   const saved = await readOAuthState(url.searchParams.get("state") ?? "");
   if (!code || !saved) return failLogin(req, "kakao-state");
 
-  const redirectUri = saved.redirectUri || `${authOrigin(req)}/api/auth/kakao/callback`;
+  const redirectUri = saved.redirectUri || `${authOrigin()}/api/auth/kakao/callback`;
   const body = new URLSearchParams({
     grant_type: "authorization_code",
     client_id: key,

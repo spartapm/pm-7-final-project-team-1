@@ -4,7 +4,7 @@ import { GOOGLE_CLIENT_ID, authOrigin, failLogin, makeOAuthState } from "@/lib/o
 export async function GET(req: Request) {
   const id = GOOGLE_CLIENT_ID;
   if (!id) return failLogin(req, "google-key");
-  const redirectUri = `${authOrigin(req)}/api/auth/google/callback`;
+  const redirectUri = `${authOrigin()}/api/auth/google/callback`;
   const state = await makeOAuthState(redirectUri);
   const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
   url.searchParams.set("client_id", id);

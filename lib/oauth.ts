@@ -2,21 +2,18 @@ import { NextResponse } from "next/server";
 import { supabase } from "./supabase";
 import type { Provider } from "./types";
 
-export const KAKAO_REST_API_KEY = process.env.KAKAO_REST_API_KEY ?? "";
-export const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET ?? "";
-export const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID ?? "";
-export const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET ?? "";
+export const KAKAO_REST_API_KEY = "52db7ed4c5a23b5739e144d7a9694fd3";
+export const KAKAO_CLIENT_SECRET = "PfDg0meuxd8jYUhTQxInzbu9OhKMvtzd";
+export const KAKAO_JS_KEY = "5b952668ebf4ed1f28ceea8da6246f73";
+export const GOOGLE_CLIENT_ID = "260828879992-j760obsrbk8bos38anvbfoq61l7murr7.apps.googleusercontent.com";
+export const GOOGLE_CLIENT_SECRET = "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";
 
-export function authOrigin(req: Request) {
-  const forced = process.env.AUTH_BASE_URL?.replace(/\/$/, "");
-  if (forced) return forced;
-  const host = req.headers.get("x-forwarded-host") || req.headers.get("host") || "oneandbeauty.vercel.app";
-  const proto = req.headers.get("x-forwarded-proto") || (host.includes("localhost") ? "http" : "https");
-  return `${proto}://${host}`;
+export function authOrigin() {
+  return "https://oneandbeauty.vercel.app";
 }
 
 function oauthSecret() {
-  return process.env.AUTH_SECRET || KAKAO_CLIENT_SECRET || GOOGLE_CLIENT_SECRET || "onebeauty-oauth";
+  return KAKAO_CLIENT_SECRET;
 }
 
 function b64urlEncode(text: string) {
@@ -114,8 +111,8 @@ export async function sessionForSocial(provider: Provider, subject: string) {
   return again.data.session;
 }
 
-export function failLogin(req: Request, reason: string) {
-  const url = new URL("/login", authOrigin(req));
+export function failLogin(_req: Request, reason: string) {
+  const url = new URL("/login", authOrigin());
   url.searchParams.set("social", "fail");
   url.searchParams.set("why", reason);
   return NextResponse.redirect(url);
@@ -124,7 +121,7 @@ export function failLogin(req: Request, reason: string) {
 export async function finishSocial(req: Request, provider: Provider, subject: string) {
   if (!subject) return failLogin(req, `${provider}-id`);
   const ticket = await makeSocialTicket(provider, subject);
-  const url = new URL("/auth/callback", authOrigin(req));
+  const url = new URL("/auth/callback", authOrigin());
   url.searchParams.set("ticket", ticket);
   return NextResponse.redirect(url);
 }

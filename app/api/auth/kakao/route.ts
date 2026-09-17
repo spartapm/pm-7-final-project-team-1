@@ -4,7 +4,7 @@ import { KAKAO_REST_API_KEY, authOrigin, failLogin, makeOAuthState } from "@/lib
 export async function GET(req: Request) {
   const key = KAKAO_REST_API_KEY;
   if (!key) return failLogin(req, "kakao-key");
-  const redirectUri = `${authOrigin(req)}/api/auth/kakao/callback`;
+  const redirectUri = `${authOrigin()}/api/auth/kakao/callback`;
   const state = await makeOAuthState(redirectUri);
   const url = new URL("https://kauth.kakao.com/oauth/authorize");
   url.searchParams.set("client_id", key);
