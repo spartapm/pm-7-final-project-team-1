@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
 import { IconCheck, IconClose, IconGoogle, IconKakao, LogoMark } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import type { Provider } from "@/lib/types";
 import { track } from "@/lib/analytics";
+import { peekOAuthProvider } from "@/lib/social-flow";
 
 const TERMS = [
   { id: "service", label: "(필수) 서비스 이용약관 동의" },
@@ -15,8 +16,9 @@ const TERMS = [
   { id: "age", label: "(필수) 만 14세 이상이에요", note: "만 14세 미만은 가입이 제한돼요." },
 ];
 
-export default function LoginPage() {
+function LoginInner() {
   const router = useRouter();
+  const params = useSearchParams();
   const { hydrated, account, startSocial, completeTermsAndJoin, beginSignup, cancelAuth, showToast } = useStore();
   const [sheet, setSheet] = useState<"signup" | "after-social" | "pick" | null>(null);
   const [checks, setChecks] = useState<Record<string, boolean>>({});
@@ -25,9 +27,18 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!hydrated) return;
+    if (params.get("social") === "fail") {
+      showToast("소셜 로그인에 실패했어요. 다시 시도해주세요");
+    }
+    if (params.get("terms") === "1") {
+      const provider = peekOAuthProvider();
+      setProviderLabel(provider === "google" ? "구글" : "카카오");
+      setSheet("after-social");
+      return;
+    }
     if (account?.onboardingDone) router.replace("/home");
     else if (account) router.replace("/onboarding");
-  }, [hydrated, account, router]);
+  }, [hydrated, account, router, params, showToast]);
 
   const allOn = TERMS.every((t) => checks[t.id]);
   const toggleAll = () => {
@@ -49,27 +60,19 @@ export default function LoginPage() {
       return;
     }
     setBusy(true);
+    const method = providerLabel === "구글" ? "google" : "kakao";
     const ok = await completeTermsAndJoin();
     setBusy(false);
     if (!ok) return;
-    track("sign_up", { method: providerLabel === "구글" ? "google" : "kakao" });
+    track("sign_up", { method });
     showToast("회원가입이 완료되었습니다");
     router.replace("/onboarding");
   };
 
-  const onSocial = async (provider: Provider) => {
+  const onSocial = (provider: Provider) => {
     if (busy) return;
     setProviderLabel(provider === "kakao" ? "카카오" : "구글");
-    setBusy(true);
-    const result = await startSocial(provider);
-    setBusy(false);
-    if (result.kind === "login") {
-      if (result.isNew) track("sign_up", { method: provider });
-      showToast(result.isNew ? "회원가입이 완료되었습니다" : "로그인되었어요");
-      return;
-    }
-    setChecks({});
-    setSheet("after-social");
+    startSocial(provider);
   };
 
   if (!hydrated) return <PhoneShell />;
@@ -167,5 +170,13 @@ export default function LoginPage() {
         ) : null}
       </div>
     </PhoneShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<PhoneShell />}>
+      <LoginInner />
+    </Suspense>
   );
 }

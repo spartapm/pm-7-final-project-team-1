@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from "react";
 import { supabase, supabaseReady } from "./supabase";
+import { track } from "./analytics";
 import {
   createProfile,
   fetchCart,
@@ -19,6 +20,14 @@ import {
   fetchViewed,
   fetchWishlist,
 } from "./db";
+import {
+  clearOAuthFlags,
+  consumeOAuthProvider,
+  consumeTermsOk,
+  markTermsOk,
+  peekOAuthProvider,
+  rememberOAuthProvider,
+} from "./social-flow";
 import type {
   Account,
   AppState,
@@ -31,11 +40,7 @@ import type {
 } from "./types";
 
 const CART_MAX = 10;
-const SOCIAL_KEY = "onebeauty:social";
 const SERVER_TOAST = "일시적인 오류입니다. 잠시 후 다시 시도해주세요";
-
-type SocialCreds = { email: string; password: string };
-type SocialBook = Partial<Record<Provider, SocialCreds>>;
 
 function empty(): AppState {
   return {
@@ -52,26 +57,6 @@ function empty(): AppState {
   };
 }
 
-function readBook(): SocialBook {
-  try {
-    return JSON.parse(localStorage.getItem(SOCIAL_KEY) || "{}") as SocialBook;
-  } catch {
-    return {};
-  }
-}
-
-function writeBook(book: SocialBook) {
-  localStorage.setItem(SOCIAL_KEY, JSON.stringify(book));
-}
-
-function makeCreds(provider: Provider): SocialCreds {
-  const id = crypto.randomUUID().replace(/-/g, "").slice(0, 16);
-  return {
-    email: `ob.${provider}.${id}@gmail.com`,
-    password: `${crypto.randomUUID()}Aa1!`,
-  };
-}
-
 type Store = AppState & {
   hydrated: boolean;
   bootError: boolean;
@@ -79,7 +64,8 @@ type Store = AppState & {
   toast: string | null;
   showToast: (msg: string) => void;
   retryBoot: () => void;
-  startSocial: (provider: Provider) => Promise<{ kind: "login" | "terms"; isNew?: boolean }>;
+  startSocial: (provider: Provider) => void;
+  finishOAuth: (ticket: string) => Promise<string>;
   completeTermsAndJoin: () => Promise<boolean>;
   beginSignup: () => void;
   cancelAuth: () => void;
@@ -204,81 +190,92 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }));
   }, []);
 
-  const joinWithProvider = useCallback(
-    async (provider: Provider) => {
-      const creds = makeCreds(provider);
-      const { data, error } = await supabase.auth.signUp({
-        email: creds.email,
-        password: creds.password,
-      });
-      let user = data.user;
-      if ((!user || !data.session) && !error) {
-        const again = await supabase.auth.signInWithPassword(creds);
-        user = again.data.user;
-      }
-      if (error || !user) {
-        showToast(SERVER_TOAST);
-        return false;
-      }
-      writeBook({ ...readBook(), [provider]: creds });
-      try {
-        const profile = await createProfile(user.id, provider);
-        const reviews = await fetchReviews();
-        applyLoggedIn(profile, { wishlist: [], cart: [], viewed: [] });
-        setState((s) => ({ ...s, reviews }));
-        return true;
-      } catch {
-        showToast(SERVER_TOAST);
-        return false;
-      }
-    },
-    [applyLoggedIn, showToast]
-  );
+  const startSocial = useCallback((provider: Provider) => {
+    rememberOAuthProvider(provider);
+    if (state.termsPending) markTermsOk();
+    window.location.href = `/api/auth/${provider}`;
+  }, [state.termsPending]);
 
-  const startSocial = useCallback(
-    async (provider: Provider): Promise<{ kind: "login" | "terms"; isNew?: boolean }> => {
-      const book = readBook();
-      const saved = book[provider];
-      if (saved) {
-        const { data, error } = await supabase.auth.signInWithPassword(saved);
-        if (error || !data.user) {
-          showToast(SERVER_TOAST);
-          return { kind: "terms" };
+  const finishOAuth = useCallback(
+    async (ticket: string) => {
+      try {
+        const res = await fetch(`/api/auth/session?ticket=${encodeURIComponent(ticket)}`);
+        const json = (await res.json()) as {
+          ok?: boolean;
+          provider?: Provider;
+          access_token?: string;
+          refresh_token?: string;
+        };
+        if (!json.ok || !json.access_token || !json.refresh_token || !json.provider) {
+          showToast("소셜 로그인에 실패했어요. 다시 시도해주세요");
+          return "/login?social=fail";
         }
-        try {
-          const slice = await loadUserSlice(data.user.id);
-          if (!slice.profile) {
-            const created = await createProfile(data.user.id, provider);
-            applyLoggedIn(created, { wishlist: [], cart: [], viewed: [] });
-            return { kind: "login", isNew: true };
-          }
+        const { error } = await supabase.auth.setSession({
+          access_token: json.access_token,
+          refresh_token: json.refresh_token,
+        });
+        if (error) {
+          showToast("소셜 로그인에 실패했어요. 다시 시도해주세요");
+          return "/login?social=fail";
+        }
+        const { data: userData } = await supabase.auth.getUser();
+        const user = userData.user;
+        if (!user) {
+          showToast("소셜 로그인에 실패했어요. 다시 시도해주세요");
+          return "/login?social=fail";
+        }
+        const slice = await loadUserSlice(user.id);
+        const reviews = await fetchReviews();
+        setState((s) => ({ ...s, reviews }));
+        if (slice.profile) {
           applyLoggedIn(slice.profile, slice);
-          return { kind: "login", isNew: false };
-        } catch {
-          showToast(SERVER_TOAST);
-          return { kind: "terms" };
+          return slice.profile.onboardingDone ? "/home" : "/onboarding";
         }
+        rememberOAuthProvider(json.provider);
+        if (consumeTermsOk()) {
+          const profile = await createProfile(user.id, json.provider);
+          applyLoggedIn(profile, { wishlist: [], cart: [], viewed: [] });
+          track("sign_up", { method: json.provider });
+          return "/onboarding";
+        }
+        return "/login?terms=1";
+      } catch {
+        showToast("소셜 로그인에 실패했어요. 다시 시도해주세요");
+        return "/login?social=fail";
       }
-      if (state.termsPending) {
-        const ok = await joinWithProvider(provider);
-        return { kind: ok ? "login" : "terms", isNew: ok };
-      }
-      setState((s) => ({ ...s, pendingProvider: provider }));
-      return { kind: "terms" };
     },
-    [applyLoggedIn, joinWithProvider, loadUserSlice, showToast, state.termsPending]
+    [applyLoggedIn, loadUserSlice, showToast]
   );
 
   const completeTermsAndJoin = useCallback(async () => {
-    const provider = state.pendingProvider ?? "kakao";
-    return joinWithProvider(provider);
-  }, [joinWithProvider, state.pendingProvider]);
+    const { data } = await supabase.auth.getSession();
+    const user = data.session?.user;
+    const provider = peekOAuthProvider() ?? state.pendingProvider ?? "kakao";
+    if (!user) {
+      showToast("소셜 로그인에 실패했어요. 다시 시도해주세요");
+      return false;
+    }
+    try {
+      const profile = await createProfile(user.id, provider);
+      const reviews = await fetchReviews();
+      applyLoggedIn(profile, { wishlist: [], cart: [], viewed: [] });
+      setState((s) => ({ ...s, reviews }));
+      consumeOAuthProvider();
+      consumeTermsOk();
+      return true;
+    } catch {
+      showToast(SERVER_TOAST);
+      return false;
+    }
+  }, [applyLoggedIn, showToast, state.pendingProvider]);
 
   const beginSignup = useCallback(() => {
     setState((s) => ({ ...s, pendingProvider: null, termsPending: true }));
   }, []);
 
   const cancelAuth = useCallback(() => {
+    clearOAuthFlags();
+    void supabase.auth.signOut();
     setState((s) => ({ ...s, pendingProvider: null, termsPending: false }));
   }, []);
 
@@ -318,12 +315,6 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       showToast(SERVER_TOAST);
       return false;
     }
-    const provider = account?.provider;
-    if (provider) {
-      const book = readBook();
-      delete book[provider];
-      writeBook(book);
-    }
     await supabase.auth.signOut();
     try {
       const reviews = await fetchReviews();
@@ -332,7 +323,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setState(empty());
     }
     return true;
-  }, [account?.provider, showToast]);
+  }, [showToast]);
 
   const toggleWish = useCallback(
     (productId: string) => {
@@ -577,6 +568,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       showToast,
       retryBoot,
       startSocial,
+      finishOAuth,
       completeTermsAndJoin,
       beginSignup,
       cancelAuth,
@@ -602,6 +594,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       showToast,
       retryBoot,
       startSocial,
+      finishOAuth,
       completeTermsAndJoin,
       beginSignup,
       cancelAuth,

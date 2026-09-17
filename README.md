@@ -7,7 +7,7 @@
 `npm install && npm run dev`
 
 브라우저에서 http://localhost:3000  
-화면은 390px 폭 + 레터박스입니다. Supabase·GA4 값은 코드에 들어 있어 `.env.local`이 필요 없습니다.
+화면은 390px 폭 + 레터박스입니다. Supabase·GA4 값은 코드에 들어 있습니다. 소셜 로그인 시크릿은 `.env.local` / Vercel에만 넣습니다.
 
 ## 최초 1회: Supabase SQL
 
@@ -23,8 +23,8 @@
 - 리뷰·찜·장바구니·최근 본 제품·피부 프로필은 계정에 묶여 서버에 저장됩니다.
 - 탈퇴 시 계정은 삭제되고, 리뷰는 “탈퇴한 회원의 리뷰 입니다”로 남습니다.
 - 장바구니 주문/결제·바로 구매는 명세상 비활성입니다.
-- 카카오/구글 콘솔 키가 없어 실제 OAuth 화면은 열리지 않습니다. 같은 브라우저에서는 제공자별로 계정이 유지됩니다.
+- 카카오/구글 로그인은 실제 OAuth 창을 엽니다. 시크릿은 Vercel 환경변수에만 넣고 깃에는 올리지 않습니다.
 
 ## Vercel
 
-환경변수는 넣지 않아도 됩니다. **넣지 말 것:** DB password, Direct connection string. 둘 다 서버 루트 권한이라 클라이언트/Vercel에 올리면 안 됩니다.
+환경변수: 소셜 로그인 키(`KAKAO_*`, `GOOGLE_*`, `AUTH_BASE_URL`)는 Vercel에만 넣습니다. **넣지 말 것:** DB password, Direct connection string.
