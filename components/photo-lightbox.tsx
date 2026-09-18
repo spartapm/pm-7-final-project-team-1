@@ -19,7 +19,7 @@ export function ReviewPhotos({ photos }: { photos: string[] }) {
       {open != null ? (
         <div className="dim center" onClick={() => setOpen(null)}>
           <div className="lightbox" onClick={(e) => e.stopPropagation()}>
-            <img src={photos[i]} alt="" />
+            <img src={photos[i]} alt="" referrerPolicy="no-referrer" />
             {photos.length > 1 ? (
               <div className="lightbox-nav">
                 <button type="button" onClick={() => setOpen((i - 1 + photos.length) % photos.length)}>

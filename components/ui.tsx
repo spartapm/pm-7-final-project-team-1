@@ -70,7 +70,11 @@ export function Stars({ value, size = 14 }: { value: number; size?: number }) {
 }
 
 export function Thumb({ src, alt, className }: { src: string; alt: string; className?: string }) {
-  return <div className={`thumb ${className ?? ""}`} style={{ backgroundImage: `url("${src}")` }} role="img" aria-label={alt} />;
+  return (
+    <div className={`thumb ${className ?? ""}`} role="img" aria-label={alt}>
+      <img src={src} alt="" referrerPolicy="no-referrer" />
+    </div>
+  );
 }
 
 export function Avatar({ name, className }: { name?: string; className?: string }) {

@@ -479,10 +479,14 @@ img { display: block; max-width: 100%; }
   width: 60px;
   height: 60px;
   border-radius: 10px;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  overflow: hidden;
   background-color: #fff6f4;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
 .empty {

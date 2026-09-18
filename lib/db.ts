@@ -81,7 +81,12 @@ const KNOWN = new Set(PRODUCTS.map((p) => p.id));
 export async function fetchReviews(): Promise<Review[]> {
   const { data, error } = await supabase.from("reviews").select("*").order("created_at", { ascending: false });
   if (error) throw error;
-  const server = (data as ReviewRow[]).map(reviewFromRow).filter((r) => KNOWN.has(r.productId));
+  const catalogById = new Map(CATALOG_REVIEWS.map((r) => [r.id, r]));
+  const server = (data as ReviewRow[]).map(reviewFromRow).filter((r) => KNOWN.has(r.productId)).map((r) => {
+    if (r.photos?.length) return r;
+    const photos = catalogById.get(r.id)?.photos ?? [];
+    return photos.length ? { ...r, photos } : r;
+  });
   const ids = new Set(server.map((r) => r.id));
   const extra = CATALOG_REVIEWS.filter((r) => !ids.has(r.id) && KNOWN.has(r.productId));
   return [...server, ...extra].sort((a, b) => b.createdAt - a.createdAt);

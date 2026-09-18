@@ -12,5 +12,5 @@ export const CATALOG_REVIEWS: Review[] = (raw as Review[]).map((r) => ({
   ...r,
   skinType: (TYPES as string[]).includes(r.skinType) ? r.skinType : "복합성",
   concerns: asConcerns(r.concerns as unknown as string[]),
-  photos: [],
+  photos: Array.isArray(r.photos) ? r.photos.filter(Boolean) : [],
 }));
