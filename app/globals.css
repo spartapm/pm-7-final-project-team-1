@@ -1620,10 +1620,21 @@ textarea:focus {
   pointer-events: none;
 }
 .search-none {
-  margin: 48px 0 0;
+  margin: 24px 0 0;
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+}
+.recent-block {
+  padding: 28px 20px 0;
+}
+.recent-block .section-label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
 }
 .hl { color: var(--accent); font-weight: 700; }
 .quiz { margin-top: 12px; }

@@ -207,7 +207,7 @@ function RecentBlock({
 }) {
   if (!showEmpty && recent.length === 0) return null;
   return (
-    <div style={{ padding: "0 16px" }}>
+    <div className="recent-block">
       <div className="section-label" style={{ display: "flex", justifyContent: "space-between" }}>
         최근 검색어
         {recent.length ? (
