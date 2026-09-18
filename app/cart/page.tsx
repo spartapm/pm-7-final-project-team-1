@@ -85,7 +85,7 @@ export default function CartPage() {
           {rows.length === 0 ? (
             <div className="empty">
               <div className="icon-wrap">
-                <IconCart />
+                <IconCart size={29} />
               </div>
               <h2>아직 담은 제품이 없어요</h2>
               <p>제품을 둘러보고 장바구니에 담아보세요</p>

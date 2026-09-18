@@ -743,13 +743,13 @@ img { display: block; max-width: 100%; }
   gap: 8px;
 }
 .empty .icon-wrap {
-  width: 72px;
-  height: 72px;
+  width: 65px;
+  height: 65px;
   border-radius: 50%;
   background: var(--accent-light);
   display: grid;
   place-items: center;
-  color: var(--accent);
+  color: var(--cta);
   margin-bottom: 8px;
 }
 .empty h2 { margin: 0; font-size: 16px; font-weight: 700; }
