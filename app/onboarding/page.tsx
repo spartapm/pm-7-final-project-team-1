@@ -83,13 +83,16 @@ function OnboardingInner() {
           <IconClose />
         </button>
         <div className="page-scroll onboard">
-          <div className="onboard-hero" style={{ paddingTop: 28 }}>
+          <div className="onboard-hero">
             <h1>
-              {account.nickname}님,
+              {account.nickname}님
               <br />
               반가워요!
             </h1>
-            <p>현재 피부 상태에 맞게 정보를 설정하면 더 잘 맞는 제품을 추천받을 수 있어요.</p>
+            <p>
+              현재 피부 상태에 맞게 정보를 설정하면
+              <br />더 잘 맞는 제품을 추천받을 수 있어요.
+            </p>
           </div>
           <div className="field-label">성별</div>
           <div className="chips">
@@ -107,18 +110,20 @@ function OnboardingInner() {
               </option>
             ))}
           </select>
-          <div className="field-label">피부 타입</div>
+          <div className="field-label">
+            피부 타입
+            {skin && skin !== "모르겠어요" ? <span className="field-hint">{SKIN_BLURBS[skin]}</span> : null}
+          </div>
           <div className="chips types">
             {SKIN_TYPES.map((t) => (
               <button key={t} className={`chip${skin === t ? " on" : ""}`} type="button" onClick={() => setSkin(t)}>
                 {t}
               </button>
             ))}
-            <button className={`chip${skin === "모르겠어요" ? " on" : ""}`} type="button" onClick={() => setSkin("모르겠어요")}>
+            <button className={`chip muted${skin === "모르겠어요" ? " on" : ""}`} type="button" onClick={() => setSkin("모르겠어요")}>
               모르겠어요
             </button>
           </div>
-          {skin && skin !== "모르겠어요" ? <p style={{ color: "var(--muted)", fontSize: 12 }}>{SKIN_BLURBS[skin]}</p> : null}
           {skin === "모르겠어요" || answers.some((n) => n >= 0) ? (
             <div className="quiz">
               {QUIZ.map((item, qi) => (
@@ -145,7 +150,7 @@ function OnboardingInner() {
               ))}
             </div>
           ) : null}
-          <div className="field-label">피부 고민 (최소 1개 · 최대 3개)</div>
+          <div className="field-label">피부 고민 <span className="field-hint">(중복 선택 - 최대 3개)</span></div>
           <div className="chips" style={{ flexWrap: "wrap" }}>
             {SKIN_CONCERNS.map((c) => (
               <button key={c} className={`chip${concerns.includes(c) ? " on" : ""}`} type="button" onClick={() => toggleConcern(c)}>

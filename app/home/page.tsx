@@ -11,7 +11,7 @@ import { CATEGORIES } from "@/lib/types";
 import { BANNERS, CATEGORY_IMAGE } from "@/lib/constants";
 import { DEFAULT_PRICE, rankProducts } from "@/lib/ranking";
 import { ageGroupFromYear } from "@/lib/skin-quiz";
-import { concernShort } from "@/lib/badges";
+import { SkinBar } from "@/components/skin-bar";
 
 export default function HomePage() {
   const router = useRouter();
@@ -50,21 +50,11 @@ export default function HomePage() {
       <div className="page" style={{ position: "relative" }}>
         <div className="page-scroll bleed">
           <div className="home-head">
-            <VionLogo className="vion-mark" />
+            <VionLogo variant="black" className="vion-mark" />
             <HeadTools />
           </div>
 
-          {account.skinType ? (
-            <div className="skin-bar">
-              <div>
-                <strong>{account.skinType}타입</strong>
-                <span>{account.concerns.map(concernShort).join(",")}</span>
-              </div>
-              <button className="redo" type="button" onClick={() => router.push("/onboarding?edit=1")}>
-                다시진단 ›
-              </button>
-            </div>
-          ) : null}
+          {account.skinType ? <SkinBar skinType={account.skinType} concerns={account.concerns} /> : null}
 
           <button
             className="banner-wrap"
@@ -74,6 +64,10 @@ export default function HomePage() {
             onPointerUp={() => window.setTimeout(() => setPaused(false), 5000)}
           >
             <img src={BANNERS[banner].src} alt="" />
+            <div className="banner-copy">
+              <h2>{BANNERS[banner].title(account.birthYear ? ageGroupFromYear(account.birthYear) : "20대")}</h2>
+              <p>{BANNERS[banner].sub}</p>
+            </div>
             {BANNERS.length > 1 ? (
               <div className="banner-dots">
                 {BANNERS.map((_, i) => (
@@ -86,7 +80,9 @@ export default function HomePage() {
           <div className="cat-picks">
             {CATEGORIES.map((c) => (
               <button key={c} className="cat-pick" type="button" onClick={() => router.push(`/ranking?cat=${encodeURIComponent(c)}`)}>
-                <img src={CATEGORY_IMAGE[c]} alt="" />
+                <span className="cat-circle">
+                  <img src={CATEGORY_IMAGE[c]} alt="" />
+                </span>
                 {c}
               </button>
             ))}
@@ -98,7 +94,7 @@ export default function HomePage() {
               <p>내 피부 타입에 잘 맞는 제품부터 보여드려요.</p>
             </div>
             <button className="all" type="button" onClick={() => router.push("/ranking")}>
-              전체 랭킹보기
+              전체 랭킹보기 &gt;
             </button>
           </div>
           <div className="rank-list">

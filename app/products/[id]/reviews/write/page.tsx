@@ -124,38 +124,6 @@ function WriteInner() {
               </button>
             ))}
           </div>
-          <div className="field-label">리뷰 내용 (선택 · 최대 1,000자)</div>
-          <textarea
-            value={text}
-            maxLength={1000}
-            disabled={!rated}
-            placeholder="사용감, 피부 변화 등을 입력"
-            onChange={(e) => setText(e.target.value)}
-          />
-          <div className="char-count">{text.length}/1,000</div>
-          <div className="field-label">사진 등록 (선택 · 최대 3장)</div>
-          <div className="photos">
-            {photos.map((src, i) => (
-              <div key={i} className="photo-item thumb" style={{ backgroundImage: `url("${src}")` }}>
-                <button type="button" onClick={() => setPhotos((p) => p.filter((_, idx) => idx !== i))}>
-                  ×
-                </button>
-              </div>
-            ))}
-            {photos.length < 3 ? (
-              <button className="photo-add" type="button" disabled={!rated} onClick={() => fileRef.current?.click()}>
-                {photos.length}/3
-              </button>
-            ) : null}
-            <input
-              ref={fileRef}
-              className="hidden-file"
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => onFiles(e.target.files)}
-            />
-          </div>
           <div className="field-label">사용감 (필수 · 최대 5개)</div>
           <div className="chips" style={{ flexWrap: "wrap", marginBottom: 16 }}>
             {FEEL_TAGS.map((t) => {
@@ -178,26 +146,58 @@ function WriteInner() {
               );
             })}
           </div>
-          <button className="btn-primary soft" type="button" disabled={!enabled || busy} onClick={submit}>
+          <div className="field-label">리뷰 내용 (선택 · 최대 1,000자)</div>
+          <textarea
+            value={text}
+            maxLength={1000}
+            disabled={!rated}
+            placeholder="사용감, 피부 변화 등을 입력"
+            onChange={(e) => setText(e.target.value)}
+          />
+          <div className="char-count">{text.length}/1,000</div>
+          <div className="field-label">사진 등록 (선택 · 최대 3장)</div>
+          <div className="photos">
+            {photos.map((src, i) => (
+              <div key={i} className="photo-item thumb">
+                <img src={src} alt="" />
+                <button type="button" onClick={() => setPhotos((p) => p.filter((_, idx) => idx !== i))}>
+                  ×
+                </button>
+              </div>
+            ))}
+            {photos.length < 3 ? (
+              <button className="photo-add" type="button" disabled={!rated} onClick={() => fileRef.current?.click()}>
+                {photos.length}/3
+              </button>
+            ) : null}
+            <input
+              ref={fileRef}
+              className="hidden-file"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => onFiles(e.target.files)}
+            />
+          </div>
+          <button className="btn-primary" type="button" disabled={!enabled || busy} onClick={submit}>
             등록하기
           </button>
         </div>
         {leave ? (
           <div className="dim center">
             <div className="modal">
-              <h2>
-                잠깐만요!
-                <br />
+              <h2>잠깐만요!</h2>
+              <p>
                 리뷰 작성 화면을 나갈까요?
                 <br />
-                입력하신 내용은 저장되지 않습니다
-              </h2>
+                입력하신 내용은 저장되지 않습니다.
+              </p>
               <div className="modal-btns">
-                <button className="sub" type="button" onClick={() => router.back()}>
-                  나가기
-                </button>
-                <button className="main" type="button" onClick={() => setLeave(false)}>
+                <button className="sub" type="button" onClick={() => setLeave(false)}>
                   계속하기
+                </button>
+                <button className="main" type="button" onClick={() => router.back()}>
+                  나가기
                 </button>
               </div>
             </div>

@@ -1,9 +1,24 @@
 import type { Category, RankMode } from "./types";
 
 export const BANNERS = [
-  { src: "/vion/banners/banner-1.png", href: "/ranking?mode=age" },
-  { src: "/vion/banners/banner-2.png", href: "/ranking" },
-  { src: "/vion/banners/banner-3.png", href: "/ranking?mode=concern" },
+  {
+    src: "/vion/banners/banner-1.png",
+    href: "/ranking?mode=age",
+    title: (age: string) => `${age}가\n가장 많이 찾는 제품`,
+    sub: "토너 크림 클렌징폼\n내 피부에 맞는 것만 골라 드려요.",
+  },
+  {
+    src: "/vion/banners/banner-2.png",
+    href: "/ranking",
+    title: () => "내 피부에\n꼭 맞는 랭킹",
+    sub: "토너 크림 클렌징폼\n지금 바로 확인해 보세요.",
+  },
+  {
+    src: "/vion/banners/banner-3.png",
+    href: "/ranking?mode=concern",
+    title: () => "피부 고민에\n맞춘 제품",
+    sub: "보습 여드름 미백까지\n내 피부에 맞는 것만 골라 드려요.",
+  },
 ];
 
 export const FEEL_TAGS = [
@@ -58,10 +73,10 @@ export function rankModeCopy(mode: RankMode, skin: string, age: string) {
 }
 
 export const RANK_HELP = [
-  "내 피부 종합 랭킹: 피부 타입 50% + 피부 고민 30% + 나이대 20%",
-  "내 피부 고민 맞춤 랭킹: 고민 일치율 60% + 고민 적합도 40%",
-  "내 피부 타입 추천 랭킹: 적합도 → 주의 수준 → 사용감 일치",
-  "내 나이대 추천 랭킹: 나이대 점수 → 동일 나이대 찜 수",
+  { title: "내 피부 조건을 확인해요", desc: "피부 타입과 피부 고민을 기준으로 필요한 기능을 정합니다." },
+  { title: "제품의 전성분을 분석해요", desc: "제품에 포함된 성분을 수분, 장벽, 진정 등 기능별로 분류합니다." },
+  { title: "같은 기준으로 제품을 비교해요", desc: "동일 제품군의 모든 제품을 같은 기준으로 비교합니다." },
+  { title: "나에게 더 적합한 제품부터 보여줘요", desc: "비교 결과를 바탕으로 토너, 크림, 클렌징폼 각각의 나의 맞춤 랭킹을 제공합니다." },
 ];
 
 const TYPE_FEEL: Record<string, string[]> = {

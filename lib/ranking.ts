@@ -195,7 +195,7 @@ export function formatVolume(volume: string) {
 }
 
 export function formatVolumePrice(volume: string, price: number) {
-  return `${formatVolume(volume)} · ${formatPrice(price)}`;
+  return `${formatVolume(volume)}  ·  ${formatPrice(price)}`;
 }
 
 export function formatDate(ts: number) {

@@ -46,12 +46,11 @@ export default function MyReviewsPage() {
     return (
       <PhoneShell>
         <div className="page">
-          <div className="topbar">
+          <div className="topbar start">
             <button className="side" type="button" onClick={() => setOpen(null)} aria-label="뒤로">
               <IconBack />
             </button>
             <h1>내가 쓴 리뷰</h1>
-            <span />
           </div>
           <div className="page-scroll">
             <div className="write-product">
@@ -81,7 +80,7 @@ export default function MyReviewsPage() {
   return (
     <PhoneShell>
       <div className="page">
-        <div className="topbar">
+        <div className="topbar start">
           <button className="side" type="button" onClick={() => router.back()} aria-label="뒤로">
             <IconBack />
           </button>
@@ -94,7 +93,7 @@ export default function MyReviewsPage() {
           <div className="empty">
             <h2>아직 등록한 리뷰가 없어요</h2>
             <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
-              홈으로가기
+              홈으로 가기
             </button>
           </div>
         ) : (

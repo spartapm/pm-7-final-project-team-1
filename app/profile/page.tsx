@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, PhoneShell, TabBar } from "@/components/ui";
+import { IconBadgeCheck, IconCart, IconComment, IconClock, IconHeart, IconPen } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { concernShort } from "@/lib/badges";
 
@@ -31,17 +32,17 @@ export default function ProfilePage() {
           </div>
           <div className="profile-card">
             <Avatar name={account.nickname} />
-            <div style={{ flex: 1 }}>
+            <div className="profile-meta">
               <div className="name-row">
                 <strong>{account.nickname}</strong>
                 <button className="edit-link" type="button" onClick={() => router.push("/profile/edit")}>
                   프로필 수정 ›
                 </button>
               </div>
-              <div className="tags" style={{ padding: "6px 0 0" }}>
-                {account.skinType ? <span className="tag">{account.skinType}</span> : null}
+              <div className="tags" style={{ padding: "8px 0 0" }}>
+                {account.skinType ? <span className="tag type">{account.skinType}</span> : null}
                 {account.concerns.map((c) => (
-                  <span className="tag" key={c}>
+                  <span className="tag skin" key={c}>
                     {concernShort(c)}
                   </span>
                 ))}
@@ -49,40 +50,62 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="section-label">기록</div>
-          <button className="menu-row" type="button" onClick={() => router.push("/recent")}>
-            <span>최근 본 제품</span>
-            <span>
-              {viewed.length} ›
-            </span>
-          </button>
-          <button className="menu-row" type="button" onClick={() => router.push("/cart")}>
-            <span>장바구니</span>
-            <span>
-              {cart.length} ›
-            </span>
-          </button>
-          <button className="menu-row" type="button" onClick={() => router.push("/wishlist")}>
-            <span>찜한 제품</span>
-            <span>
-              {wishlist.length} ›
-            </span>
-          </button>
-          <button className="menu-row" type="button" onClick={() => router.push("/reviews")}>
-            <span>내가 쓴 리뷰</span>
-            <span>
-              {myReviewCount} ›
-            </span>
-          </button>
+          <div className="menu-card">
+            <button className="menu-row" type="button" onClick={() => router.push("/recent")}>
+              <span className="menu-left">
+                <IconClock />
+                최근 본 제품
+              </span>
+              <span className="menu-right">
+                {viewed.length} <i>›</i>
+              </span>
+            </button>
+            <button className="menu-row" type="button" onClick={() => router.push("/cart")}>
+              <span className="menu-left">
+                <IconCart />
+                장바구니
+              </span>
+              <span className="menu-right">
+                {cart.length} <i>›</i>
+              </span>
+            </button>
+            <button className="menu-row" type="button" onClick={() => router.push("/wishlist")}>
+              <span className="menu-left">
+                <IconHeart />
+                찜한 제품
+              </span>
+              <span className="menu-right">
+                {wishlist.length} <i>›</i>
+              </span>
+            </button>
+            <button className="menu-row" type="button" onClick={() => router.push("/reviews")}>
+              <span className="menu-left">
+                <IconComment />
+                내가 쓴 리뷰
+              </span>
+              <span className="menu-right">
+                {myReviewCount} <i>›</i>
+              </span>
+            </button>
+          </div>
           <div className="section-label">활동</div>
-          <button className="menu-row" type="button" onClick={() => router.push("/onboarding?edit=1")}>
-            <span>피부 진단 수정</span>
-            <span>›</span>
-          </button>
-          <button className="menu-row" type="button" onClick={() => router.push("/search")}>
-            <span>리뷰 작성</span>
-            <span>›</span>
-          </button>
-          <button className="btn-ghost logout" type="button" onClick={() => setBye(true)}>
+          <div className="menu-card">
+            <button className="menu-row" type="button" onClick={() => router.push("/onboarding?edit=1")}>
+              <span className="menu-left">
+                <IconBadgeCheck />
+                피부 진단 수정
+              </span>
+              <span className="menu-right"><i>›</i></span>
+            </button>
+            <button className="menu-row" type="button" onClick={() => router.push("/search")}>
+              <span className="menu-left">
+                <IconPen />
+                리뷰 작성
+              </span>
+              <span className="menu-right"><i>›</i></span>
+            </button>
+          </div>
+          <button className="logout-pill" type="button" onClick={() => setBye(true)}>
             로그아웃
           </button>
           <button className="withdraw-link" type="button" onClick={() => setOut(true)}>
@@ -94,13 +117,11 @@ export default function ProfilePage() {
         {bye ? (
           <div className="dim center" onClick={() => setBye(false)}>
             <div className="modal" onClick={(e) => e.stopPropagation()}>
-              <h2>로그아웃 할까요?</h2>
+              <h2>로그아웃 하시겠어요?</h2>
+              <p>다시 로그인을 하려면 소셜 인증이 필요해요</p>
               <div className="modal-btns">
-                <button className="sub" type="button" onClick={() => setBye(false)}>
-                  괜찮아요
-                </button>
                 <button
-                  className="main"
+                  className="sub"
                   type="button"
                   onClick={async () => {
                     await logout();
@@ -108,6 +129,9 @@ export default function ProfilePage() {
                   }}
                 >
                   로그아웃
+                </button>
+                <button className="main" type="button" onClick={() => setBye(false)}>
+                  괜찮아요
                 </button>
               </div>
             </div>
@@ -119,7 +143,7 @@ export default function ProfilePage() {
             <div className="withdraw-box" onClick={(e) => e.stopPropagation()}>
               <h2>정말 탈퇴하실 건가요?</h2>
               <div className="del">탈퇴 시 삭제되는 데이터</div>
-              <p>연동된 소셜 계정 정보</p>
+              <p>연동된 소셜 로그인 정보</p>
               <div className="del">탈퇴 시 유지되는 데이터</div>
               <p>작성한 리뷰(닉네임 익명 처리),</p>
               <p>찜 통계(개인 연결 정보 삭제)</p>
@@ -133,7 +157,7 @@ export default function ProfilePage() {
                   router.replace("/login");
                 }}
               >
-                모두 동의하고 탈퇴 희망합니다
+                모두 동의하고 탈퇴를 희망합니다.
               </button>
             </div>
           </div>

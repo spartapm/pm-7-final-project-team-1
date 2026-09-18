@@ -3,10 +3,11 @@
 import { useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
-import { IconBack, IconCart, IconHeart, IconShare, IconUp } from "@/components/icons";
+import { IconBack, IconCart, IconClose, IconHeart, IconKakao, IconLink, IconShare, IconStar, IconUp } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
-import { formatVolumePrice, liveRating } from "@/lib/ranking";
+import { formatPrice, formatVolume, liveRating } from "@/lib/ranking";
+import { feelTone } from "@/lib/badges";
 import { track } from "@/lib/analytics";
 import { shareKakao } from "@/lib/share";
 import type { Product } from "@/lib/types";
@@ -51,12 +52,12 @@ export function ProductFrame({
             <button className="back-fab" type="button" aria-label="뒤로" onClick={() => router.back()}>
               <IconBack />
             </button>
-            <button className="back-fab" type="button" aria-label="공유" style={{ left: "auto", right: 56 }} onClick={() => setShare(true)}>
-              <IconShare />
-            </button>
-            <button className="back-fab" type="button" aria-label="장바구니" style={{ left: "auto", right: 12 }} onClick={() => router.push("/cart")}>
+            <button className="back-fab" type="button" aria-label="장바구니" style={{ left: "auto", right: 56 }} onClick={() => router.push("/cart")}>
               <IconCart />
               {cartCount > 0 ? <span className="cart-badge">{cartCount}</span> : null}
+            </button>
+            <button className="back-fab" type="button" aria-label="공유" style={{ left: "auto", right: 12 }} onClick={() => setShare(true)}>
+              <IconShare />
             </button>
           </div>
           <div className="product-info">
@@ -67,14 +68,23 @@ export function ProductFrame({
                 <IconHeart filled={wished} size={22} />
               </button>
             </div>
-            <p className="vol-price">{formatVolumePrice(product.volume, product.price)}</p>
-            <button type="button" onClick={() => router.push(`/products/${product.id}/reviews`)}>
-              ★ {rating.toFixed(1)} · 리뷰 {reviewCount.toLocaleString("ko-KR")}
+            <p className="vol-price">
+              {formatVolume(product.volume)}
+              <span>  ·  </span>
+              <strong>{formatPrice(product.price)}</strong>
+            </p>
+            <button className="product-rating" type="button" onClick={() => router.push(`/products/${product.id}/reviews`)}>
+              <span className="stars">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <IconStar key={n} filled={n <= Math.round(rating)} size={14} />
+                ))}
+              </span>
+              {rating.toFixed(1)} ({reviewCount.toLocaleString("ko-KR")})
             </button>
             {product.feelTags.length ? (
-              <div className="feel-row">
+              <div className="feel-pills">
                 {product.feelTags.map((t) => (
-                  <span className="tag" key={t}>
+                  <span className={`feel-pill ${feelTone(t)}`} key={t}>
                     {t}
                   </span>
                 ))}
@@ -115,7 +125,7 @@ export function ProductFrame({
             <IconHeart filled={wished} />
           </button>
           <button
-            className={inCart ? "btn-line" : "btn-primary"}
+            className="btn-line"
             type="button"
             onClick={() => {
               if (inCart) {
@@ -134,7 +144,7 @@ export function ProductFrame({
             {inCart ? "장바구니 보기" : "장바구니 담기"}
           </button>
           <button
-            className="btn-disabled"
+            className="btn-primary"
             type="button"
             onClick={() => {
               track("begin_checkout", { item_id: product.id, price: product.price });
@@ -147,7 +157,10 @@ export function ProductFrame({
 
         {share ? (
           <div className="dim center" onClick={() => setShare(false)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal share-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="share-x" type="button" onClick={() => setShare(false)} aria-label="닫기">
+                <IconClose />
+              </button>
               <h2>공유하기</h2>
               <div className="share-row">
                 <button
@@ -164,10 +177,10 @@ export function ProductFrame({
                     }
                   }}
                 >
-                  <span className="chip" style={{ background: "#FEE500" }}>
-                    카톡
+                  <span className="share-circle kakao">
+                    <IconKakao />
                   </span>
-                  카카오톡
+                  카카오
                 </button>
                 <button
                   type="button"
@@ -177,13 +190,12 @@ export function ProductFrame({
                     setShare(false);
                   }}
                 >
-                  <span className="chip">URL</span>
-                  링크 복사
+                  <span className="share-circle url">
+                    <IconLink />
+                  </span>
+                  URL
                 </button>
               </div>
-              <button className="btn-ghost" type="button" onClick={() => setShare(false)}>
-                닫기
-              </button>
             </div>
           </div>
         ) : null}

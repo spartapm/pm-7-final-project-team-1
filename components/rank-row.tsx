@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Thumb } from "@/components/ui";
-import { IconHeart } from "@/components/icons";
+import { IconHeart, IconStar, IconUp } from "@/components/icons";
 import { useStore } from "@/lib/store";
-import { formatVolumePrice, liveRating } from "@/lib/ranking";
-import { feelPreview } from "@/lib/badges";
+import { formatPrice, formatVolume, liveRating } from "@/lib/ranking";
+import { feelPreview, feelTone } from "@/lib/badges";
 import { setSourceScreen, track } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
 
@@ -27,56 +27,55 @@ export function RankRow({
   const tags = open ? product.feelTags : feel.shown;
   const mine = reviews.filter((r) => r.productId === product.id);
   const rating = liveRating(mine, product.rating);
-  const reviewCount = mine.length || product.reviewCount;
+
+  const goProduct = () => {
+    track("select_item", { item_id: product.id, item_list_name: product.category });
+    setSourceScreen(source);
+    router.push(`/products/${product.id}`);
+  };
 
   return (
     <div className="rank-card">
-      <span className={`rank-no${rank <= 3 ? " top" : ""}`}>{rank}</span>
-      <button
-        type="button"
-        onClick={() => {
-          track("select_item", { item_id: product.id, item_list_name: product.category });
-          setSourceScreen(source);
-          router.push(`/products/${product.id}`);
-        }}
-      >
+      <span className="rank-no">{rank}</span>
+      <button type="button" onClick={goProduct} aria-label={product.name}>
         <Thumb src={product.image} alt={product.name} />
       </button>
-      <button
-        type="button"
-        style={{ textAlign: "left" }}
-        onClick={() => {
-          track("select_item", { item_id: product.id, item_list_name: product.category });
-          setSourceScreen(source);
-          router.push(`/products/${product.id}`);
-        }}
-      >
+      <button className="rank-main" type="button" onClick={goProduct}>
         <h3>{product.name}</h3>
-        <p>{formatVolumePrice(product.volume, product.price)}</p>
-        <p>
-          ★ {rating.toFixed(1)} · {reviewCount.toLocaleString("ko-KR")}
+        <p className="brand-name">{product.brand}</p>
+        <p className="vol-price">
+          {formatVolume(product.volume)}
+          <span>  ·  </span>
+          <strong>{formatPrice(product.price)}</strong>
         </p>
-        {product.feelTags.length > 0 ? (
-          <div className="feel-row">
-            {tags.map((t) => (
-              <span className="tag" key={t}>
-                {t}
-              </span>
-            ))}
-            {product.feelTags.length > 2 ? (
-              <button
-                className="caret"
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpen((v) => !v);
-                }}
-              >
-                {open ? "∧" : "∨"}
-              </button>
-            ) : null}
-          </div>
-        ) : null}
+        <div className="rank-foot">
+          <span className="star-line">
+            <IconStar filled size={11} />
+            {rating.toFixed(1)}
+          </span>
+          {product.feelTags.length > 0 ? (
+            <div className="feel-pills">
+              {tags.map((t) => (
+                <span className={`feel-pill ${feelTone(t)}`} key={t}>
+                  {t}
+                </span>
+              ))}
+              {product.feelTags.length > 2 ? (
+                <button
+                  className={`caret-btn${open ? " open" : ""}`}
+                  type="button"
+                  aria-label={open ? "태그 접기" : "태그 더보기"}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpen((v) => !v);
+                  }}
+                >
+                  <IconUp />
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </button>
       <button
         className={`heart${wished ? " on" : ""}`}

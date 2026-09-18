@@ -25,6 +25,12 @@ export function feelPreview(product: Product) {
   return { shown: product.feelTags.slice(0, 2), extra: product.feelTags.length - 2 };
 }
 
+export function feelTone(tag: string): "cyan" | "lime" | "peach" {
+  if (["촉촉함", "수분감", "쿨링감", "윤광", "광채"].includes(tag)) return "cyan";
+  if (["끈적임 적음", "산뜻함", "보송함", "가벼움", "빠른 흡수", "적은 유분감"].includes(tag)) return "lime";
+  return "peach";
+}
+
 export function BadgeRow({ badges }: { badges: DisplayBadge[] }) {
   if (!badges.length) return null;
   return (

@@ -39,9 +39,9 @@ export function IconHeart({ filled, size = 22 }: { filled?: boolean; size?: numb
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"}>
       <path
-        d="M12 20s-7.2-4.6-9.3-8.6C1.2 8.6 2.6 5.5 6 5.2c1.9-.2 3.6.8 4.5 2.3C11.4 6 13.1 5 15 5.2c3.4.3 4.8 3.4 3.3 6.2C16.2 15.4 12 20 12 20Z"
+        d="M12 20s-7.2-4.4-9.2-8.6C1.4 8.6 3.2 5.6 6.4 5.2 8.2 5 9.8 5.8 12 8c2.2-2.2 3.8-3 5.6-2.8 3.2.4 5 3.4 3.6 6.2C19.2 15.6 12 20 12 20Z"
         stroke="currentColor"
-        strokeWidth="1.8"
+        strokeWidth="1.7"
         strokeLinejoin="round"
       />
     </svg>
@@ -81,9 +81,8 @@ export function IconClose() {
 export function IconCart() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <path d="M6 8h15l-1.4 8.2A2 2 0 0 1 17.6 18H9.2a2 2 0 0 1-2-1.7L5.2 6H3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="10" cy="20" r="1.3" fill="currentColor" />
-      <circle cx="17" cy="20" r="1.3" fill="currentColor" />
+      <path d="M7 8h10l-.9 11H7.9L7 8Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <path d="M9 8V6.6A3 3 0 0 1 15 6.6V8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
 }
@@ -115,8 +114,29 @@ export function IconRefresh() {
 
 export function IconFilter() {
   return (
-    <svg width="15" height="12" viewBox="0 0 15 12" fill="none">
-      <path d="M1 1.5h13L9.2 6.6V10l-3.4 1.2V6.6L1 1.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M4 7h16M4 17h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <circle cx="9" cy="7" r="2.4" fill="#fff" stroke="currentColor" strokeWidth="1.8" />
+      <circle cx="15" cy="17" r="2.4" fill="#fff" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
+  );
+}
+
+export function IconLink() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M10 13.5a4.5 4.5 0 0 0 6.4.1l1.6-1.6a4.5 4.5 0 1 0-6.4-6.4l-.9.9"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M14 10.5a4.5 4.5 0 0 0-6.4-.1L6 12a4.5 4.5 0 1 0 6.4 6.4l.9-.9"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -232,6 +252,33 @@ export function IconChevron() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       <path d="M6 3.5 11 8 6 12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function IconClock() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="8.2" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M12 8v4.4l2.8 1.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function IconComment() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M5 6.5h14v10H9.2L5 19.4V6.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+      <path d="M9 11h6M9 14h3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function IconBadgeCheck() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3.4 14.2 5l2.6.2 1.2 2.3 2.2 1.4-.6 2.6.6 2.6-2.2 1.4-1.2 2.3-2.6.2L12 20.6 9.8 19l-2.6-.2-1.2-2.3-2.2-1.4.6-2.6-.6-2.6 2.2-1.4 1.2-2.3 2.6-.2L12 3.4Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+      <path d="m8.8 12.1 2.1 2.1 4.3-4.4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }

@@ -10,10 +10,10 @@ import { CATEGORIES, type Category, type PriceFilter, type RankMode, type SortKe
 import { CATEGORY_IMAGE, RANK_HELP, rankModeCopy, rankingUpdatedLabel } from "@/lib/constants";
 import { DEFAULT_PRICE, rankProducts } from "@/lib/ranking";
 import { ageGroupFromYear } from "@/lib/skin-quiz";
-import { concernShort } from "@/lib/badges";
 import { track } from "@/lib/analytics";
 import { fetchWishCountsByAge } from "@/lib/db";
 import { HeadTools } from "@/components/head-tools";
+import { SkinBar } from "@/components/skin-bar";
 
 function RankingInner() {
   const router = useRouter();
@@ -69,7 +69,7 @@ function RankingInner() {
               <IconWarn />
             </div>
             <h2>랭킹을 불러오지 못했어요</h2>
-            <p>네트워크 상태를 확인하고 다시 시도해주세요.</p>
+            <p>잠시 후 다시 시도해주세요</p>
             <button className="btn-primary" type="button" disabled={!hydrated} onClick={retryBoot}>
               다시 시도
             </button>
@@ -102,36 +102,27 @@ function RankingInner() {
       <div className="page" style={{ position: "relative" }}>
         <div className="page-scroll bleed">
           <div className="home-head">
-            <button type="button" onClick={() => setModeOpen(true)} style={{ fontSize: 18, fontWeight: 800 }}>
+            <button className="rank-mode-title" type="button" onClick={() => setModeOpen(true)}>
               {rankModeCopy(mode, account.skinType ?? "", ageGroup).title} ›
             </button>
             <HeadTools />
           </div>
-          <div className="rank-meta" style={{ paddingLeft: 16 }}>
-            {rankingUpdatedLabel()}
-          </div>
-          <div className="skin-bar">
-            <div>
-              <strong>{account.skinType}타입</strong>
-              <span>{account.concerns.map(concernShort).join(",")}</span>
-            </div>
-            <button className="redo" type="button" onClick={() => router.push("/onboarding?edit=1")}>
-              다시진단 ›
-            </button>
-          </div>
+          <div className="rank-meta">{rankingUpdatedLabel()}</div>
+          {account.skinType ? <SkinBar skinType={account.skinType} concerns={account.concerns} /> : null}
           <div className="rank-cats">
             {CATEGORIES.map((c) => (
               <button key={c} className={category === c ? "on" : ""} type="button" onClick={() => setCategory(c)}>
-                <img src={CATEGORY_IMAGE[c]} alt="" />
+                <span className="cat-circle">
+                  <img src={CATEGORY_IMAGE[c]} alt="" />
+                </span>
                 {c}
               </button>
             ))}
           </div>
-          <button className="help-link" type="button" onClick={() => setHelpOpen(true)}>
-            랭킹 산정 기준 보러가기 ›
-          </button>
-          <div className="rank-title">
-            <span />
+          <div className="rank-tools">
+            <button className="help-link" type="button" onClick={() => setHelpOpen(true)}>
+              랭킹 추천 기준 보러가기 &gt;
+            </button>
             <button
               className={`filter-btn${sort !== "match" || price.min > 0 || price.max != null ? " on" : ""}`}
               type="button"
@@ -184,17 +175,23 @@ function RankingInner() {
         {helpOpen ? (
           <div className="dim center" onClick={() => setHelpOpen(false)}>
             <div className="modal" style={{ textAlign: "left" }} onClick={(e) => e.stopPropagation()}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
                 <h2>랭킹 산정 방식 안내</h2>
                 <button type="button" onClick={() => setHelpOpen(false)} aria-label="닫기">
                   <IconClose />
                 </button>
               </div>
-              {RANK_HELP.map((line) => (
-                <p key={line} style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.5 }}>
-                  {line}
-                </p>
-              ))}
+              <ol className="help-steps">
+                {RANK_HELP.map((item, i) => (
+                  <li key={item.title}>
+                    <span className="help-num">{i + 1}</span>
+                    <div>
+                      <strong>{item.title}</strong>
+                      <p>{item.desc}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </div>
           </div>
         ) : null}

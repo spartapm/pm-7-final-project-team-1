@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PhoneShell } from "@/components/ui";
+import { PhoneShell, Thumb } from "@/components/ui";
 import { IconBack, IconHeart } from "@/components/icons";
 import { HeadTools } from "@/components/head-tools";
 import { useStore } from "@/lib/store";
@@ -34,7 +34,7 @@ export default function RecentPage() {
   return (
     <PhoneShell>
       <div className="page">
-        <div className="topbar">
+        <div className="topbar start">
           <button className="side" type="button" onClick={() => router.back()} aria-label="뒤로">
             <IconBack />
           </button>
@@ -45,7 +45,7 @@ export default function RecentPage() {
           <div className="empty">
             <h2>아직 살펴본 제품이 없어요</h2>
             <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
-              홈으로가기
+              홈으로 가기
             </button>
           </div>
         ) : (
@@ -76,7 +76,7 @@ export default function RecentPage() {
                         router.push(`/products/${p.id}`);
                       }}
                     >
-                      <div className="thumb" style={{ backgroundImage: `url("${p.image}")` }} />
+                      <Thumb src={p.image} alt={p.name} />
                     </button>
                     <button
                       type="button"
