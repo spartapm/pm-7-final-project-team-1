@@ -111,9 +111,9 @@ function OnboardingInner() {
               </option>
             ))}
           </select>
-          <div className="field-label">
+          <div className="field-label strong">
             피부 타입
-            {skin && skin !== "모르겠어요" ? <span className="field-hint">{SKIN_BLURBS[skin]}</span> : null}
+            {skin && skin !== "모르겠어요" ? <span className="field-blurb">{SKIN_BLURBS[skin]}</span> : null}
           </div>
           <div className="chips types">
             {SKIN_TYPES.map((t) => (
@@ -151,7 +151,7 @@ function OnboardingInner() {
               ))}
             </div>
           ) : null}
-          <div className="field-label">피부 고민 <span className="field-hint">(중복 선택 - 최대 3개)</span></div>
+          <div className="field-label strong">피부 고민 <span className="field-hint">(중복 선택 - 최대 3개)</span></div>
           <div className="chips concerns">
             {SKIN_CONCERNS.map((c) => (
               <button key={c} className={`chip${concerns.includes(c) ? " on" : ""}`} type="button" onClick={() => toggleConcern(c)}>

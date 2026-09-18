@@ -43,11 +43,10 @@ export function RankRow({
       <div className="rank-main">
         <button type="button" onClick={goProduct}>
           <h3>{product.name}</h3>
-          <p className="brand-name">{product.brand}</p>
-          <p className="vol-price">
-            {formatVolume(product.volume)}
-            <span>  ·  </span>
-            <strong>{formatPrice(product.price)}</strong>
+          <p className="brand-line">
+            {product.brand}
+            <span> </span>
+            {formatVolume(product.volume)} · {formatPrice(product.price)}
           </p>
         </button>
         <div className="rank-foot">

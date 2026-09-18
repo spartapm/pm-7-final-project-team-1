@@ -141,7 +141,7 @@ export function ProductFrame({
               showToast("장바구니에 담았어요");
             }}
           >
-            {inCart ? "장바구니 보기" : "장바구니 담기"}
+            장바구니 담기
           </button>
           <button
             className="btn-primary"
