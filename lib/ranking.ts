@@ -206,6 +206,10 @@ export function formatDate(ts: number) {
   return `${yy}.${mm}.${dd}`;
 }
 
+export function formatShortDate(ts: number) {
+  return formatDate(ts).slice(2);
+}
+
 export function uid(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 10)}`;
 }

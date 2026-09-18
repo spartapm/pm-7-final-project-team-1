@@ -3,12 +3,12 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Avatar, PhoneShell } from "@/components/ui";
-import { IconBack, IconPen } from "@/components/icons";
+import { IconBack, IconPen, IconStar } from "@/components/icons";
 import { ProductFrame } from "@/components/product-frame";
 import { ReviewPhotos } from "@/components/photo-lightbox";
 import { useStore } from "@/lib/store";
-import { formatDate, liveRating, matchedReviews } from "@/lib/ranking";
-import { ReviewAuthorTags } from "@/lib/badges";
+import { formatShortDate, liveRating, matchedReviews } from "@/lib/ranking";
+import { concernShort } from "@/lib/badges";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
 import type { Review } from "@/lib/types";
@@ -61,6 +61,8 @@ export default function ReviewsPage() {
 
   const counts = [5, 4, 3, 2, 1].map((n) => all.filter((r) => r.rating === n).length);
   const max = Math.max(1, ...counts);
+  const avg = liveRating(all, product.rating);
+  const avgStars = Math.round(avg);
 
   return (
     <ProductFrame
@@ -81,9 +83,17 @@ export default function ReviewsPage() {
       }
     >
       <div className="review-score">
-        <div>
+        <div className="score-col">
           <p className="score-label">평균 평점</p>
-          <strong>{liveRating(all, product.rating).toFixed(1)} / 5</strong>
+          <p className="score-num">
+            <strong>{avg.toFixed(1)}</strong>
+            <em> / 5</em>
+          </p>
+          <span className="score-stars">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <IconStar key={n} filled={n <= avgStars} size={12} />
+            ))}
+          </span>
           <span>리뷰 {all.length.toLocaleString("ko-KR")}</span>
         </div>
         <div className="dist-h">
@@ -91,20 +101,20 @@ export default function ReviewsPage() {
             <div key={5 - i} className="dist-row">
               <span>{5 - i}점</span>
               <i>
-                <b style={{ width: `${Math.max(6, (n / max) * 100)}%` }} />
+                <b style={{ width: n ? `${(n / max) * 100}%` : "0%" }} />
               </i>
-              <em>{n}</em>
+              <em>{n.toLocaleString("ko-KR")}</em>
             </div>
           ))}
         </div>
       </div>
       <div className="review-head-row">
-        <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>
+        <p>
           {mine ? (
             <>
               나와 같은 피부 타입을 가진
               <br />
-              사용자들의 리뷰예요
+              사용자들의 리뷰에요
             </>
           ) : (
             "전체 리뷰예요"
@@ -139,6 +149,7 @@ function ReviewCard({ r }: { r: Review }) {
   const [expanded, setExpanded] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
   const [showMore, setShowMore] = useState(false);
+  const concernLabel = r.concerns.map(concernShort).join(" · ");
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -146,40 +157,46 @@ function ReviewCard({ r }: { r: Review }) {
     setShowMore(el.scrollHeight - el.clientHeight > 1);
   }, [r.text, expanded]);
 
-  const tagsOpen = expanded || !showMore;
-
   return (
     <article className="review-card">
       <div className="review-user">
         <Avatar name={r.nickname} />
-        <div>
-          <strong>{r.withdrawn ? "탈퇴한 회원의 리뷰입니다" : r.nickname}</strong>
-          <ReviewAuthorTags skinType={r.skinType} concerns={r.concerns} expanded={tagsOpen} />
-          <div className="review-meta">
-            ★ {r.rating.toFixed(1)}
-            <span>{formatDate(r.createdAt)}</span>
-            {r.purchased ? <span className="badge">구매리뷰</span> : null}
+        <div className="review-user-main">
+          <div className="review-user-top">
+            <strong>{r.withdrawn ? "탈퇴한 회원의 리뷰입니다" : r.nickname}</strong>
+            <div className="review-side">
+              <span className="score-stars">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <IconStar key={n} filled={n <= Math.round(r.rating)} size={12} />
+                ))}
+              </span>
+              <span className="review-date">{formatShortDate(r.createdAt)}</span>
+            </div>
+          </div>
+          <div className="tags">
+            <span className="tag">{r.skinType}</span>
+            {concernLabel ? <span className="tag">{concernLabel}</span> : null}
           </div>
         </div>
       </div>
       {r.text ? (
-        <>
-          <p ref={ref} className={`review-text${expanded ? "" : " clamp"}`}>
-            {r.text}
-          </p>
-          {showMore && !expanded ? (
-            <button className="more" type="button" onClick={() => setExpanded(true)}>
-              더보기 &gt;
-            </button>
-          ) : null}
-          {expanded ? (
-            <button className="more" type="button" onClick={() => setExpanded(false)}>
-              닫기
-            </button>
-          ) : null}
-        </>
+        <p ref={ref} className={`review-text${expanded ? "" : " clamp"}`}>
+          {r.text}
+        </p>
       ) : null}
-      <ReviewPhotos photos={r.photos} />
+      <div className="review-card-foot">
+        <ReviewPhotos photos={r.photos} />
+        {showMore && !expanded ? (
+          <button className="more" type="button" onClick={() => setExpanded(true)}>
+            더보기 &gt;
+          </button>
+        ) : null}
+        {expanded ? (
+          <button className="more" type="button" onClick={() => setExpanded(false)}>
+            닫기
+          </button>
+        ) : null}
+      </div>
     </article>
   );
 }
