@@ -195,7 +195,7 @@ img { display: block; max-width: 100%; }
   color: var(--accent);
   border: 1px solid var(--accent);
 }
-.btn-disabled { background: var(--disabled); color: #fff; cursor: default; }
+.btn-disabled { background: #746a66; color: #fff; cursor: default; }
 .link-signup {
   text-align: center;
   margin-top: 8px;
@@ -812,7 +812,7 @@ img { display: block; max-width: 100%; }
   position: sticky;
   bottom: 0;
   display: grid;
-  grid-template-columns: 44px 1fr 1fr;
+  grid-template-columns: 40px 1fr 1fr;
   gap: 8px;
   align-items: center;
   padding: 10px 12px 18px;
@@ -891,10 +891,10 @@ img { display: block; max-width: 100%; }
   white-space: nowrap;
 }
 .cart-bar {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 12px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
   padding: 12px 16px 18px;
   background: #fff;
   border-top: 1px solid var(--line);
@@ -1366,17 +1366,24 @@ textarea:focus {
 .brand img, .vion-mark { height: 28px; width: auto; }
 .skin-bar {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
   margin: 0;
   padding: 12px 22px;
   background: var(--skinbar);
   border-radius: 0;
   font-size: 12px;
 }
+.skin-bar > div { min-width: 0; flex: 1; }
 .skin-bar strong { font-size: 16px; font-weight: 700; color: #000; }
-.skin-bar span { color: #000; margin-left: 8px; font-size: 12px; font-weight: 400; }
-.skin-bar .redo { color: var(--redo); font-weight: 700; font-size: 12px; white-space: nowrap; }
+.skin-bar span {
+  color: #000;
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+}
+.skin-bar .redo { color: var(--redo); font-weight: 700; font-size: 12px; white-space: nowrap; flex-shrink: 0; padding-top: 2px; }
 .banner-wrap { position: relative; margin: 0; border-radius: 0; overflow: hidden; height: 276px; background: #111; }
 .banner-wrap img { width: 100%; height: 276px; object-fit: cover; object-position: left center; }
 .home-locked .home-head {
@@ -1429,7 +1436,7 @@ textarea:focus {
   font-size: 15px;
   background: #fff;
 }
-.nick-field input.ok { border-color: var(--ok); }
+.nick-field input.ok { border-color: #08c146; border-width: 2px; }
 .nick-field input.bad { border-color: var(--danger); }
 .nick-field .msg { margin: 8px 4px 0; font-size: 12px; }
 .nick-field .msg.ok { color: var(--ok); }
@@ -1659,16 +1666,6 @@ textarea:focus {
 }
 .search-top { display: flex; align-items: center; gap: 4px; padding: 8px 12px 4px; }
 .search-clear { position: absolute; right: 10px; top: 10px; }
-.nick-field input {
-  width: 100%;
-  height: 52px;
-  border-radius: 999px;
-  border: 1px solid #746a66;
-  padding: 0 42px 0 18px;
-  font-size: 16px;
-  background: #fff;
-}
-.nick-field input.ok { border-color: #08c146; border-width: 2px; }
 .profile-card .edit-link { font-size: 12px; color: var(--muted); font-weight: 400; white-space: nowrap; }
 .nick-wrap { position: relative; }
 .nick-check {
@@ -1696,7 +1693,6 @@ textarea:focus {
 .tag.more-tag { background: transparent; border: 1px dashed var(--line); }
 .cart-count { margin: 12px 16px 8px; font-size: 12px; color: var(--muted); }
 button.banner-wrap { width: 100%; padding: 0; border: 0; background: none; text-align: left; }
-.profile-card .edit-link { font-size: 12px; color: var(--muted); font-weight: 400; white-space: nowrap; }
 .tag.skin { background: var(--accent-light); color: var(--accent); font-weight: 700; font-size: 10px; }
 .tag.type {
   background: #fff;

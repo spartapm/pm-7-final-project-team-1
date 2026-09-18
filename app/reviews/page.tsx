@@ -108,7 +108,7 @@ export default function MyReviewsPage() {
           <h1>내가 쓴 리뷰</h1>
           {mine.length === 0 ? <HeadTools /> : (
             <button className="side accent" type="button" onClick={() => setDir((d) => (d === "desc" ? "asc" : "desc"))}>
-              {dir === "desc" ? "최신순" : "오래된순"}
+              {dir === "desc" ? "최신순 ▾" : "오래된순 ▾"}
             </button>
           )}
         </div>

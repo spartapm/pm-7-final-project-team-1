@@ -143,6 +143,7 @@ export default function CartPage() {
                         <button
                           type="button"
                           aria-label="수량 늘리기"
+                          disabled={row.qty >= 10}
                           onClick={() => {
                             if (row.qty >= 10) {
                               showToast("최대 10개까지 담을 수 있어요");
@@ -165,13 +166,18 @@ export default function CartPage() {
           )}
         </div>
         {rows.length > 0 ? (
-          <div className="cart-bar" style={{ gridTemplateColumns: "1fr" }}>
+          <div className="cart-bar">
+            <button className="btn-disabled" type="button" disabled>
+              아직 구현되지 않은 영역입니다
+            </button>
             <button
               className="btn-primary"
               type="button"
+              disabled={!picked.length}
               onClick={() => {
+                if (!picked.length) return;
                 track("begin_checkout", { value: selectedPrice });
-                showToast("아직 구현 되지 않은 영역입니다");
+                showToast("아직 구현되지 않은 영역입니다");
               }}
             >
               총 {formatPrice(selectedPrice)} 주문하기

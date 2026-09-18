@@ -148,7 +148,7 @@ export function ProductFrame({
             type="button"
             onClick={() => {
               track("begin_checkout", { item_id: product.id, price: product.price });
-              showToast("아직 구현 되지 않은 영역입니다");
+              showToast("아직 구현되지 않은 영역입니다");
             }}
           >
             바로 구매

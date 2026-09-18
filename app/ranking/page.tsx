@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PhoneShell, TabBar } from "@/components/ui";
-import { IconClose, IconFilter, IconModeDrop, IconModeFace, IconModePeople, IconModeSpark, IconWarn } from "@/components/icons";
+import { IconClose, IconFilter, IconModeDrop, IconModeFace, IconModePeople, IconModeSpark, IconSearch, IconWarn } from "@/components/icons";
 import { RankRow } from "@/components/rank-row";
 import { useStore } from "@/lib/store";
 import { CATEGORIES, type Category, type PriceFilter, type RankMode, type SortKey } from "@/lib/types";
@@ -150,6 +150,14 @@ function RankingInner() {
                 <button className="btn-primary" type="button" onClick={retryBoot}>
                   다시 시도
                 </button>
+              </div>
+            ) : ranked.length === 0 ? (
+              <div className="empty" style={{ paddingTop: 48 }}>
+                <div className="icon-wrap">
+                  <IconSearch />
+                </div>
+                <h2>조건에 맞는 제품이 없어요</h2>
+                <p>필터를 바꿔 다시 찾아보세요</p>
               </div>
             ) : (
               ranked.map((row) => (

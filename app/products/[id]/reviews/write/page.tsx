@@ -192,8 +192,8 @@ function WriteInner() {
           </button>
         </div>
         {leave ? (
-          <div className="dim center">
-            <div className="modal">
+          <div className="dim center" onClick={() => setLeave(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
               <h2>잠깐만요!</h2>
               <p>
                 리뷰 작성 화면을 나갈까요?
