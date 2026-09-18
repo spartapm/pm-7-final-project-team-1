@@ -3,15 +3,13 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PhoneShell, Thumb } from "@/components/ui";
-import { IconStar } from "@/components/icons";
+import { IconCircleX, IconPlus, IconStar } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
-import { SKIN_CONCERNS } from "@/lib/types";
-import { concernShort } from "@/lib/badges";
 import { formatVolumePrice } from "@/lib/ranking";
 
-const WRITE_TAGS = [...SKIN_CONCERNS.map(concernShort), "끈적임 적음", "촉촉함"];
+const WRITE_TAGS = ["보습", "끈적임 적음", "탄력·주름", "촉촉함", "모공", "피지·블랙헤드", "여드름"];
 
 export default function WriteReviewPage() {
   return (
@@ -103,7 +101,7 @@ function WriteInner() {
   return (
     <PhoneShell>
       <div className="page">
-        <div className="topbar">
+        <div className="topbar write-pick">
           <button className="side accent" type="button" onClick={() => setLeave(true)}>
             취소
           </button>
@@ -114,9 +112,10 @@ function WriteInner() {
           <div className="write-product">
             <Thumb src={product.image} alt={product.name} />
             <div>
-              <h3>
-                {product.name} <span className="review-brand">{product.brand}</span>
-              </h3>
+              <p className="write-title">
+                <strong>{product.name}</strong>
+                <span className="review-brand">{product.brand}</span>
+              </p>
               <p>{formatVolumePrice(product.volume, product.price)}</p>
             </div>
           </div>
@@ -124,12 +123,12 @@ function WriteInner() {
           <div className="star-pick">
             {[1, 2, 3, 4, 5].map((n) => (
               <button key={n} className={rating >= n ? "on" : ""} type="button" onClick={() => setRating(n)}>
-                <IconStar filled={rating >= n} size={28} />
+                <IconStar filled={rating >= n} size={20} />
               </button>
             ))}
           </div>
           <div className="field-label">사용감 (필수)</div>
-          <div className="chips" style={{ flexWrap: "wrap", marginBottom: 16 }}>
+          <div className="chips write-tags">
             {WRITE_TAGS.map((t) => {
               const on = tags.includes(t);
               return (
@@ -151,31 +150,36 @@ function WriteInner() {
             })}
           </div>
           <div className="field-label">리뷰 내용 (선택 · 최대 1,000자)</div>
-          <textarea
-            value={text}
-            maxLength={1000}
-            disabled={!rated}
-            placeholder="사용감, 피부 변화 등을 입력"
-            onChange={(e) => setText(e.target.value)}
-          />
-          <div className="char-count">{text.length.toLocaleString("ko-KR")} / 1,000</div>
+          <div className="review-box">
+            <textarea
+              value={text}
+              maxLength={1000}
+              disabled={!rated}
+              placeholder="사용감, 피부 변화 등을 입력"
+              onChange={(e) => setText(e.target.value)}
+            />
+            <div className="char-count">{text.length.toLocaleString("ko-KR")} / 1,000</div>
+          </div>
           <div className="field-label">사진 등록 (선택 · 최대 3장)</div>
-          <div className="photos">
+          <div className="photos write-photos">
             {photos.map((src, i) => (
-              <div key={i} className="photo-item thumb">
+              <div key={i} className="photo-item">
                 <img src={src} alt="" />
-                <button type="button" onClick={() => setPhotos((p) => p.filter((_, idx) => idx !== i))}>
-                  ×
+                <button type="button" aria-label="사진 삭제" onClick={() => setPhotos((p) => p.filter((_, idx) => idx !== i))}>
+                  <IconCircleX />
                 </button>
               </div>
             ))}
             {photos.length < 3 ? (
               <button className="photo-add" type="button" disabled={!rated} onClick={() => fileRef.current?.click()}>
-                +
+                <IconPlus size={24} />
               </button>
             ) : null}
-            {photos.length < 2 ? <span className="photo-add ghost" aria-hidden>+</span> : null}
-            {photos.length < 1 ? <span className="photo-add ghost" aria-hidden>+</span> : null}
+            {Array.from({ length: Math.max(0, 2 - photos.length) }).map((_, i) => (
+              <span className="photo-add ghost" aria-hidden key={`ghost-${i}`}>
+                <IconPlus size={24} />
+              </span>
+            ))}
             <input
               ref={fileRef}
               className="hidden-file"
