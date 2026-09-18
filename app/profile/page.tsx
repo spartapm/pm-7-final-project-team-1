@@ -97,7 +97,7 @@ export default function ProfilePage() {
               </span>
               <span className="menu-right"><i>›</i></span>
             </button>
-            <button className="menu-row" type="button" onClick={() => router.push("/search")}>
+            <button className="menu-row" type="button" onClick={() => router.push("/reviews/write")}>
               <span className="menu-left">
                 <IconPen />
                 리뷰 작성

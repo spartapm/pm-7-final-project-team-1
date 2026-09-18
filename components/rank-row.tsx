@@ -15,11 +15,13 @@ export function RankRow({
   rank,
   source,
   onOpen,
+  onPick,
 }: {
   product: Product;
   rank?: number;
   source: string;
   onOpen?: () => void;
+  onPick?: () => void;
 }) {
   const router = useRouter();
   const { isWished, toggleWish, reviews } = useStore();
@@ -32,6 +34,10 @@ export function RankRow({
 
   const goProduct = () => {
     onOpen?.();
+    if (onPick) {
+      onPick();
+      return;
+    }
     track("select_item", { item_id: product.id, item_list_name: product.category });
     setSourceScreen(source);
     router.push(`/products/${product.id}`);

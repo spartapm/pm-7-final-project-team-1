@@ -976,6 +976,34 @@ img { display: block; max-width: 100%; }
   padding: 14px 8px 10px;
 }
 .topbar h1 { margin: 0; font-size: 16px; font-weight: 700; text-align: center; }
+.topbar.write-pick {
+  padding: 16px 8px 8px;
+}
+.topbar.write-pick h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3a1f27;
+}
+.topbar.write-pick .side.accent {
+  font-size: 14px;
+}
+.pick-prompt {
+  margin: 28px 20px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--text);
+}
+.pick-search {
+  margin: 0 20px 8px;
+}
+.pick-label {
+  margin: 28px 20px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #292524;
+}
+.pick-list { padding-top: 0; }
 .topbar.review {
   grid-template-columns: 44px 1fr auto;
   padding: 10px 12px 8px;
