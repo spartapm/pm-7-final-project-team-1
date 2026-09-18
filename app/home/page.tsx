@@ -64,13 +64,6 @@ export default function HomePage() {
             onPointerUp={() => window.setTimeout(() => setPaused(false), 5000)}
           >
             <img src={BANNERS[banner].src} alt={BANNERS[banner].alt} />
-            {BANNERS.length > 1 ? (
-              <div className="banner-dots">
-                {BANNERS.map((_, i) => (
-                  <i key={i} className={i === banner ? "on" : ""} />
-                ))}
-              </div>
-            ) : null}
           </button>
 
           <div className="cat-picks">

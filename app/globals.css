@@ -1408,9 +1408,6 @@ textarea:focus {
   z-index: 3;
   background: transparent;
 }
-.banner-dots { position: absolute; left: 0; right: 0; bottom: 12px; display: flex; justify-content: center; gap: 6px; }
-.banner-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(41, 37, 36, 0.28); }
-.banner-dots i.on { background: #292524; }
 .cat-circle {
   width: 72px;
   height: 72px;
