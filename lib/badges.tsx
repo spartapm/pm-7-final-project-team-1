@@ -65,10 +65,14 @@ export function ReviewAuthorTags({
           {concernShort(c)}
         </span>
       ))}
-      {extra && onToggle ? (
-        <button className="tag more-tag" type="button" onClick={onToggle}>
-          {expanded ? "접기" : "…"}
-        </button>
+      {extra && !expanded ? (
+        onToggle ? (
+          <button className="tag more-tag" type="button" onClick={onToggle}>
+            …
+          </button>
+        ) : (
+          <span className="tag more-tag">…</span>
+        )
       ) : null}
     </div>
   );

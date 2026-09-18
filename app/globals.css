@@ -874,9 +874,22 @@ img { display: block; max-width: 100%; }
 .pill.on-line { color: var(--accent); border-color: var(--accent); background: var(--accent-light); }
 .pill.on-fill { background: var(--accent); color: #fff; border-color: var(--accent); }
 
+.product-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 8px 8px 4px;
+  background: #fff;
+  min-height: 52px;
+}
+.product-top-tools {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
 .product-hero {
   position: relative;
-  height: 276px;
+  height: 240px;
   background: #f8f4f1;
   overflow: hidden;
 }
@@ -886,7 +899,7 @@ img { display: block; max-width: 100%; }
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
   font-size: 14px;
 }
 .product-hero .back-fab {
@@ -2130,7 +2143,7 @@ textarea:focus {
   align-items: center;
   gap: 6px;
   margin-top: 6px;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 500;
   color: var(--muted);
 }

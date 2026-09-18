@@ -48,18 +48,22 @@ export function ProductFrame({
           ref={scroller}
           onScroll={() => setTop((scroller.current?.scrollTop ?? 0) > 240)}
         >
-          <div className="product-hero">
-            <SafeImg src={product.image} className="hero-img" />
-            <button className="back-fab" type="button" aria-label="뒤로" onClick={() => router.back()}>
+          <div className="product-top">
+            <button className="cart-head" type="button" aria-label="뒤로" onClick={() => router.back()}>
               <IconBack />
             </button>
-            <button className="back-fab" type="button" aria-label="장바구니" style={{ left: "auto", right: 56 }} onClick={() => router.push("/cart")}>
-              <IconCart />
-              {cartCount > 0 ? <span className="cart-badge">{cartCount}</span> : null}
-            </button>
-            <button className="back-fab" type="button" aria-label="공유" style={{ left: "auto", right: 12 }} onClick={() => setShare(true)}>
-              <IconShare />
-            </button>
+            <div className="product-top-tools">
+              <button className="cart-head" type="button" aria-label="장바구니" onClick={() => router.push("/cart")}>
+                <IconCart />
+                {cartCount > 0 ? <span className="cart-badge">{cartCount}</span> : null}
+              </button>
+              <button className="cart-head" type="button" aria-label="공유" onClick={() => setShare(true)}>
+                <IconShare />
+              </button>
+            </div>
+          </div>
+          <div className="product-hero">
+            <SafeImg src={product.image} className="hero-img" />
           </div>
           <div className="product-info">
             <div className="product-head">
@@ -79,7 +83,7 @@ export function ProductFrame({
             <button className="product-rating" type="button" onClick={() => router.push(`/products/${product.id}/reviews`)}>
               <span className="stars">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <IconStar key={n} filled={n <= Math.round(rating)} size={14} />
+                  <IconStar key={n} filled={n <= Math.round(rating)} size={12} />
                 ))}
               </span>
               {rating.toFixed(1)} ({reviewCount.toLocaleString("ko-KR")})

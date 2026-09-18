@@ -8,7 +8,7 @@ import { ProductFrame } from "@/components/product-frame";
 import { ReviewPhotos } from "@/components/photo-lightbox";
 import { useStore } from "@/lib/store";
 import { formatShortDate, liveRating, matchedReviews } from "@/lib/ranking";
-import { concernShort } from "@/lib/badges";
+import { ReviewAuthorTags } from "@/lib/badges";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
 import type { Review } from "@/lib/types";
@@ -60,7 +60,6 @@ export default function ReviewsPage() {
   }
 
   const counts = [5, 4, 3, 2, 1].map((n) => all.filter((r) => r.rating === n).length);
-  const max = Math.max(1, ...counts);
   const avg = liveRating(all, product.rating);
   const avgStars = Math.round(avg);
 
@@ -96,17 +95,19 @@ export default function ReviewsPage() {
           </span>
           <span>리뷰 {all.length.toLocaleString("ko-KR")}</span>
         </div>
-        <div className="dist-h">
-          {counts.map((n, i) => (
-            <div key={5 - i} className="dist-row">
-              <span>{5 - i}점</span>
-              <i>
-                <b style={{ width: n ? `${(n / max) * 100}%` : "0%" }} />
-              </i>
-              <em>{n.toLocaleString("ko-KR")}</em>
-            </div>
-          ))}
-        </div>
+        {all.length > 0 ? (
+          <div className="dist-h">
+            {counts.map((n, i) => (
+              <div key={5 - i} className="dist-row">
+                <span>{5 - i}점</span>
+                <i>
+                  <b style={{ width: `${(n / all.length) * 100}%` }} />
+                </i>
+                <em>{n.toLocaleString("ko-KR")}</em>
+              </div>
+            ))}
+          </div>
+        ) : null}
       </div>
       <div className="review-head-row">
         <p>
@@ -149,7 +150,6 @@ function ReviewCard({ r }: { r: Review }) {
   const [expanded, setExpanded] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
   const [showMore, setShowMore] = useState(false);
-  const concernLabel = r.concerns.map(concernShort).join(" · ");
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -173,10 +173,12 @@ function ReviewCard({ r }: { r: Review }) {
               <span className="review-date">{formatShortDate(r.createdAt)}</span>
             </div>
           </div>
-          <div className="tags">
-            <span className="tag">{r.skinType}</span>
-            {concernLabel ? <span className="tag">{concernLabel}</span> : null}
-          </div>
+          <ReviewAuthorTags
+            skinType={r.skinType}
+            concerns={r.concerns}
+            expanded={expanded}
+            onToggle={r.concerns.length > 1 ? () => setExpanded((v) => !v) : undefined}
+          />
         </div>
       </div>
       {r.text ? (
@@ -188,7 +190,7 @@ function ReviewCard({ r }: { r: Review }) {
         <ReviewPhotos photos={r.photos} />
         {showMore && !expanded ? (
           <button className="more" type="button" onClick={() => setExpanded(true)}>
-            더보기 &gt;
+            더보기&gt;
           </button>
         ) : null}
         {expanded ? (
