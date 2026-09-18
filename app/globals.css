@@ -1078,17 +1078,17 @@ img { display: block; max-width: 100%; }
   align-items: center;
   width: 100%;
   margin: 0;
-  padding: 14px 16px;
+  padding: 13px 16px;
   background: none;
   border-bottom: 1px solid var(--line);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
 }
 .menu-card .menu-row:last-child { border-bottom: none; }
 .menu-left {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
   color: var(--text);
 }
 .menu-row span:last-child { color: var(--text); font-weight: 700; }
@@ -1367,11 +1367,24 @@ textarea:disabled { background: var(--accent-light); color: var(--hint); }
   grid-template-columns: 72px 1fr;
   gap: 12px;
   align-items: center;
-  margin-bottom: 22px;
+  margin-bottom: 18px;
 }
 .profile-card .avatar { width: 72px; height: 72px; }
 .profile-card strong { font-size: 16px; font-weight: 700; }
 .profile-meta { min-width: 0; }
+.profile-scroll { padding: 8px 16px 24px; }
+.profile-scroll .home-head { padding: 8px 4px 14px; }
+.profile-card .tags { padding: 8px 0 0; flex-wrap: wrap; }
+.profile-card .tag,
+.profile-card .tag.type,
+.profile-card .tag.skin {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 10px;
+  border: none;
+  padding: 4px 10px;
+}
 .skin-link { color: var(--accent); font-size: 13px; font-weight: 700; margin-top: 8px; display: block; text-align: right; }
 .section-label { font-size: 14px; color: var(--muted); margin: 0 4px 10px; font-weight: 400; }
 .viewed { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 22px; }
@@ -1382,10 +1395,10 @@ textarea:disabled { background: var(--accent-light); color: var(--hint); }
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 48px;
-  margin: 28px 0 10px;
+  height: 44px;
+  margin: 32px 0 12px;
   border-radius: 999px;
-  border: 1px solid #f8c0a5;
+  border: 1px solid rgba(248, 132, 95, 0.45);
   background: #fff;
   font-size: 13px;
   font-weight: 700;
@@ -1393,10 +1406,12 @@ textarea:disabled { background: var(--accent-light); color: var(--hint); }
 }
 .withdraw-link {
   display: block;
+  width: 100%;
   text-align: center;
   color: var(--muted);
-  font-size: 12px;
-  margin-bottom: 24px;
+  font-size: 11px;
+  font-weight: 400;
+  margin-bottom: 8px;
 }
 .my-review { background: #fff; border: 1px solid var(--line); border-radius: var(--radius-card); padding: 12px; margin-bottom: 8px; }
 .my-review h3 { margin: 0; font-size: 13px; }
@@ -2073,7 +2088,20 @@ textarea:focus {
 }
 .search-top { display: flex; align-items: center; gap: 4px; padding: 8px 12px 4px; }
 .search-clear { position: absolute; right: 10px; top: 10px; color: var(--muted); }
-.profile-card .edit-link { font-size: 12px; color: var(--muted); font-weight: 400; white-space: nowrap; }
+.profile-card .edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 400;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.profile-card .edit-link svg {
+  width: 8px;
+  height: 12px;
+}
 .nick-wrap { position: relative; }
 .nick-check {
   position: absolute;
@@ -2121,8 +2149,8 @@ button.banner-wrap { width: 100%; padding: 0; border: 0; background: none; text-
 .menu-right {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 6px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--text);
 }

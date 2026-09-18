@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Avatar, PhoneShell, TabBar } from "@/components/ui";
-import { IconBadgeCheck, IconCart, IconComment, IconClock, IconHeart, IconPen } from "@/components/icons";
+import { IconBadgeCheck, IconCart, IconChevron, IconClock, IconHeart, IconMessageMore, IconSquarePen } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { concernShort } from "@/lib/badges";
 
@@ -26,7 +26,7 @@ export default function ProfilePage() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        <div className="page-scroll">
+        <div className="page-scroll profile-scroll">
           <div className="home-head">
             <h1>마이페이지</h1>
           </div>
@@ -36,11 +36,12 @@ export default function ProfilePage() {
               <div className="name-row">
                 <strong>{account.nickname}</strong>
                 <button className="edit-link" type="button" onClick={() => router.push("/profile/edit")}>
-                  프로필 수정 &gt;
+                  프로필 수정
+                  <IconChevron />
                 </button>
               </div>
-              <div className="tags" style={{ padding: "8px 0 0" }}>
-                {account.skinType ? <span className="tag type">{account.skinType}</span> : null}
+              <div className="tags">
+                {account.skinType ? <span className="tag skin">{account.skinType}</span> : null}
                 {account.concerns.map((c) => (
                   <span className="tag skin" key={c}>
                     {concernShort(c)}
@@ -53,7 +54,7 @@ export default function ProfilePage() {
           <div className="menu-card">
             <button className="menu-row" type="button" onClick={() => router.push("/recent")}>
               <span className="menu-left">
-                <IconClock />
+                <IconClock size={20} />
                 최근 본 제품
               </span>
               <span className="menu-right">
@@ -62,7 +63,7 @@ export default function ProfilePage() {
             </button>
             <button className="menu-row" type="button" onClick={() => router.push("/cart")}>
               <span className="menu-left">
-                <IconCart />
+                <IconCart size={20} />
                 장바구니
               </span>
               <span className="menu-right">
@@ -71,7 +72,7 @@ export default function ProfilePage() {
             </button>
             <button className="menu-row" type="button" onClick={() => router.push("/wishlist")}>
               <span className="menu-left">
-                <IconHeart />
+                <IconHeart size={20} />
                 찜한 제품
               </span>
               <span className="menu-right">
@@ -80,7 +81,7 @@ export default function ProfilePage() {
             </button>
             <button className="menu-row" type="button" onClick={() => router.push("/reviews")}>
               <span className="menu-left">
-                <IconComment />
+                <IconMessageMore size={20} />
                 내가 쓴 리뷰
               </span>
               <span className="menu-right">
@@ -99,7 +100,7 @@ export default function ProfilePage() {
             </button>
             <button className="menu-row" type="button" onClick={() => router.push("/reviews/write")}>
               <span className="menu-left">
-                <IconPen />
+                <IconSquarePen size={20} />
                 리뷰 작성
               </span>
               <span className="menu-right"><i>›</i></span>

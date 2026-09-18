@@ -209,6 +209,26 @@ export function IconPen() {
   );
 }
 
+export function IconSquarePen({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M12 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M17.2 3.3a1.8 1.8 0 0 1 2.5 2.5L12 13.5l-3 .8.8-3 7.4-8Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconStar({ filled, size = 22 }: { filled?: boolean; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24">
@@ -311,6 +331,22 @@ export function IconComment({ size = 20 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <path d="M5 6.5h14v10H9.2L5 19.4V6.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
       <path d="M9 11h6M9 14h3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function IconMessageMore({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M21 15a2 2 0 0 1-2 2H8l-4 3.5V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <circle cx="8" cy="10.2" r="1" fill="currentColor" />
+      <circle cx="12" cy="10.2" r="1" fill="currentColor" />
+      <circle cx="16" cy="10.2" r="1" fill="currentColor" />
     </svg>
   );
 }
