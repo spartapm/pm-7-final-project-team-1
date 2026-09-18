@@ -61,11 +61,13 @@ export function ProductFrame({
             </button>
           </div>
           <div className="product-info">
-            <div className="brand">{product.brand}</div>
-            <div className="name-row">
-              <h1>{product.name}</h1>
-              <button className={`heart${wished ? " on" : ""}`} type="button" aria-label="찜" onClick={wish}>
-                <IconHeart filled={wished} size={22} />
+            <div className="product-head">
+              <div className="product-copy">
+                <div className="brand">{product.brand}</div>
+                <h1>{product.name}</h1>
+              </div>
+              <button className={`heart circle${wished ? " on" : ""}`} type="button" aria-label="찜" onClick={wish}>
+                <IconHeart filled={wished} size={18} />
               </button>
             </div>
             <p className="vol-price">
@@ -121,8 +123,8 @@ export function ProductFrame({
         ) : null}
         {overlay}
         <div className="buybar">
-          <button className={`wish-btn${wished ? " on" : ""}`} type="button" onClick={wish}>
-            <IconHeart filled={wished} />
+          <button className={`wish-btn${wished ? " on" : ""}`} type="button" aria-label="찜" onClick={wish}>
+            <IconHeart filled={wished} size={18} />
           </button>
           <button
             className="btn-line"
