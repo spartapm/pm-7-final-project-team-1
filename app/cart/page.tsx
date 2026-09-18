@@ -167,9 +167,6 @@ export default function CartPage() {
         </div>
         {rows.length > 0 ? (
           <div className="cart-bar">
-            <button className="btn-disabled" type="button" disabled>
-              아직 구현 되지 않은 영역입니다
-            </button>
             <button
               className="btn-primary"
               type="button"

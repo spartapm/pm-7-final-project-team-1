@@ -24,12 +24,15 @@ export function LogoMark({ className, color = "currentColor" }: { className?: st
 
 export function IconHome({ active }: { active?: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
-        d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5.2v-6.2H10.2V21H5a1 1 0 0 1-1-1v-9.5Z"
-        stroke="currentColor"
-        strokeWidth={active ? 2.2 : 1.7}
+        d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM10 12h4a1 1 0 0 1 1 1v8h-6v-8a1 1 0 0 1 1-1z"
         fill={active ? "currentColor" : "none"}
+        fillRule="evenodd"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.7}
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -50,12 +53,12 @@ export function IconHeart({ filled, size = 22 }: { filled?: boolean; size?: numb
 
 export function IconUser({ active }: { active?: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="8" r="3.4" stroke="currentColor" strokeWidth={active ? 2.2 : 1.7} />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="8" r="5" stroke="currentColor" strokeWidth={active ? 2.1 : 1.7} />
       <path
-        d="M5 19.2c1.2-3.2 3.7-5 7-5s5.8 1.8 7 5"
+        d="M20 21a8 8 0 0 0-16 0"
         stroke="currentColor"
-        strokeWidth={active ? 2.2 : 1.7}
+        strokeWidth={active ? 2.1 : 1.7}
         strokeLinecap="round"
       />
     </svg>
@@ -137,10 +140,14 @@ export function IconRefresh() {
 
 export function IconFilter() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <path d="M4 7h16M4 17h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-      <circle cx="9" cy="7" r="2.4" fill="#fff" stroke="currentColor" strokeWidth="1.8" />
-      <circle cx="15" cy="17" r="2.4" fill="#fff" stroke="currentColor" strokeWidth="1.8" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M10 5H3M12 19H3M14 3v4M16 17v4M21 12h-9M21 19h-4M21 5h-7M8 10v4M8 12H3"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
@@ -298,19 +305,24 @@ export function IconSearchSm() {
 
 export function IconRank({ active }: { active?: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <path d="M4 18h3V10H4v8Zm6.5 0h3V6h-3v12ZM17 18h3v-7h-3v7Z" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? 1.4 : 1.7} />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <path
+        d="M3 6h6M3 12h12M3 18h18"
+        stroke="currentColor"
+        strokeWidth={active ? 2.1 : 1.7}
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
 export function IconShare() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-      <circle cx="6" cy="12" r="2.2" stroke="currentColor" strokeWidth="1.7" />
-      <circle cx="17" cy="6.5" r="2.2" stroke="currentColor" strokeWidth="1.7" />
-      <circle cx="17" cy="17.5" r="2.2" stroke="currentColor" strokeWidth="1.7" />
-      <path d="M8 11.2 15 7.4M8 12.8 15 16.6" stroke="currentColor" strokeWidth="1.7" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="18" cy="5" r="3" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="6" cy="12" r="3" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="18" cy="19" r="3" stroke="currentColor" strokeWidth="1.7" />
+      <path d="m8.59 13.51 6.83 3.98M15.41 6.51l-6.82 3.98" stroke="currentColor" strokeWidth="1.7" />
     </svg>
   );
 }
