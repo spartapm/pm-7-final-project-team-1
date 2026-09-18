@@ -40,9 +40,11 @@ export default function ProductPage() {
     return (
       <PhoneShell>
         <div className="page">
-          <button className="x-btn" type="button" onClick={() => router.back()}>
-            <IconBack />
-          </button>
+          <div className="close-bar">
+            <button className="close-bar-btn" type="button" onClick={() => router.back()} aria-label="뒤로">
+              <IconBack />
+            </button>
+          </div>
         </div>
       </PhoneShell>
     );

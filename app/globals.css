@@ -71,7 +71,7 @@ img { display: block; max-width: 100%; }
   justify-content: center;
   gap: 14px;
 }
-.boot-loading .logo { width: 44px; height: 44px; }
+.boot-loading .logo { width: 148px; height: auto; object-fit: contain; }
 .boot-loading i {
   width: 28px;
   height: 28px;
@@ -273,8 +273,22 @@ img { display: block; max-width: 100%; }
 .terms-head h1 { margin: 0; font-size: 22px; font-weight: 700; }
 .terms-head p { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
 
+.close-bar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 4px 8px 0;
+  flex-shrink: 0;
+}
+.close-bar-btn {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
 .onboard { padding: 8px 20px 24px; }
-.onboard-hero { display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding-top: 8px; }
+.onboard-hero { display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding-top: 4px; }
 .onboard-hero svg { width: 72px; height: 72px; }
 .onboard-hero h1 { margin: 0; font-size: 24px; font-weight: 700; line-height: 1.4; letter-spacing: -0.4px; }
 .onboard-hero p { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; font-weight: 400; }
@@ -336,6 +350,9 @@ img { display: block; max-width: 100%; }
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px 10px;
+  background: var(--surface);
+  position: relative;
+  z-index: 2;
 }
 .home-head h1 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.3px; }
 .brand {
@@ -628,11 +645,19 @@ img { display: block; max-width: 100%; }
 
 .sheet-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
+  gap: 12px;
   margin-bottom: 18px;
 }
-.sheet-head h2 { margin: 0; }
+.sheet-head h2 { margin: 0; flex: 1; min-width: 0; }
+.sheet-head > button:not(.reset) {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+}
 .sheet-head .reset {
   display: flex;
   align-items: center;
@@ -1217,8 +1242,8 @@ textarea:focus {
   color: #fff;
   background: rgba(58, 31, 39, 0.28);
 }
-.terms-head h1 { color: #fff; }
-.terms-head p { color: rgba(255, 255, 255, 0.82); }
+.terms-head h1 { color: var(--text); }
+.terms-head p { color: var(--muted); }
 
 .avatar {
   display: grid;
@@ -1251,8 +1276,8 @@ textarea:focus {
 .star-pick button:active { transform: scale(1.08); }
 .toggle i { transition: transform 0.2s ease; }
 
-.page-scroll.onboard { padding: 8px 20px 24px; }
-.onboard { padding: 8px 20px 24px; }
+.page-scroll.onboard { padding: 4px 20px 24px; }
+.onboard { padding: 4px 20px 24px; }
 .chips.types { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px; }
 .chips.types .chip { min-width: 0; flex: 0 0 auto; padding: 0 16px; }
 .chips.concerns { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -1290,33 +1315,9 @@ textarea:focus {
 .skin-bar .redo { color: var(--redo); font-weight: 700; font-size: 12px; white-space: nowrap; }
 .banner-wrap { position: relative; margin: 0; border-radius: 0; overflow: hidden; height: 276px; background: #111; }
 .banner-wrap img { width: 100%; height: 276px; object-fit: cover; }
-.banner-copy {
-  position: absolute;
-  left: 16px;
-  top: 70px;
-  z-index: 1;
-  color: #fff;
-  text-align: left;
-  pointer-events: none;
-}
-.banner-copy h2 {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 800;
-  line-height: 1.2;
-  white-space: pre-line;
-  letter-spacing: -0.4px;
-}
-.banner-copy p {
-  margin: 10px 0 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.4;
-  white-space: pre-line;
-}
 .banner-dots { position: absolute; left: 0; right: 0; bottom: 12px; display: flex; justify-content: center; gap: 6px; }
-.banner-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.45); }
-.banner-dots i.on { background: #fff; }
+.banner-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(41, 37, 36, 0.28); }
+.banner-dots i.on { background: #292524; }
 .cat-circle {
   width: 72px;
   height: 72px;

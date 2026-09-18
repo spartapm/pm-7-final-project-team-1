@@ -4,20 +4,17 @@ export const BANNERS = [
   {
     src: "/vion/banners/banner-1.png",
     href: "/ranking?mode=age",
-    title: (age: string) => `${age}가\n가장 많이 찾는 제품`,
-    sub: "토너 크림 클렌징폼\n내 피부에 맞는 것만 골라 드려요.",
+    alt: "20대가 가장 많이 찾는 제품. 토너 크림 클렌징폼 내 피부에 맞는 것만 골라 드려요.",
   },
   {
     src: "/vion/banners/banner-2.png",
     href: "/ranking",
-    title: () => "내 피부에\n꼭 맞는 랭킹",
-    sub: "토너 크림 클렌징폼\n지금 바로 확인해 보세요.",
+    alt: "보습이 필요할 때. 피부 보습에 도움을 주는 제품을 모았어요.",
   },
   {
     src: "/vion/banners/banner-3.png",
     href: "/ranking?mode=concern",
-    title: () => "피부 고민에\n맞춘 제품",
-    sub: "보습 여드름 미백까지\n내 피부에 맞는 것만 골라 드려요.",
+    alt: "복합성 피부가 많이 찾는 제품. 유분과 건조함을 함께 고려해 추천해요.",
   },
 ];
 

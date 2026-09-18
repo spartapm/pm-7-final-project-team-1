@@ -125,16 +125,18 @@ function LoginInner() {
 
         {sheet ? (
           <div className="dim">
-            <button className="x-btn light" type="button" onClick={closeSheet} aria-label="닫기">
-              <IconClose />
-            </button>
             <div className="sheet" style={{ marginTop: "auto" }}>
               <div className="sheet-handle" />
-              <h2>
-                VION을 이용하려면
-                <br />
-                약관 동의가 필요해요
-              </h2>
+              <div className="sheet-head">
+                <h2>
+                  VION을 이용하려면
+                  <br />
+                  약관 동의가 필요해요
+                </h2>
+                <button type="button" onClick={closeSheet} aria-label="닫기">
+                  <IconClose />
+                </button>
+              </div>
               <button className="agree-all" type="button" onClick={toggleAll}>
                 <IconCheck on={allOn} />
                 약관 전체 동의

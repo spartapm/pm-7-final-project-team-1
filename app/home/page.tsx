@@ -63,11 +63,7 @@ export default function HomePage() {
             onPointerDown={() => setPaused(true)}
             onPointerUp={() => window.setTimeout(() => setPaused(false), 5000)}
           >
-            <img src={BANNERS[banner].src} alt="" />
-            <div className="banner-copy">
-              <h2>{BANNERS[banner].title(account.birthYear ? ageGroupFromYear(account.birthYear) : "20대")}</h2>
-              <p>{BANNERS[banner].sub}</p>
-            </div>
+            <img src={BANNERS[banner].src} alt={BANNERS[banner].alt} />
             {BANNERS.length > 1 ? (
               <div className="banner-dots">
                 {BANNERS.map((_, i) => (

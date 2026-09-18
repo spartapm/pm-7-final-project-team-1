@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
-import { IconHeart, IconHome, IconRank, IconUser } from "./icons";
+import { IconHeart, IconHome, IconRank, IconUser, VionLogo } from "./icons";
 import { useStore } from "@/lib/store";
 import { avatarSrc } from "@/lib/nicknames";
 
 export function PhoneShell({ children, splash }: { children?: ReactNode; splash?: boolean }) {
   return (
     <div className={`shell${splash ? " shell-splash" : ""}`}>
-      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><img className="logo" src="/vion/logo/logo_orange.png" alt="" /><i /></div>}</div>
+      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><VionLogo variant="orange" className="logo" /><i /></div>}</div>
       <ToastHost />
     </div>
   );
