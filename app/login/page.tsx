@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
-import { IconCheck, IconChevron, IconClose, IconGoogle, IconKakao, VionLogo } from "@/components/icons";
+import { IconCheck, IconChevron, IconGoogle, IconKakao, VionLogo } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import type { Provider } from "@/lib/types";
 import { track } from "@/lib/analytics";
@@ -95,48 +95,43 @@ function LoginInner() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        <div className="login">
-          <div className="login-hero">
-            <VionLogo className="logo" />
-            <p>
-              내 피부에 따라 달라지는
-              <br />
-              나만의 뷰티 랭킹
-            </p>
-          </div>
-          <div className="login-actions">
-            <button className="btn-kakao" type="button" disabled={busy} onClick={() => onSocial("kakao")}>
-              <IconKakao />
-              카카오로 시작하기
-            </button>
-            <button className="btn-google" type="button" disabled={busy} onClick={() => onSocial("google")}>
-              <IconGoogle />
-              구글로 시작하기
-            </button>
-          </div>
-        </div>
-
-        {params.get("terms") === "1" && !sheet ? (
+        {params.get("terms") === "1" ? (
           <div className="terms-head">
             <h1>{providerLabel} 인증이 완료됐어요</h1>
             <p>서비스 이용을 위해 약관에 동의해주세요.</p>
           </div>
-        ) : null}
+        ) : (
+          <div className="login">
+            <div className="login-hero">
+              <VionLogo className="logo" />
+              <p>
+                내 피부에 따라 달라지는
+                <br />
+                나만의 뷰티 랭킹
+              </p>
+            </div>
+            <div className="login-actions">
+              <button className="btn-kakao" type="button" disabled={busy} onClick={() => onSocial("kakao")}>
+                <IconKakao />
+                카카오로 시작하기
+              </button>
+              <button className="btn-google" type="button" disabled={busy} onClick={() => onSocial("google")}>
+                <IconGoogle />
+                구글로 시작하기
+              </button>
+            </div>
+          </div>
+        )}
 
         {sheet ? (
-          <div className="dim">
-            <div className="sheet" style={{ marginTop: "auto" }}>
+          <div className="dim" onClick={closeSheet}>
+            <div className="sheet" style={{ marginTop: "auto" }} onClick={(e) => e.stopPropagation()}>
               <div className="sheet-handle" />
-              <div className="sheet-head">
-                <h2>
-                  VION을 이용하려면
-                  <br />
-                  약관 동의가 필요해요
-                </h2>
-                <button type="button" onClick={closeSheet} aria-label="닫기">
-                  <IconClose />
-                </button>
-              </div>
+              <h2>
+                VION을 이용하려면
+                <br />
+                약관 동의가 필요해요
+              </h2>
               <button className="agree-all" type="button" onClick={toggleAll}>
                 <IconCheck on={allOn} />
                 약관 전체 동의

@@ -71,15 +71,7 @@ img { display: block; max-width: 100%; }
   justify-content: center;
   gap: 14px;
 }
-.boot-loading .logo { width: 148px; height: auto; object-fit: contain; }
-.boot-loading i {
-  width: 28px;
-  height: 28px;
-  border: 2.5px solid var(--chip);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
+.boot-loading .logo { width: 180px; height: auto; object-fit: contain; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .toast {
@@ -1314,7 +1306,15 @@ textarea:focus {
 .skin-bar span { color: #000; margin-left: 8px; font-size: 12px; font-weight: 400; }
 .skin-bar .redo { color: var(--redo); font-weight: 700; font-size: 12px; white-space: nowrap; }
 .banner-wrap { position: relative; margin: 0; border-radius: 0; overflow: hidden; height: 276px; background: #111; }
-.banner-wrap img { width: 100%; height: 276px; object-fit: cover; }
+.banner-wrap img { width: 100%; height: 276px; object-fit: cover; object-position: left center; }
+.home-locked .home-head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  background: transparent;
+}
 .banner-dots { position: absolute; left: 0; right: 0; bottom: 12px; display: flex; justify-content: center; gap: 6px; }
 .banner-dots i { width: 6px; height: 6px; border-radius: 50%; background: rgba(41, 37, 36, 0.28); }
 .banner-dots i.on { background: #292524; }
@@ -1343,7 +1343,11 @@ textarea:focus {
 .sec-head .all { color: var(--muted); font-size: 12px; font-weight: 400; }
 .feel-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; align-items: center; }
 .feel-row .tag { font-size: 10px; padding: 4px 8px; }
-.nick-field { margin: 24px 20px 8px; }
+.nick-field { margin: 56px 20px 8px; }
+.nick-cta {
+  margin-top: auto;
+  padding: 16px 20px 32px;
+}
 .nick-field input {
   width: 100%;
   height: 52px;

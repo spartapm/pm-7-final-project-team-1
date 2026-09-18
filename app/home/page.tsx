@@ -48,7 +48,7 @@ export default function HomePage() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        <div className="page-scroll bleed">
+        <div className={`page-scroll bleed${!account.onboardingDone ? " home-locked" : ""}`}>
           <div className="home-head">
             <VionLogo variant="black" className="vion-mark" />
             <HeadTools />
@@ -105,7 +105,9 @@ export default function HomePage() {
           <div className="dim center">
             <div className="modal">
               <h2>
-                잠깐만요! 정보 입력을 완료해야
+                잠깐만요!
+                <br />
+                정보 입력을 완료해야
                 <br />
                 서비스를 이용할 수 있어요
               </h2>

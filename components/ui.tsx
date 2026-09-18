@@ -8,9 +8,16 @@ import { useStore } from "@/lib/store";
 import { avatarSrc } from "@/lib/nicknames";
 
 export function PhoneShell({ children, splash }: { children?: ReactNode; splash?: boolean }) {
+  const boot = !children;
   return (
-    <div className={`shell${splash ? " shell-splash" : ""}`}>
-      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><VionLogo variant="orange" className="logo" /><i /></div>}</div>
+    <div className={`shell${splash || boot ? " shell-splash" : ""}`}>
+      <div className="shell-body">
+        {children ?? (
+          <div className="boot-loading" aria-hidden>
+            <VionLogo variant="white" className="logo" />
+          </div>
+        )}
+      </div>
       <ToastHost />
     </div>
   );

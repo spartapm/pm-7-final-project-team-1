@@ -71,19 +71,18 @@ function OnboardingInner() {
   return (
     <PhoneShell>
       <div className="page">
-        <div className="close-bar">
-          <button
-            className="close-bar-btn"
-            type="button"
-            aria-label="닫기"
-            onClick={() => {
-              if (!edit) track("onboarding_exit", { skin_type: skin && skin !== "모르겠어요" ? skin : "", skin_concern_list: concerns });
-              router.replace("/home");
-            }}
-          >
-            <IconClose />
-          </button>
-        </div>
+        {edit ? (
+          <div className="close-bar">
+            <button
+              className="close-bar-btn"
+              type="button"
+              aria-label="닫기"
+              onClick={() => router.replace("/profile")}
+            >
+              <IconClose />
+            </button>
+          </div>
+        ) : null}
         <div className="page-scroll onboard">
           <div className="onboard-hero">
             <h1>

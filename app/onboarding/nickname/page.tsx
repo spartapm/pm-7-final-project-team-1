@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
-import { IconBack } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { nicknameError } from "@/lib/nicknames";
 import { nicknameTaken } from "@/lib/db";
@@ -70,13 +69,6 @@ export default function NicknamePage() {
   return (
     <PhoneShell>
       <div className="page">
-        <div className="topbar">
-          <button className="side" type="button" onClick={goSkin} aria-label="뒤로">
-            <IconBack />
-          </button>
-          <span />
-          <span />
-        </div>
         <div className="nick-field">
           <h1 className="nick-title">
             VION에서 사용할
@@ -100,7 +92,7 @@ export default function NicknamePage() {
           <p className="nick-rule">희망하는 닉네임이 없으면 위의 닉네임으로 자동설정 됩니다.</p>
           <p className="nick-rule">한글, 영문, 숫자포함 2~10자 (특수문자 및 공백 불가)</p>
         </div>
-        <div className="page-scroll" style={{ paddingTop: 12 }}>
+        <div className="nick-cta">
           <button className="btn-primary" type="button" disabled={disabled || busy} onClick={submit}>
             확인
           </button>
