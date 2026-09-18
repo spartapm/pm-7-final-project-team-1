@@ -37,16 +37,15 @@ export function RankRow({
   return (
     <div className="rank-card">
       <span className="rank-no">{rank}</span>
-      <button type="button" onClick={goProduct} aria-label={product.name}>
+      <button className="rank-thumb" type="button" onClick={goProduct} aria-label={product.name}>
         <Thumb src={product.image} alt={product.name} />
       </button>
       <div className="rank-main">
         <button type="button" onClick={goProduct}>
           <h3>{product.name}</h3>
-          <p className="brand-line">
-            {product.brand}
-            <span> </span>
-            {formatVolume(product.volume)} · {formatPrice(product.price)}
+          <p className="brand-name">{product.brand}</p>
+          <p className="vol-price">
+            {formatVolume(product.volume)} · <strong>{formatPrice(product.price)}</strong>
           </p>
         </button>
         <div className="rank-foot">

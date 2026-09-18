@@ -576,14 +576,14 @@ img { display: block; max-width: 100%; }
 .rank-card {
   position: relative;
   display: grid;
-  grid-template-columns: 18px 48px minmax(0, 1fr);
-  gap: 8px 10px;
+  grid-template-columns: 22px 48px minmax(0, 1fr);
+  column-gap: 12px;
   align-items: center;
   background: #fff;
   border: 1px solid var(--card-line);
   box-shadow: none;
   border-radius: 16px;
-  padding: 12px 40px 12px 10px;
+  padding: 12px 44px 12px 12px;
   text-align: left;
   width: 100%;
   min-height: 84px;
@@ -593,10 +593,24 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
   font-size: 12px;
   text-align: center;
+  line-height: 1;
+}
+.rank-thumb {
+  width: 48px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.rank-thumb .thumb {
+  width: 48px;
+  height: 56px;
+  border-radius: 8px;
+  background: #fff;
 }
 .rank-main { min-width: 0; text-align: left; }
 .rank-main > button { width: 100%; text-align: left; display: block; }
-.rank-card h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; color: #292524; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank-card h3 { margin: 0; font-size: 14px; font-weight: 700; line-height: 20px; color: #292524; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rank-card .brand-line {
   margin: 2px 0 0;
   font-size: 11px;
@@ -607,9 +621,18 @@ img { display: block; max-width: 100%; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.rank-card .brand-name { margin: 0; font-size: 11px; color: #746a66; font-weight: 400; }
-.rank-card .vol-price { margin: 0; font-size: 11px; color: #746a66; font-weight: 400; }
-.rank-card .vol-price strong { color: inherit; font-weight: 400; }
+.rank-card .brand-name {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: #746a66;
+  font-weight: 400;
+  line-height: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rank-card .vol-price { margin: 1px 0 0; font-size: 11px; color: #746a66; font-weight: 400; line-height: 16px; }
+.rank-card .vol-price strong { color: #292524; font-weight: 700; }
 .rank-card .badges { margin-top: 4px; }
 .rank-card .heart {
   position: absolute;
