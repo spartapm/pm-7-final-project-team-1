@@ -19,7 +19,7 @@ export function SkinBar({
         <span>{concerns.map(concernShort).join(", ")}</span>
       </div>
       <button className="redo" type="button" onClick={() => router.push("/onboarding?edit=1")}>
-        다시 진단 ›
+        다시 진단 &gt;
       </button>
     </div>
   );

@@ -65,15 +65,38 @@ function RankingInner() {
       return (
         <PhoneShell>
           <div className="page">
-            <div className="empty">
-              <div className="icon-wrap">
-                <IconWarn />
+            <div className="page-scroll bleed rank-scroll">
+              <div className="home-head">
+                <p className="rank-mode-title">종합 맞춤 랭킹 &gt;</p>
+                <HeadTools />
               </div>
-              <h2>랭킹을 불러오지 못했어요</h2>
-              <p>잠시 후 다시 시도해주세요</p>
-              <button className="btn-primary" type="button" disabled={!hydrated} onClick={retryBoot}>
-                다시 시도
-              </button>
+              <div className="rank-meta">{rankingUpdatedLabel()}</div>
+              <SkinBar
+                skinType={account?.skinType ?? "복합성"}
+                concerns={account?.concerns?.length ? account.concerns : ["보습", "여드름"]}
+              />
+              <div className="rank-cats">
+                {CATEGORIES.map((c) => (
+                  <button key={c} className={c === "토너" ? "on" : ""} type="button">
+                    <span className="cat-circle">
+                      <img src={CATEGORY_IMAGE[c]} alt="" />
+                    </span>
+                    {c}
+                  </button>
+                ))}
+              </div>
+              <div className="rank-list">
+                <div className="empty rank-sync-empty">
+                  <div className="icon-wrap">
+                    <IconWarn />
+                  </div>
+                  <h2>랭킹을 불러오지 못했어요</h2>
+                  <p>잠시 후 다시 시도해주세요</p>
+                  <button className="btn-primary" type="button" disabled={!hydrated} onClick={retryBoot}>
+                    다시 시도
+                  </button>
+                </div>
+              </div>
             </div>
             <TabBar />
           </div>
@@ -101,10 +124,10 @@ function RankingInner() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        <div className="page-scroll bleed">
+        <div className="page-scroll bleed rank-scroll">
           <div className="home-head">
             <button className="rank-mode-title" type="button" onClick={() => setModeOpen(true)}>
-              {rankModeCopy(mode, account.skinType ?? "", ageGroup).title} ›
+              {rankModeCopy(mode, account.skinType ?? "", ageGroup).title} &gt;
             </button>
             <HeadTools />
           </div>
@@ -120,6 +143,7 @@ function RankingInner() {
               </button>
             ))}
           </div>
+          {!bootError ? (
           <div className="rank-tools">
             <button className="help-link" type="button" onClick={() => setHelpOpen(true)}>
               랭킹 추천 기준 보러가기 &gt;
@@ -139,9 +163,10 @@ function RankingInner() {
               <IconFilter />
             </button>
           </div>
+          ) : null}
           <div className="rank-list">
             {bootError ? (
-              <div className="empty" style={{ paddingTop: 48 }}>
+              <div className="empty rank-sync-empty">
                 <div className="icon-wrap">
                   <IconWarn />
                 </div>
@@ -170,7 +195,7 @@ function RankingInner() {
 
         {modeOpen ? (
           <div className="dim" onClick={() => setModeOpen(false)}>
-            <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet mode-sheet" onClick={(e) => e.stopPropagation()}>
               <div className="sheet-handle" />
               <h2>원하는 랭킹을 선택해 주세요</h2>
               {(["overall", "type", "concern", "age"] as RankMode[]).map((k) => {
@@ -258,7 +283,7 @@ function RankingInner() {
                   </button>
                 ))}
               </div>
-              <div className="filter-label">
+              <div className="filter-label price-head">
                 가격대 <span>{priceLabel.replace("원~", "원 ~ ")}</span>
               </div>
               <div className="price-track">
