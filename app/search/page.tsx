@@ -208,10 +208,10 @@ function RecentBlock({
   if (!showEmpty && recent.length === 0) return null;
   return (
     <div className="recent-block">
-      <div className="section-label" style={{ display: "flex", justifyContent: "space-between" }}>
-        최근 검색어
+      <div className="recent-head">
+        <span>최근 검색어</span>
         {recent.length ? (
-          <button className="accent" type="button" onClick={onClear}>
+          <button className="recent-clear-all" type="button" onClick={onClear}>
             전체 삭제
           </button>
         ) : null}
@@ -219,17 +219,19 @@ function RecentBlock({
       {recent.length === 0 ? (
         <p className="search-none">최근 검색어가 없습니다</p>
       ) : (
-        recent.map((term) => (
-          <div key={term} className="menu-row">
-            <button type="button" className="menu-left" onClick={() => onPick(term)}>
-              <IconClock />
-              {term}
-            </button>
-            <button type="button" onClick={() => onRemove(term)} aria-label="삭제">
-              <IconClose />
-            </button>
-          </div>
-        ))
+        <ul className="recent-list">
+          {recent.map((term) => (
+            <li key={term} className="recent-row">
+              <button type="button" className="recent-term" onClick={() => onPick(term)}>
+                <IconClock />
+                {term}
+              </button>
+              <button type="button" className="recent-remove" onClick={() => onRemove(term)} aria-label="삭제">
+                <IconClose />
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
