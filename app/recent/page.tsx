@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Thumb } from "@/components/ui";
-import { IconBack, IconHeart } from "@/components/icons";
+import { IconBack, IconClock, IconHeart } from "@/components/icons";
 import { HeadTools } from "@/components/head-tools";
 import { useStore } from "@/lib/store";
 import { CATEGORIES, type Category } from "@/lib/types";
@@ -43,7 +43,11 @@ export default function RecentPage() {
         </div>
         {items.length === 0 ? (
           <div className="empty">
+            <div className="icon-wrap">
+              <IconClock />
+            </div>
             <h2>아직 살펴본 제품이 없어요</h2>
+            <p>제품을 살펴보면 최근 본 제품이 여기에 표시돼요</p>
             <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
               홈으로 가기
             </button>

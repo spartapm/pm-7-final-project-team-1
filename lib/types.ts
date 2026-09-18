@@ -1,4 +1,4 @@
-export const SKIN_TYPES = ["건성", "중성", "지성", "복합성", "수부지"] as const;
+export const SKIN_TYPES = ["건성", "지성", "중성", "복합성", "수부지"] as const;
 export const SKIN_CONCERNS = ["보습", "미백/잡티", "탄력/주름", "민감성", "모공", "피지/블랙헤드", "여드름"] as const;
 export const CATEGORIES = ["토너", "크림", "클렌징폼"] as const;
 export const AGE_GROUPS = ["10대", "20대", "30대", "40대 이상"] as const;

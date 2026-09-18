@@ -52,7 +52,7 @@ export default function CartPage() {
 
         <div className="page-scroll cart-scroll">
           <div className="list-meta" style={{ paddingTop: 4 }}>
-            <button type="button" className="agree-row" style={{ padding: 0, border: "none", margin: 0 }} onClick={() => setPicked(allOn ? [] : ids)}>
+            <button type="button" className="cart-all" onClick={() => setPicked(allOn ? [] : ids)}>
               <span className={`chk${allOn ? " on" : ""}`}>✓</span>
               제품 전체 선택
             </button>

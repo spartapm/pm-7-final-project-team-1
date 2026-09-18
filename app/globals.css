@@ -319,6 +319,14 @@ img { display: block; max-width: 100%; }
   flex-direction: column;
   padding: 0 0 8px;
 }
+.cart-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
 
 .close-bar {
   display: flex;
@@ -581,7 +589,7 @@ img { display: block; max-width: 100%; }
   text-align: center;
 }
 .rank-main { min-width: 0; text-align: left; }
-.rank-card h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; color: #292524; }
+.rank-card h3 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.25; color: #292524; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rank-card .brand-name { margin: 2px 0 0; font-size: 11px; color: #746a66; font-weight: 500; }
 .rank-card .vol-price { margin: 1px 0 0; font-size: 11px; color: #746a66; }
 .rank-card .vol-price strong { color: #292524; font-weight: 700; }
@@ -871,6 +879,8 @@ img { display: block; max-width: 100%; }
   font-size: 12px;
   font-weight: 500;
   background: #fff;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .cart-bar {
   display: grid;
@@ -1256,7 +1266,7 @@ textarea:focus {
   overflow: hidden;
 }
 .rank-no.top { font-size: 12px; }
-.rank-card h3, .wish-card h3, .cart-row h3, .cart-card h3, .write-product h3, .my-review h3 {
+.wish-card h3, .cart-row h3, .cart-card h3, .write-product h3, .my-review h3 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -1325,8 +1335,8 @@ textarea:focus {
 
 .page-scroll.onboard { padding: 4px 20px 24px; }
 .onboard { padding: 4px 20px 24px; }
-.chips.types { display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 10px; }
-.chips.types .chip { min-width: 0; flex: 0 0 auto; padding: 0 16px; }
+.chips.types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.chips.types .chip { min-width: 0; width: 100%; padding: 0 10px; }
 .chips.concerns { display: flex; gap: 10px; flex-wrap: wrap; }
 .chips.concerns .chip { flex: 0 0 auto; min-width: 0; }
 .field-hint { font-weight: 400; margin-left: 6px; }
@@ -1406,7 +1416,7 @@ textarea:focus {
 .nick-field input {
   width: 100%;
   height: 52px;
-  border-radius: 14px;
+  border-radius: 999px;
   border: 1.5px solid var(--line);
   padding: 0 42px 0 14px;
   font-size: 15px;

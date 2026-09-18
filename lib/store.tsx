@@ -41,6 +41,7 @@ import type {
   SkinType,
   WishlistItem,
 } from "./types";
+import { isQaAccount, readLocalPreview } from "./qa-preview";
 
 const CART_MAX = 10;
 const SERVER_TOAST = "일시적인 오류입니다. 잠시 후 다시 시도해주세요";
@@ -126,6 +127,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      const preview = readLocalPreview();
+      if (preview) {
+        try {
+          const reviews = await fetchReviews();
+          if (cancelled) return;
+          setState((s) => ({
+            ...s,
+            accounts: [preview.account],
+            currentId: preview.account.id,
+            loginAt: Date.now(),
+            reviews,
+            wishlist: preview.wishlist,
+            cart: preview.cart,
+            viewed: preview.viewed,
+          }));
+          setBootError(false);
+        } catch {
+          if (!cancelled) setBootError(true);
+        } finally {
+          if (!cancelled) setHydrated(true);
+        }
+        return;
+      }
       if (!supabaseReady) {
         setBootError(true);
         setHydrated(true);
@@ -291,6 +315,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const saveProfile = useCallback(
     async (input: { skinType: SkinType; concerns: SkinConcern[]; gender: Gender; birthYear: number }) => {
       if (!state.currentId) return false;
+      const apply = () => {
+        setState((s) => ({
+          ...s,
+          accounts: s.accounts.map((a) =>
+            a.id === s.currentId
+              ? {
+                  ...a,
+                  skinType: input.skinType,
+                  concerns: input.concerns,
+                  gender: input.gender,
+                  birthYear: input.birthYear,
+                  onboardingDone: true,
+                }
+              : a
+          ),
+        }));
+        return true;
+      };
+      if (isQaAccount(state.currentId)) return apply();
       const { error } = await supabase
         .from("profiles")
         .update({
@@ -329,6 +372,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     async (nickname: string) => {
       if (!state.currentId) return "fail";
       try {
+        if (isQaAccount(state.currentId)) {
+          setState((s) => ({
+            ...s,
+            accounts: s.accounts.map((a) => (a.id === s.currentId ? { ...a, nickname } : a)),
+          }));
+          return "ok";
+        }
         if (await nicknameTaken(nickname, state.currentId)) return "taken";
         const { error } = await supabase.from("profiles").update({ nickname }).eq("id", state.currentId);
         if (error) {
@@ -386,6 +436,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ? s.wishlist.filter((w) => w.productId !== productId)
           : [{ productId, savedAt: Date.now() }, ...s.wishlist],
       }));
+      if (isQaAccount(state.currentId)) {
+        wishBusy.current = false;
+        return nextOn;
+      }
       const req = has
         ? supabase.from("wishlist").delete().eq("user_id", state.currentId).eq("product_id", productId)
         : supabase.from("wishlist").insert({ user_id: state.currentId, product_id: productId });
@@ -429,6 +483,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           ...s,
           cart: s.cart.map((c) => (c.productId === productId ? { ...c, qty } : c)),
         }));
+        if (isQaAccount(state.currentId)) return { ok: true, qty, existed: true };
         void supabase
           .from("cart")
           .update({ qty })
@@ -444,6 +499,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       }
       const prev = state.cart;
       setState((s) => ({ ...s, cart: [{ productId, qty: 1, addedAt: Date.now() }, ...s.cart] }));
+      if (isQaAccount(state.currentId)) return { ok: true, qty: 1, existed: false };
       void supabase
         .from("cart")
         .insert({ user_id: state.currentId, product_id: productId, qty: 1 })
@@ -464,6 +520,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const prev = state.cart;
       if (qty < 1) {
         setState((s) => ({ ...s, cart: s.cart.filter((c) => c.productId !== productId) }));
+        if (isQaAccount(state.currentId)) return;
         void supabase
           .from("cart")
           .delete()
@@ -482,6 +539,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...s,
         cart: s.cart.map((c) => (c.productId === productId ? { ...c, qty: next } : c)),
       }));
+      if (isQaAccount(state.currentId)) return;
       void supabase
         .from("cart")
         .update({ qty: next })
@@ -516,6 +574,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...s,
         viewed: [productId, ...s.viewed.filter((id) => id !== productId)].slice(0, 20),
       }));
+      if (isQaAccount(state.currentId)) return;
       void supabase.from("viewed").upsert({
         user_id: state.currentId,
         product_id: productId,

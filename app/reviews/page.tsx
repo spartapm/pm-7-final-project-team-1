@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Stars, Thumb } from "@/components/ui";
-import { IconBack } from "@/components/icons";
+import { IconBack, IconComment } from "@/components/icons";
+import { HeadTools } from "@/components/head-tools";
 import { ReviewPhotos } from "@/components/photo-lightbox";
 import { useStore } from "@/lib/store";
 import { CATEGORIES, type Category } from "@/lib/types";
@@ -85,13 +86,19 @@ export default function MyReviewsPage() {
             <IconBack />
           </button>
           <h1>내가 쓴 리뷰</h1>
-          <button className="side accent" type="button" onClick={() => setDir((d) => (d === "desc" ? "asc" : "desc"))}>
-            {dir === "desc" ? "최신순" : "오래된순"}
-          </button>
+          {mine.length === 0 ? <HeadTools /> : (
+            <button className="side accent" type="button" onClick={() => setDir((d) => (d === "desc" ? "asc" : "desc"))}>
+              {dir === "desc" ? "최신순" : "오래된순"}
+            </button>
+          )}
         </div>
         {mine.length === 0 ? (
           <div className="empty">
+            <div className="icon-wrap">
+              <IconComment />
+            </div>
             <h2>아직 등록한 리뷰가 없어요</h2>
+            <p>맞춤 랭킹 확인하고 제품의 첫 리뷰를 남겨보세요</p>
             <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
               홈으로 가기
             </button>

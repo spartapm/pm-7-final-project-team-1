@@ -75,7 +75,6 @@ export function ReviewAuthorTags({
 }
 
 export function concernShort(c: SkinConcern) {
-  if (c === "보습") return "수분";
   if (c === "피지/블랙헤드") return "피지·블랙헤드";
   if (c === "미백/잡티") return "미백·잡티";
   if (c === "탄력/주름") return "탄력·주름";
