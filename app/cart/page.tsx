@@ -1,22 +1,24 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Thumb } from "@/components/ui";
-import { IconBack, IconCart, IconMinus, IconPlus } from "@/components/icons";
+import { IconBack, IconCart, IconClose, IconMinus, IconPlus } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
-import { formatPrice } from "@/lib/ranking";
-import { setSourceScreen } from "@/lib/analytics";
+import { formatPrice, formatVolumePrice } from "@/lib/ranking";
+import { setSourceScreen, track } from "@/lib/analytics";
 
 export default function CartPage() {
   const router = useRouter();
   const { hydrated, account, cart, setCartQty, removeFromCart, showToast } = useStore();
+  const [picked, setPicked] = useState<string[]>([]);
+  const [confirm, setConfirm] = useState<string[] | null>(null);
 
   useEffect(() => {
     if (!hydrated) return;
     if (!account) router.replace("/login");
-    else if (!account.onboardingDone) router.replace("/onboarding");
+    else if (!account.onboardingDone) router.replace("/home");
   }, [hydrated, account, router]);
 
   const rows = useMemo(
@@ -31,8 +33,10 @@ export default function CartPage() {
     [cart]
   );
 
-  const totalQty = rows.reduce((n, r) => n + r.qty, 0);
-  const totalPrice = rows.reduce((n, r) => n + r.product.price * r.qty, 0);
+  const ids = rows.map((r) => r.productId);
+  const allOn = ids.length > 0 && ids.every((id) => picked.includes(id));
+  const selectedRows = rows.filter((r) => picked.includes(r.productId));
+  const selectedPrice = selectedRows.reduce((n, r) => n + r.product.price * r.qty, 0);
 
   if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
 
@@ -52,22 +56,43 @@ export default function CartPage() {
             <div className="icon-wrap">
               <IconCart />
             </div>
-            <h2>아직 담긴 제품이 없어요</h2>
-            <p>마음에 드는 제품을 담아 모아보세요</p>
+            <h2>아직 담은 제품이 없어요</h2>
             <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
-              홈으로 가기
+              홈으로가기
             </button>
           </div>
         ) : (
           <>
             <div className="page-scroll" style={{ padding: "0 0 8px" }}>
+              <div className="list-meta" style={{ paddingTop: 4 }}>
+                <button type="button" className="agree-row" style={{ padding: 0, border: "none", margin: 0 }} onClick={() => setPicked(allOn ? [] : ids)}>
+                  <span className={`chk${allOn ? " on" : ""}`}>✓</span>
+                  제품 전체 선택
+                </button>
+                <button className="accent" type="button" onClick={() => setConfirm(picked.length ? picked : ids)}>
+                  선택 삭제
+                </button>
+              </div>
+              <p className="cart-count">총 {rows.length}개</p>
               <div className="cart-list">
                 {rows.map((row) => (
-                  <div key={row.productId} className="cart-row">
-                    <button type="button" onClick={() => {
-                      setSourceScreen("cart");
-                      router.push(`/products/${row.product.id}`);
-                    }}>
+                  <div key={row.productId} className="cart-row" style={{ gridTemplateColumns: "24px 72px 1fr" }}>
+                    <button
+                      type="button"
+                      className={`chk${picked.includes(row.productId) ? " on" : ""}`}
+                      onClick={() =>
+                        setPicked((p) => (p.includes(row.productId) ? p.filter((id) => id !== row.productId) : [...p, row.productId]))
+                      }
+                    >
+                      ✓
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSourceScreen("cart");
+                        router.push(`/products/${row.product.id}`);
+                      }}
+                    >
                       <Thumb src={row.product.image} alt={row.product.name} />
                     </button>
                     <div>
@@ -81,15 +106,11 @@ export default function CartPage() {
                       >
                         <p className="cart-brand">{row.product.brand}</p>
                         <h3>{row.product.name}</h3>
-                        <strong>{formatPrice(row.product.price * row.qty)}</strong>
+                        <p>{formatVolumePrice(row.product.volume, row.product.price)}</p>
                       </button>
                       <div className="cart-actions">
                         <div className="qty">
-                          <button
-                            type="button"
-                            aria-label="수량 줄이기"
-                            onClick={() => setCartQty(row.productId, row.qty - 1)}
-                          >
+                          <button type="button" aria-label="수량 줄이기" disabled={row.qty <= 1} onClick={() => setCartQty(row.productId, row.qty - 1)}>
                             <IconMinus />
                           </button>
                           <span>{row.qty}</span>
@@ -107,8 +128,9 @@ export default function CartPage() {
                             <IconPlus />
                           </button>
                         </div>
-                        <button className="cart-del" type="button" onClick={() => removeFromCart(row.productId)}>
-                          삭제
+                        <strong>{formatPrice(row.product.price * row.qty)}</strong>
+                        <button className="cart-del" type="button" onClick={() => setConfirm([row.productId])} aria-label="삭제">
+                          <IconClose />
                         </button>
                       </div>
                     </div>
@@ -116,20 +138,44 @@ export default function CartPage() {
                 ))}
               </div>
             </div>
-            <div className="cart-bar">
-              <div>
-                <div className="cart-total-label">총 {totalQty}개</div>
-                <div className="cart-total">{formatPrice(totalPrice)}</div>
-              </div>
-              <div className="cart-order">
-                <button className="btn-disabled" type="button" disabled>
-                  주문하기
-                </button>
-                <p>결제는 아직 준비 중이에요</p>
-              </div>
+            <div className="cart-bar" style={{ gridTemplateColumns: "1fr" }}>
+              <button
+                className="btn-disabled"
+                type="button"
+                onClick={() => {
+                  track("begin_checkout", { value: selectedPrice });
+                  showToast("아직 구현 되지 않은 영역입니다");
+                }}
+              >
+                총 {formatPrice(selectedPrice)} 주문하기
+              </button>
             </div>
           </>
         )}
+
+        {confirm ? (
+          <div className="dim center" onClick={() => setConfirm(null)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>선택한 제품을 삭제할까요?</h2>
+              <div className="modal-btns">
+                <button className="sub" type="button" onClick={() => setConfirm(null)}>
+                  아니오
+                </button>
+                <button
+                  className="main"
+                  type="button"
+                  onClick={() => {
+                    confirm.forEach((id) => removeFromCart(id));
+                    setPicked((p) => p.filter((id) => !confirm.includes(id)));
+                    setConfirm(null);
+                  }}
+                >
+                  네
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </PhoneShell>
   );

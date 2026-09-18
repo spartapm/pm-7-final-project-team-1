@@ -2,10 +2,14 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Avatar, PhoneShell, Stars, Thumb } from "@/components/ui";
+import { Avatar, PhoneShell } from "@/components/ui";
 import { IconBack, IconPen } from "@/components/icons";
+import { ProductFrame } from "@/components/product-frame";
+import { ReviewPhotos } from "@/components/photo-lightbox";
 import { useStore } from "@/lib/store";
-import { formatDate } from "@/lib/ranking";
+import { formatDate, matchedReviews } from "@/lib/ranking";
+import { ReviewAuthorTags } from "@/lib/badges";
+import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
 
 export default function ReviewsPage() {
@@ -13,98 +17,55 @@ export default function ReviewsPage() {
   const router = useRouter();
   const { hydrated, account, reviews, showToast } = useStore();
   const [mine, setMine] = useState(true);
+  const [openBadges, setOpenBadges] = useState<Record<string, boolean>>({});
+  const product = productById(id);
 
   useEffect(() => {
     if (!hydrated) return;
     if (!account) router.replace("/login");
-    else if (!account.onboardingDone) router.replace("/onboarding");
+    else if (!account.onboardingDone) router.replace("/home");
   }, [hydrated, account, router]);
 
+  const all = useMemo(
+    () => reviews.filter((r) => r.productId === id).sort((a, b) => b.createdAt - a.createdAt),
+    [reviews, id]
+  );
+
   const list = useMemo(() => {
-    const all = reviews
-      .filter((r) => r.productId === id)
-      .sort((a, b) => b.createdAt - a.createdAt);
     if (!mine || !account) return all;
-    return all.filter(
-      (r) => r.skinType === account.skinType || r.concerns.some((c) => account.concerns.includes(c))
-    );
-  }, [reviews, id, mine, account]);
+    return matchedReviews(all, account.skinType, account.concerns);
+  }, [all, mine, account]);
 
   useEffect(() => {
     if (!hydrated || !account || !mine) return;
-    const all = reviews.filter((r) => r.productId === id);
-    const matched = all.filter(
-      (r) => r.skinType === account.skinType || r.concerns.some((c) => account.concerns.includes(c))
-    );
+    const matched = matchedReviews(all, account.skinType, account.concerns);
     if (all.length > 0 && matched.length === 0) {
       showToast("내 피부와 일치하는 리뷰가 없어요");
       setMine(false);
     }
-  }, [hydrated, account, reviews, id, mine, showToast]);
+  }, [hydrated, account, all, mine, showToast]);
 
-  if (!hydrated) return <PhoneShell />;
-
-  return (
-    <PhoneShell>
-      <div className="page" style={{ position: "relative" }}>
-        <div className="topbar review">
-          <button className="side" type="button" onClick={() => router.back()} aria-label="뒤로">
+  if (!hydrated || !product) {
+    return (
+      <PhoneShell>
+        <div className="page">
+          <button className="x-btn" type="button" onClick={() => router.back()}>
             <IconBack />
           </button>
-          <h1>제품 리뷰</h1>
-          <div className="toggle-inline">
-            내 피부 맞춤
-            <button className={`toggle${mine ? " on" : ""}`} type="button" onClick={() => setMine((v) => !v)} aria-label="내 피부 맞춤">
-              <i />
-            </button>
-          </div>
         </div>
-        <div className="page-scroll bleed">
-        <div className="review-list">
-          {list.length === 0 ? (
-            <div className="empty" style={{ paddingTop: 48 }}>
-              <div className="icon-wrap">
-                <IconPen />
-              </div>
-              <h2>아직 리뷰가 없어요</h2>
-              <p>첫 리뷰를 남겨보세요</p>
-            </div>
-          ) : null}
-          {list.map((r) => {
-            return (
-              <article key={r.id} className="review-card">
-                <div className="review-user">
-                  <Avatar name={r.nickname} />
-                  <div>
-                    <strong>{r.nickname}</strong>
-                    <div className="tags">
-                      <span className="tag">{r.skinType}</span>
-                      {r.concerns.map((c) => (
-                        <span className="tag" key={c}>
-                          {c}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="review-meta">
-                      <Stars value={r.rating} />
-                      <span>{formatDate(r.createdAt)}</span>
-                      {r.purchased ? <span className="badge">구매리뷰</span> : null}
-                    </div>
-                  </div>
-                </div>
-                {r.text ? <ClampedReview text={r.text} /> : null}
-                {r.photos.length ? (
-                  <div className="review-photos">
-                    {r.photos.map((src, i) => (
-                      <Thumb key={i} src={src} alt="" />
-                    ))}
-                  </div>
-                ) : null}
-              </article>
-            );
-          })}
-        </div>
-        </div>
+      </PhoneShell>
+    );
+  }
+
+  const counts = [5, 4, 3, 2, 1].map((n) => all.filter((r) => r.rating === n).length);
+  const max = Math.max(1, ...counts);
+
+  return (
+    <ProductFrame
+      product={product}
+      tab="reviews"
+      reviewCount={all.length || product.reviewCount}
+      overlay={
         <button
           className="fab-pen"
           type="button"
@@ -116,8 +77,63 @@ export default function ReviewsPage() {
         >
           <IconPen />
         </button>
+      }
+    >
+      <p style={{ margin: "0 16px 8px", fontSize: 12, color: "var(--muted)" }}>
+        {mine ? "나와 같은 피부 타입을 가진 사용자들의 리뷰에요" : "전체 리뷰에요"}
+      </p>
+      <div className="review-head-row">
+        <strong>
+          {product.rating.toFixed(1)} / 5
+          <span> 리뷰 {all.length.toLocaleString("ko-KR")}</span>
+        </strong>
+        <div className="toggle-inline">
+          {mine ? "내 타입만 보기" : "전체 리뷰에요"}
+          <button className={`toggle${mine ? " on" : ""}`} type="button" onClick={() => setMine((v) => !v)} aria-label="내 타입만 보기">
+            <i />
+          </button>
+        </div>
       </div>
-    </PhoneShell>
+      <div className="dist">
+        {counts.map((n, i) => (
+          <i key={i} className={i === 0 ? "on" : ""} style={{ height: `${Math.max(8, (n / max) * 72)}px` }} />
+        ))}
+      </div>
+      <div className="review-list">
+        {list.length === 0 ? (
+          <div className="empty" style={{ paddingTop: 48 }}>
+            <div className="icon-wrap">
+              <IconPen />
+            </div>
+            <h2>아직 리뷰가 없어요</h2>
+            <p>첫 리뷰를 남겨보세요</p>
+          </div>
+        ) : null}
+        {list.map((r) => (
+          <article key={r.id} className="review-card">
+            <div className="review-user">
+              <Avatar name={r.nickname} />
+              <div>
+                <strong>{r.nickname}</strong>
+                <ReviewAuthorTags
+                  skinType={r.skinType}
+                  concerns={r.concerns}
+                  expanded={!!openBadges[r.id]}
+                  onToggle={() => setOpenBadges((s) => ({ ...s, [r.id]: !s[r.id] }))}
+                />
+                <div className="review-meta">
+                  ★ {r.rating.toFixed(1)}
+                  <span>{formatDate(r.createdAt)}</span>
+                  {r.purchased ? <span className="badge">구매리뷰</span> : null}
+                </div>
+              </div>
+            </div>
+            {r.text ? <ClampedReview text={r.text} /> : null}
+            <ReviewPhotos photos={r.photos} />
+          </article>
+        ))}
+      </div>
+    </ProductFrame>
   );
 }
 
@@ -140,6 +156,11 @@ function ClampedReview({ text }: { text: string }) {
       {showMore && !expanded ? (
         <button className="more" type="button" onClick={() => setExpanded(true)}>
           더보기 &gt;
+        </button>
+      ) : null}
+      {expanded ? (
+        <button className="more" type="button" onClick={() => setExpanded(false)}>
+          닫기
         </button>
       ) : null}
     </>

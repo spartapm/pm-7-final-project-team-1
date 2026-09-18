@@ -1,0 +1,196 @@
+"use client";
+
+import { useRef, useState, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { PhoneShell } from "@/components/ui";
+import { IconBack, IconCart, IconHeart, IconShare, IconUp } from "@/components/icons";
+import { useStore } from "@/lib/store";
+import { productById } from "@/lib/products";
+import { formatVolumePrice } from "@/lib/ranking";
+import { track } from "@/lib/analytics";
+import { shareKakao } from "@/lib/share";
+import type { Product } from "@/lib/types";
+
+export function ProductFrame({
+  product,
+  tab,
+  reviewCount,
+  overlay,
+  children,
+}: {
+  product: Product;
+  tab: "info" | "reviews";
+  reviewCount: number;
+  overlay?: ReactNode;
+  children: ReactNode;
+}) {
+  const router = useRouter();
+  const { isWished, toggleWish, isInCart, addToCart, showToast, cart } = useStore();
+  const [share, setShare] = useState(false);
+  const [top, setTop] = useState(false);
+  const scroller = useRef<HTMLDivElement>(null);
+  const wished = isWished(product.id);
+  const inCart = isInCart(product.id);
+  const cartCount = cart.reduce((n, c) => n + c.qty, 0);
+
+  const wish = () => {
+    const on = toggleWish(product.id);
+    if (on) track("add_to_wishlist", { item_id: product.id, item_name: product.name, price: product.price });
+  };
+
+  return (
+    <PhoneShell>
+      <div className="page" style={{ position: "relative" }}>
+        <div
+          className="page-scroll bleed"
+          ref={scroller}
+          onScroll={() => setTop((scroller.current?.scrollTop ?? 0) > 240)}
+        >
+          <div className="product-hero" style={{ backgroundImage: `url("${product.image}")` }}>
+            <button className="back-fab" type="button" aria-label="뒤로" onClick={() => router.back()}>
+              <IconBack />
+            </button>
+            <button className="back-fab" type="button" aria-label="공유" style={{ left: "auto", right: 56 }} onClick={() => setShare(true)}>
+              <IconShare />
+            </button>
+            <button className="back-fab" type="button" aria-label="장바구니" style={{ left: "auto", right: 12 }} onClick={() => router.push("/cart")}>
+              <IconCart />
+              {cartCount > 0 ? <span className="cart-badge">{cartCount}</span> : null}
+            </button>
+          </div>
+          <div className="product-info">
+            <div className="brand">{product.brand}</div>
+            <div className="name-row">
+              <h1>{product.name}</h1>
+              <button className={`heart${wished ? " on" : ""}`} type="button" aria-label="찜" onClick={wish}>
+                <IconHeart filled={wished} size={22} />
+              </button>
+            </div>
+            <p className="vol-price">{formatVolumePrice(product.volume, product.price)}</p>
+            <button type="button" onClick={() => router.push(`/products/${product.id}/reviews`)}>
+              ★ {product.rating.toFixed(1)} · 리뷰 {reviewCount.toLocaleString("ko-KR")}
+            </button>
+            {product.feelTags.length ? (
+              <div className="feel-row">
+                {product.feelTags.map((t) => (
+                  <span className="tag" key={t}>
+                    {t}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className="cat-bar tabs">
+            <button
+              className={`cat${tab === "info" ? " on" : ""}`}
+              type="button"
+              onClick={() => router.replace(`/products/${product.id}`)}
+            >
+              상품 정보
+            </button>
+            <button
+              className={`cat${tab === "reviews" ? " on" : ""}`}
+              type="button"
+              onClick={() => router.replace(`/products/${product.id}/reviews`)}
+            >
+              리뷰 ({reviewCount.toLocaleString("ko-KR")})
+            </button>
+          </div>
+          {children}
+        </div>
+        {top ? (
+          <button
+            className="up-fab"
+            type="button"
+            aria-label="맨 위로"
+            onClick={() => scroller.current?.scrollTo({ top: 0, behavior: "smooth" })}
+          >
+            <IconUp />
+          </button>
+        ) : null}
+        {overlay}
+        <div className="buybar">
+          <button className={`wish-btn${wished ? " on" : ""}`} type="button" onClick={wish}>
+            <IconHeart filled={wished} />
+          </button>
+          <button
+            className={inCart ? "btn-line" : "btn-primary"}
+            type="button"
+            onClick={() => {
+              if (inCart) {
+                router.push("/cart");
+                return;
+              }
+              const result = addToCart(product.id);
+              if (!result.ok) {
+                showToast("일시적인 오류입니다. 잠시 후 다시 시도해주세요");
+                return;
+              }
+              track("add_to_cart", { item_id: product.id, price: product.price });
+              showToast("장바구니에 담았어요");
+            }}
+          >
+            {inCart ? "장바구니 보기" : "장바구니 담기"}
+          </button>
+          <button
+            className="btn-disabled"
+            type="button"
+            onClick={() => {
+              track("begin_checkout", { item_id: product.id, price: product.price });
+              showToast("아직 구현 되지 않은 영역입니다");
+            }}
+          >
+            바로 구매
+          </button>
+        </div>
+
+        {share ? (
+          <div className="dim center" onClick={() => setShare(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>공유하기</h2>
+              <div className="share-row">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    try {
+                      await shareKakao({
+                        title: product.name,
+                        image: product.image,
+                        url: window.location.href,
+                      });
+                    } catch {
+                      showToast("카카오 공유를 열 수 없어요");
+                    }
+                  }}
+                >
+                  <span className="chip" style={{ background: "#FEE500" }}>
+                    카톡
+                  </span>
+                  카카오톡
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(window.location.href);
+                    showToast("링크를 복사했어요");
+                    setShare(false);
+                  }}
+                >
+                  <span className="chip">URL</span>
+                  링크 복사
+                </button>
+              </div>
+              <button className="btn-ghost" type="button" onClick={() => setShare(false)}>
+                닫기
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </PhoneShell>
+  );
+}
+
+export function useProductOrRedirect(id: string) {
+  return productById(id);
+}

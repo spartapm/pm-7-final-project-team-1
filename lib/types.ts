@@ -1,13 +1,25 @@
 export const SKIN_TYPES = ["건성", "중성", "지성", "복합성", "수부지"] as const;
-export const SKIN_CONCERNS = ["수분/보습", "트러블/진정"] as const;
-export const CATEGORIES = ["크림", "스킨/토너", "클렌징 폼"] as const;
+export const SKIN_CONCERNS = ["보습", "미백/잡티", "탄력/주름", "민감성", "모공", "피지/블랙헤드", "여드름"] as const;
+export const CATEGORIES = ["토너", "크림", "클렌징폼"] as const;
+export const AGE_GROUPS = ["10대", "20대", "30대", "40대 이상"] as const;
+export const GENDERS = ["여성", "남성"] as const;
+export const RANK_MODES = ["overall", "concern", "type", "age"] as const;
+export const SORT_KEYS = ["match", "rating", "reviews"] as const;
 
 export type SkinType = (typeof SKIN_TYPES)[number];
 export type SkinConcern = (typeof SKIN_CONCERNS)[number];
 export type Category = (typeof CATEGORIES)[number];
-export type SortKey = "match" | "rating" | "reviews";
-export type PriceRange = "all" | "under30" | "30to50" | "over50";
+export type AgeGroup = (typeof AGE_GROUPS)[number];
+export type Gender = (typeof GENDERS)[number];
+export type RankMode = (typeof RANK_MODES)[number];
+export type SortKey = (typeof SORT_KEYS)[number];
+export type FitLevel = "적극 추천" | "추천" | "조건부 추천" | "주의";
 export type Provider = "kakao" | "google";
+
+export type PriceFilter = {
+  min: number;
+  max: number | null;
+};
 
 export type Product = {
   id: string;
@@ -15,21 +27,20 @@ export type Product = {
   brand: string;
   category: Category;
   price: number;
+  volume: string;
   rating: number;
   reviewCount: number;
   image: string;
-  detailImage?: string;
-  detailGallery: string[];
-  skinTypes: SkinType[];
-  concerns: SkinConcern[];
-  fit: number;
+  gallery: string[];
+  ageRank: Partial<Record<AgeGroup, number>>;
+  typeFit: Partial<Record<SkinType, FitLevel>>;
+  caution: Partial<Record<SkinType, number>>;
+  concernFit: Partial<Record<SkinConcern, number>>;
+  feelTags: string[];
+  featureTags: string[];
   ingredients: string[];
-  badges: ProductBadge[];
-};
-
-export type ProductBadge = {
-  label: string;
-  tone: "warn" | "muted";
+  keyIngredients: string[];
+  source: string;
 };
 
 export type Review = {
@@ -40,6 +51,7 @@ export type Review = {
   concerns: SkinConcern[];
   rating: number;
   text: string;
+  tags: string[];
   photos: string[];
   createdAt: number;
   purchased?: boolean;
@@ -62,6 +74,8 @@ export type Account = {
   id: string;
   provider: Provider;
   nickname: string;
+  gender: Gender | null;
+  birthYear: number | null;
   skinType: SkinType | null;
   concerns: SkinConcern[];
   onboardingDone: boolean;

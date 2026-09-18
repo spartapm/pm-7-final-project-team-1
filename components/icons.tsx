@@ -194,26 +194,48 @@ export function IconUp() {
 export function IconCheck({ on }: { on?: boolean }) {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <circle cx="10" cy="10" r="9" fill={on ? "#C85C78" : "none"} stroke={on ? "#C85C78" : "#DAD7D7"} strokeWidth="1.4" />
-      <path d="M6 10.2 8.6 13l5.4-6" stroke={on ? "#fff" : "#DAD7D7"} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="10" cy="10" r="9" fill={on ? "#F8845F" : "none"} stroke={on ? "#F8845F" : "#E0D7D3"} strokeWidth="1.4" />
+      <path d="M6 10.2 8.6 13l5.4-6" stroke={on ? "#fff" : "#E0D7D3"} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-export function Rabbit() {
+export function IconSearchSm() {
   return (
-    <svg width="92" height="92" viewBox="0 0 92 92" aria-hidden>
-      <circle cx="46" cy="46" r="46" fill="#F7D4DC" />
-      <ellipse cx="32" cy="22" rx="8" ry="16" fill="#fff" />
-      <ellipse cx="60" cy="22" rx="8" ry="16" fill="#fff" />
-      <ellipse cx="32" cy="24" rx="3.4" ry="9" fill="#F4A7BA" />
-      <ellipse cx="60" cy="24" rx="3.4" ry="9" fill="#F4A7BA" />
-      <circle cx="46" cy="52" r="22" fill="#fff" />
-      <circle cx="38" cy="50" r="3.2" fill="#3A1F27" />
-      <circle cx="54" cy="50" r="3.2" fill="#3A1F27" />
-      <ellipse cx="46" cy="58" rx="3.2" ry="2.2" fill="#F4A7BA" />
-      <path d="M42 62c2.4 2.4 5.6 2.4 8 0" stroke="#C85C78" strokeWidth="1.6" fill="none" strokeLinecap="round" />
-      <path d="M58 38c6-2 10 2 11 7" stroke="#C85C78" strokeWidth="3" fill="none" strokeLinecap="round" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="1.6" />
+      <path d="m16 16 4 4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>
   );
+}
+
+export function IconRank({ active }: { active?: boolean }) {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M4 18h3V10H4v8Zm6.5 0h3V6h-3v12ZM17 18h3v-7h-3v7Z" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth={active ? 1.4 : 1.7} />
+    </svg>
+  );
+}
+
+export function IconShare() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <circle cx="6" cy="12" r="2.2" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="17" cy="6.5" r="2.2" stroke="currentColor" strokeWidth="1.7" />
+      <circle cx="17" cy="17.5" r="2.2" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M8 11.2 15 7.4M8 12.8 15 16.6" stroke="currentColor" strokeWidth="1.7" />
+    </svg>
+  );
+}
+
+export function IconChevron() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M6 3.5 11 8 6 12.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function VionLogo({ variant = "orange", className }: { variant?: "orange" | "white" | "black"; className?: string }) {
+  return <img className={className} src={`/vion/logo/logo_${variant}.png`} alt="vion" />;
 }

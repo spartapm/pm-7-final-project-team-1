@@ -19,6 +19,7 @@ import {
   fetchReviews,
   fetchViewed,
   fetchWishlist,
+  nicknameTaken,
 } from "./db";
 import {
   clearOAuthFlags,
@@ -32,6 +33,7 @@ import type {
   Account,
   AppState,
   CartItem,
+  Gender,
   Provider,
   Review,
   SkinConcern,
@@ -69,7 +71,13 @@ type Store = AppState & {
   completeTermsAndJoin: () => Promise<boolean>;
   beginSignup: () => void;
   cancelAuth: () => void;
-  saveProfile: (skinType: SkinType, concerns: SkinConcern[]) => Promise<boolean>;
+  saveProfile: (input: {
+    skinType: SkinType;
+    concerns: SkinConcern[];
+    gender: Gender;
+    birthYear: number;
+  }) => Promise<boolean>;
+  updateNickname: (nickname: string) => Promise<"ok" | "taken" | "fail">;
   logout: () => Promise<void>;
   withdraw: () => Promise<boolean>;
   toggleWish: (productId: string) => boolean;
@@ -229,14 +237,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         setState((s) => ({ ...s, reviews }));
         if (slice.profile) {
           applyLoggedIn(slice.profile, slice);
-          return slice.profile.onboardingDone ? "/home" : "/onboarding";
+          return "/home";
         }
         rememberOAuthProvider(json.provider);
         if (consumeTermsOk()) {
           const profile = await createProfile(user.id, json.provider);
           applyLoggedIn(profile, { wishlist: [], cart: [], viewed: [] });
           track("sign_up", { method: json.provider });
-          return "/onboarding";
+          return "/onboarding/nickname";
         }
         return "/login?terms=1";
       } catch {
@@ -280,11 +288,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const saveProfile = useCallback(
-    async (skinType: SkinType, concerns: SkinConcern[]) => {
+    async (input: { skinType: SkinType; concerns: SkinConcern[]; gender: Gender; birthYear: number }) => {
       if (!state.currentId) return false;
       const { error } = await supabase
         .from("profiles")
-        .update({ skin_type: skinType, concerns, onboarding_done: true })
+        .update({
+          skin_type: input.skinType,
+          concerns: input.concerns,
+          gender: input.gender,
+          birth_year: input.birthYear,
+          onboarding_done: true,
+        })
         .eq("id", state.currentId);
       if (error) {
         showToast(SERVER_TOAST);
@@ -293,10 +307,43 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setState((s) => ({
         ...s,
         accounts: s.accounts.map((a) =>
-          a.id === s.currentId ? { ...a, skinType, concerns, onboardingDone: true } : a
+          a.id === s.currentId
+            ? {
+                ...a,
+                skinType: input.skinType,
+                concerns: input.concerns,
+                gender: input.gender,
+                birthYear: input.birthYear,
+                onboardingDone: true,
+              }
+            : a
         ),
       }));
       return true;
+    },
+    [showToast, state.currentId]
+  );
+
+  const updateNickname = useCallback(
+    async (nickname: string) => {
+      if (!state.currentId) return "fail";
+      try {
+        if (await nicknameTaken(nickname, state.currentId)) return "taken";
+        const { error } = await supabase.from("profiles").update({ nickname }).eq("id", state.currentId);
+        if (error) {
+          if (error.code === "23505") return "taken";
+          showToast(SERVER_TOAST);
+          return "fail";
+        }
+        setState((s) => ({
+          ...s,
+          accounts: s.accounts.map((a) => (a.id === s.currentId ? { ...a, nickname } : a)),
+        }));
+        return "ok";
+      } catch {
+        showToast(SERVER_TOAST);
+        return "fail";
+      }
     },
     [showToast, state.currentId]
   );
@@ -490,7 +537,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (input.id) {
           const { data, error } = await supabase
             .from("reviews")
-            .update({ rating: input.rating, body: input.text, photos: input.photos })
+            .update({ rating: input.rating, body: input.text, photos: input.photos, tags: input.tags ?? [] })
             .eq("id", input.id)
             .eq("user_id", account.id)
             .select("*")
@@ -504,6 +551,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             rating: input.rating,
             text: input.text,
             photos: input.photos,
+            tags: input.tags ?? [],
           };
           setState((s) => ({
             ...s,
@@ -522,6 +570,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             rating: input.rating,
             body: input.text,
             photos: input.photos,
+            tags: input.tags ?? [],
             purchased: !!input.purchased,
           })
           .select("*")
@@ -539,6 +588,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           rating: input.rating,
           text: input.text,
           photos: input.photos,
+          tags: input.tags ?? [],
           createdAt: Date.parse(data.created_at),
           purchased: !!input.purchased,
           accountId: account.id,
@@ -573,6 +623,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       beginSignup,
       cancelAuth,
       saveProfile,
+      updateNickname,
       logout,
       withdraw,
       toggleWish,
@@ -599,6 +650,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       beginSignup,
       cancelAuth,
       saveProfile,
+      updateNickname,
       logout,
       withdraw,
       toggleWish,

@@ -1,12 +1,16 @@
 import { supabase } from "./supabase";
-import type { Account, CartItem, Provider, Review, SkinConcern, SkinType, WishlistItem } from "./types";
+import { CATALOG_REVIEWS } from "./catalog-reviews";
+import { PRODUCTS } from "./products";
+import { SKIN_CONCERNS, SKIN_TYPES, type Account, type CartItem, type Gender, type Provider, type Review, type SkinConcern, type SkinType, type WishlistItem } from "./types";
 
 export type ProfileRow = {
   id: string;
   provider: Provider;
   nickname: string;
+  gender: Gender | null;
+  birth_year: number | null;
   skin_type: SkinType | null;
-  concerns: SkinConcern[];
+  concerns: string[];
   onboarding_done: boolean;
   terms_agreed: boolean;
   created_at: string;
@@ -17,23 +21,37 @@ export type ReviewRow = {
   product_id: string;
   user_id: string | null;
   nickname: string;
-  skin_type: SkinType;
-  concerns: SkinConcern[];
+  skin_type: string;
+  concerns: string[];
   rating: number;
   body: string;
   photos: string[];
+  tags?: string[];
   purchased: boolean;
   withdrawn: boolean;
   created_at: string;
 };
+
+function mapConcern(raw: string): SkinConcern | null {
+  if (raw === "수분/보습") return "보습";
+  if (raw === "트러블/진정") return "민감성";
+  return SKIN_CONCERNS.includes(raw as SkinConcern) ? (raw as SkinConcern) : null;
+}
+
+function mapType(raw: string | null): SkinType | null {
+  if (!raw) return null;
+  return SKIN_TYPES.includes(raw as SkinType) ? (raw as SkinType) : null;
+}
 
 export function profileToAccount(row: ProfileRow): Account {
   return {
     id: row.id,
     provider: row.provider,
     nickname: row.nickname,
-    skinType: row.skin_type,
-    concerns: row.concerns ?? [],
+    gender: row.gender ?? null,
+    birthYear: row.birth_year ?? null,
+    skinType: mapType(row.skin_type),
+    concerns: (row.concerns ?? []).map(mapConcern).filter((c): c is SkinConcern => !!c),
     onboardingDone: row.onboarding_done,
     termsAgreed: row.terms_agreed,
     createdAt: Date.parse(row.created_at),
@@ -45,10 +63,11 @@ export function reviewFromRow(row: ReviewRow): Review {
     id: row.id,
     productId: row.product_id,
     nickname: row.nickname,
-    skinType: row.skin_type,
-    concerns: row.concerns ?? [],
+    skinType: mapType(row.skin_type) ?? "복합성",
+    concerns: (row.concerns ?? []).map(mapConcern).filter((c): c is SkinConcern => !!c),
     rating: row.rating,
     text: row.body ?? "",
+    tags: row.tags ?? [],
     photos: row.photos ?? [],
     createdAt: Date.parse(row.created_at),
     purchased: row.purchased,
@@ -57,10 +76,15 @@ export function reviewFromRow(row: ReviewRow): Review {
   };
 }
 
+const KNOWN = new Set(PRODUCTS.map((p) => p.id));
+
 export async function fetchReviews(): Promise<Review[]> {
   const { data, error } = await supabase.from("reviews").select("*").order("created_at", { ascending: false });
   if (error) throw error;
-  return (data as ReviewRow[]).map(reviewFromRow);
+  const server = (data as ReviewRow[]).map(reviewFromRow).filter((r) => KNOWN.has(r.productId));
+  const ids = new Set(server.map((r) => r.id));
+  const extra = CATALOG_REVIEWS.filter((r) => !ids.has(r.id) && KNOWN.has(r.productId));
+  return [...server, ...extra].sort((a, b) => b.createdAt - a.createdAt);
 }
 
 export async function fetchProfile(userId: string): Promise<Account | null> {
@@ -72,23 +96,27 @@ export async function fetchProfile(userId: string): Promise<Account | null> {
 export async function fetchWishlist(userId: string): Promise<WishlistItem[]> {
   const { data, error } = await supabase.from("wishlist").select("product_id, saved_at").eq("user_id", userId).order("saved_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []).map((r) => ({ productId: r.product_id as string, savedAt: Date.parse(r.saved_at as string) }));
+  return (data ?? [])
+    .map((r) => ({ productId: r.product_id as string, savedAt: Date.parse(r.saved_at as string) }))
+    .filter((w) => KNOWN.has(w.productId));
 }
 
 export async function fetchCart(userId: string): Promise<CartItem[]> {
   const { data, error } = await supabase.from("cart").select("product_id, qty, added_at").eq("user_id", userId).order("added_at", { ascending: false });
   if (error) throw error;
-  return (data ?? []).map((r) => ({
-    productId: r.product_id as string,
-    qty: r.qty as number,
-    addedAt: Date.parse(r.added_at as string),
-  }));
+  return (data ?? [])
+    .map((r) => ({
+      productId: r.product_id as string,
+      qty: r.qty as number,
+      addedAt: Date.parse(r.added_at as string),
+    }))
+    .filter((c) => KNOWN.has(c.productId));
 }
 
 export async function fetchViewed(userId: string): Promise<string[]> {
   const { data, error } = await supabase.from("viewed").select("product_id, viewed_at").eq("user_id", userId).order("viewed_at", { ascending: false }).limit(20);
   if (error) throw error;
-  return (data ?? []).map((r) => r.product_id as string);
+  return (data ?? []).map((r) => r.product_id as string).filter((id) => KNOWN.has(id));
 }
 
 export async function createProfile(userId: string, provider: Provider): Promise<Account> {
@@ -108,4 +136,20 @@ export async function createProfile(userId: string, provider: Provider): Promise
     .single();
   if (error) throw error;
   return profileToAccount(data as ProfileRow);
+}
+
+export async function fetchWishCountsByAge(age: string): Promise<Record<string, number>> {
+  const { data, error } = await supabase.rpc("wish_counts_by_age", { p_age: age });
+  if (!error && data) {
+    return Object.fromEntries((data as { product_id: string; n: number }[]).map((r) => [r.product_id, r.n]));
+  }
+  const { data: stats } = await supabase.from("product_wish_stats").select("product_id, wish_count");
+  return Object.fromEntries((stats ?? []).map((r) => [r.product_id as string, r.wish_count as number]));
+}
+
+export async function nicknameTaken(nickname: string, exceptId?: string) {
+  const { data, error } = await supabase.from("profiles").select("id").eq("nickname", nickname).maybeSingle();
+  if (error) throw error;
+  if (!data) return false;
+  return data.id !== exceptId;
 }

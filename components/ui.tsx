@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode } from "react";
-import { IconHeart, IconHome, IconUser, LogoMark } from "./icons";
+import { IconHeart, IconHome, IconRank, IconUser } from "./icons";
 import { useStore } from "@/lib/store";
+import { avatarSrc } from "@/lib/nicknames";
 
 export function PhoneShell({ children, splash }: { children?: ReactNode; splash?: boolean }) {
   return (
     <div className={`shell${splash ? " shell-splash" : ""}`}>
-      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><LogoMark className="logo" color="#C85C78" /><i /></div>}</div>
+      <div className="shell-body">{children ?? <div className="boot-loading" aria-hidden><img className="logo" src="/vion/logo/logo_orange.png" alt="" /><i /></div>}</div>
       <ToastHost />
     </div>
   );
@@ -19,6 +20,7 @@ export function TabBar() {
   const path = usePathname();
   const tabs = [
     { href: "/home", key: "home", label: "홈", Icon: IconHome },
+    { href: "/ranking", key: "rank", label: "랭킹", Icon: IconRank },
     { href: "/wishlist", key: "wish", label: "찜", Icon: IconHeart },
     { href: "/profile", key: "my", label: "마이", Icon: IconUser },
   ];
@@ -29,7 +31,7 @@ export function TabBar() {
         const Icon = t.Icon;
         return (
           <Link key={t.key} href={t.href} className={on ? "on" : ""}>
-            {t.key === "wish" ? <IconHeart filled={on} /> : <Icon active={on} />}
+            {t.key === "wish" ? <IconHeart filled={on} /> : t.key === "rank" ? <IconRank active={on} /> : <Icon active={on} />}
             <span>{t.label}</span>
           </Link>
         );
@@ -72,10 +74,9 @@ export function Thumb({ src, alt, className }: { src: string; alt: string; class
 }
 
 export function Avatar({ name, className }: { name?: string; className?: string }) {
-  const letter = (name ?? "").trim().slice(0, 1).toUpperCase() || "B";
   return (
     <div className={`avatar${className ? ` ${className}` : ""}`} aria-hidden>
-      {letter}
+      <img src={avatarSrc(name)} alt="" />
     </div>
   );
 }

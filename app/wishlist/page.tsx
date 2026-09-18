@@ -2,61 +2,81 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PhoneShell, TabBar, Thumb } from "@/components/ui";
+import { PhoneShell, TabBar } from "@/components/ui";
 import { IconHeart } from "@/components/icons";
+import { HeadTools } from "@/components/head-tools";
 import { useStore } from "@/lib/store";
 import { CATEGORIES } from "@/lib/types";
 import { productById } from "@/lib/products";
-import { formatPrice } from "@/lib/ranking";
+import { formatVolumePrice } from "@/lib/ranking";
 import { setSourceScreen } from "@/lib/analytics";
 
 const PAGE = 10;
-const FILTERS = ["전체", ...CATEGORIES] as const;
 
 export default function WishlistPage() {
   const router = useRouter();
   const { hydrated, account, wishlist, toggleWish } = useStore();
-  const [cat, setCat] = useState<(typeof FILTERS)[number]>("전체");
+  const [cat, setCat] = useState<"전체" | (typeof CATEGORIES)[number]>("전체");
+  const [dir, setDir] = useState<"desc" | "asc">("desc");
   const [shown, setShown] = useState(PAGE);
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!hydrated) return;
     if (!account) router.replace("/login");
-    else if (!account.onboardingDone) router.replace("/onboarding");
+    else if (!account.onboardingDone) router.replace("/home");
   }, [hydrated, account, router]);
 
-  const items = useMemo(() => {
-    const list = [...wishlist]
-      .sort((a, b) => b.savedAt - a.savedAt)
+  const all = useMemo(() => {
+    return [...wishlist]
+      .sort((a, b) => (dir === "desc" ? b.savedAt - a.savedAt : a.savedAt - b.savedAt))
       .map((w) => productById(w.productId))
       .filter((p): p is NonNullable<typeof p> => !!p);
-    if (cat === "전체") return list;
-    return list.filter((p) => p.category === cat);
-  }, [wishlist, cat]);
+  }, [wishlist, dir]);
+  const filters = ["전체" as const, ...CATEGORIES.filter((c) => all.some((p) => p.category === c))];
+  const items = cat === "전체" ? all : all.filter((p) => p.category === cat);
 
-  useEffect(() => setShown(PAGE), [cat, wishlist]);
+  useEffect(() => {
+    if (cat !== "전체" && !filters.includes(cat)) setCat("전체");
+  }, [cat, filters]);
+
+  useEffect(() => setShown(PAGE), [cat, wishlist, dir]);
 
   if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
 
   return (
     <PhoneShell>
       <div className="page">
-        <div className="page-scroll bleed" ref={scroller} onScroll={() => {
-          const el = scroller.current;
-          if (!el) return;
-          if (el.scrollTop + el.clientHeight >= el.scrollHeight - 80) setShown((n) => n + PAGE);
-        }}>
+        <div
+          className="page-scroll bleed"
+          ref={scroller}
+          onScroll={() => {
+            const el = scroller.current;
+            if (!el) return;
+            if (el.scrollTop + el.clientHeight >= el.scrollHeight - 80) setShown((n) => n + PAGE);
+          }}
+        >
           <div className="home-head">
             <h1>찜한 제품</h1>
+            <HeadTools />
           </div>
-          <div className="cats">
-            {FILTERS.map((c) => (
-              <button key={c} className={`chip soft${cat === c ? " on" : ""}`} type="button" onClick={() => setCat(c)}>
-                {c === "클렌징 폼" ? "클렌징폼" : c}
+          {all.length > 0 ? (
+            <div className="list-meta">
+              <span>총 {items.length}개</span>
+              <button type="button" onClick={() => setDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                {dir === "desc" ? "최신순 ∨" : "오래된순 ∨"}
               </button>
-            ))}
-          </div>
+            </div>
+          ) : null}
+          {all.length > 0 ? (
+            <div className="cats">
+              {filters.map((c) => (
+                <button key={c} className={`chip soft${cat === c ? " on" : ""}`} type="button" onClick={() => setCat(c)}>
+                  {c}
+                </button>
+              ))}
+            </div>
+          ) : null}
           {items.length === 0 ? (
             <div className="empty">
               <div className="icon-wrap">
@@ -67,7 +87,7 @@ export default function WishlistPage() {
                   <h2>아직 찜한 제품이 없어요</h2>
                   <p>마음에 드는 제품을 찜하고 모아보세요</p>
                   <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
-                    홈으로 가기
+                    홈으로가기
                   </button>
                 </>
               ) : (
@@ -82,23 +102,22 @@ export default function WishlistPage() {
               {items.slice(0, shown).map((p) => (
                 <div key={p.id} className="wish-card">
                   <div className="thumb" style={{ backgroundImage: `url("${p.image}")`, width: "100%", height: 120, borderRadius: 0, position: "relative" }}>
-                    <button
-                      className="heart"
-                      type="button"
-                      aria-label="찜 해제"
-                      onClick={() => toggleWish(p.id)}
-                    >
+                    <button className="heart on" type="button" aria-label="찜 해제" onClick={() => toggleWish(p.id)}>
                       <IconHeart filled />
                     </button>
                   </div>
-                  <button type="button" onClick={() => {
-                    setSourceScreen("wishlist");
-                    router.push(`/products/${p.id}`);
-                  }} style={{ width: "100%", textAlign: "left" }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSourceScreen("wishlist");
+                      router.push(`/products/${p.id}`);
+                    }}
+                    style={{ width: "100%", textAlign: "left" }}
+                  >
                     <div className="body">
                       <h3>{p.name}</h3>
-                      <p>{p.brand} · ★ {p.rating.toFixed(1)}</p>
-                      <strong>{formatPrice(p.price)}</strong>
+                      <p>{p.brand}</p>
+                      <strong>{formatVolumePrice(p.volume, p.price)}</strong>
                     </div>
                   </button>
                 </div>

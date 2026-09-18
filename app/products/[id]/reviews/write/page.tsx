@@ -7,6 +7,8 @@ import { IconStar } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
+import { FEEL_TAGS } from "@/lib/constants";
+import { formatVolumePrice } from "@/lib/ranking";
 
 export default function WriteReviewPage() {
   return (
@@ -27,13 +29,15 @@ function WriteInner() {
   const [rating, setRating] = useState(0);
   const [text, setText] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>([]);
+  const [leave, setLeave] = useState(false);
   const [busy, setBusy] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!hydrated) return;
     if (!account) router.replace("/login");
-    else if (!account.onboardingDone) router.replace("/onboarding");
+    else if (!account.onboardingDone) router.replace("/home");
   }, [hydrated, account, router]);
 
   useEffect(() => {
@@ -41,12 +45,14 @@ function WriteInner() {
     setRating(existing.rating);
     setText(existing.text);
     setPhotos(existing.photos);
+    setTags(existing.tags ?? []);
   }, [existing?.id]);
 
-  const enabled = rating >= 1 && rating <= 5;
+  const rated = rating >= 1 && rating <= 5;
+  const enabled = rated && tags.length >= 1;
 
   const onFiles = (files: FileList | null) => {
-    if (!files || !enabled) return;
+    if (!files || !rated) return;
     const left = 3 - photos.length;
     Array.from(files)
       .slice(0, left)
@@ -59,7 +65,8 @@ function WriteInner() {
 
   const submit = async () => {
     if (!enabled || busy || !product) {
-      if (!enabled) showToast("별점을 입력해 주세요");
+      if (rating < 1) showToast("별점을 입력해 주세요");
+      else if (!tags.length) showToast("사용감 태그를 선택해 주세요");
       return;
     }
     setBusy(true);
@@ -69,12 +76,13 @@ function WriteInner() {
       rating,
       text,
       photos,
+      tags,
     });
     if (!saved) {
       setBusy(false);
       return;
     }
-    showToast("리뷰가 등록 되었습니다");
+    showToast("리뷰가 등록되었습니다");
     track("write_review_complete", {
       item_id: product.id,
       rating,
@@ -83,8 +91,8 @@ function WriteInner() {
         ...(account?.concerns ?? []),
       ],
     });
-    if (existing) router.replace("/profile");
-    else router.replace(`/products/${product.id}/reviews`);
+    if (existing) router.replace("/reviews");
+    else router.replace(`/products/${product.id}`);
   };
 
   if (!product) return <PhoneShell />;
@@ -93,7 +101,7 @@ function WriteInner() {
     <PhoneShell>
       <div className="page">
         <div className="topbar">
-          <button className="side" type="button" onClick={() => router.back()}>
+          <button className="side" type="button" onClick={() => setLeave(true)}>
             취소
           </button>
           <h1>{existing ? "리뷰 수정" : "리뷰 작성"}</h1>
@@ -105,6 +113,7 @@ function WriteInner() {
             <div>
               <h3>{product.name}</h3>
               <p>{product.brand}</p>
+              <p>{formatVolumePrice(product.volume, product.price)}</p>
             </div>
           </div>
           <div className="field-label">별점 (필수)</div>
@@ -119,7 +128,7 @@ function WriteInner() {
           <textarea
             value={text}
             maxLength={1000}
-            disabled={!enabled}
+            disabled={!rated}
             placeholder="사용감, 피부 변화 등을 입력"
             onChange={(e) => setText(e.target.value)}
           />
@@ -134,7 +143,7 @@ function WriteInner() {
               </div>
             ))}
             {photos.length < 3 ? (
-              <button className="photo-add" type="button" disabled={!enabled} onClick={() => fileRef.current?.click()}>
+              <button className="photo-add" type="button" disabled={!rated} onClick={() => fileRef.current?.click()}>
                 {photos.length}/3
               </button>
             ) : null}
@@ -147,10 +156,53 @@ function WriteInner() {
               onChange={(e) => onFiles(e.target.files)}
             />
           </div>
+          <div className="field-label">사용감 (필수 · 최대 5개)</div>
+          <div className="chips" style={{ flexWrap: "wrap", marginBottom: 16 }}>
+            {FEEL_TAGS.map((t) => {
+              const on = tags.includes(t);
+              return (
+                <button
+                  key={t}
+                  className={`chip${on ? " on" : ""}`}
+                  type="button"
+                  onClick={() =>
+                    setTags((prev) => {
+                      if (on) return prev.filter((x) => x !== t);
+                      if (prev.length >= 5) return prev;
+                      return [...prev, t];
+                    })
+                  }
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
           <button className="btn-primary soft" type="button" disabled={!enabled || busy} onClick={submit}>
             등록하기
           </button>
         </div>
+        {leave ? (
+          <div className="dim center">
+            <div className="modal">
+              <h2>
+                잠깐만요!
+                <br />
+                리뷰 작성 화면을 나갈까요?
+                <br />
+                입력하신 내용은 저장되지 않습니다
+              </h2>
+              <div className="modal-btns">
+                <button className="sub" type="button" onClick={() => router.back()}>
+                  나가기
+                </button>
+                <button className="main" type="button" onClick={() => setLeave(false)}>
+                  계속하기
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </PhoneShell>
   );

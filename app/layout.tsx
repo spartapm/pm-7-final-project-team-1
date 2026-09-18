@@ -4,7 +4,7 @@ import { Providers } from "./providers";
 import { GaScript } from "@/components/ga";
 
 export const metadata: Metadata = {
-  title: "ONE&BEAUTY",
+  title: "VION",
   description: "피부 타입과 고민에 맞춘 개인화 스킨케어 랭킹",
 };
 
@@ -13,7 +13,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: "cover",
-  themeColor: "#fdf2f4",
+  themeColor: "#f8845f",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

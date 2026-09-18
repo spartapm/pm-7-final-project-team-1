@@ -1,4 +1,4 @@
--- ONE&BEAUTY schema (run as postgres)
+-- VION schema (run as postgres)
 -- Also turn OFF Authentication → Providers → Email → Confirm email.
 
 create or replace function public.auto_confirm_auth_user()
@@ -39,10 +39,17 @@ security definer
 set search_path = public
 as $$
 declare
-  next_n int;
+  adj text[] := array['용감한','활발한','조용한','엉뚱한','소심한','차분한','상냥한','씩씩한','포근한','밝은','느긋한','재빠른','다정한','즐거운','신비한','따뜻한','총명한','부드러운','당찬','귀여운'];
+  animal text[] := array['거북이','사자','고양이','강아지','토끼','여우','판다','호랑이','코알라','다람쥐','부엉이','고슴도치','수달','펭귄','알파카','오리','병아리','고래','문어','나비','벌새','곰돌이','라쿤','하마','기린','얼룩말','두더지','앵무새','해달','물개'];
+  candidate text;
 begin
-  update public.nickname_seq set n = n + 1 where id = 1 returning n into next_n;
-  return 'beautyuser' || next_n;
+  loop
+    candidate := adj[1 + floor(random() * array_length(adj, 1))::int]
+      || animal[1 + floor(random() * array_length(animal, 1))::int]
+      || lpad((1000 + floor(random() * 9000))::int::text, 4, '0');
+    exit when not exists (select 1 from public.profiles where nickname = candidate);
+  end loop;
+  return candidate;
 end;
 $$;
 
@@ -50,6 +57,8 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users (id) on delete cascade,
   provider text not null check (provider in ('kakao', 'google')),
   nickname text not null unique,
+  gender text,
+  birth_year int,
   skin_type text,
   concerns text[] not null default '{}',
   onboarding_done boolean not null default false,
@@ -67,6 +76,7 @@ create table if not exists public.reviews (
   rating int not null check (rating between 1 and 5),
   body text not null default '',
   photos text[] not null default '{}',
+  tags text[] not null default '{}',
   purchased boolean not null default false,
   withdrawn boolean not null default false,
   created_at timestamptz not null default now()
@@ -144,7 +154,7 @@ begin
     raise exception 'not authenticated';
   end if;
   update public.reviews
-    set nickname = '탈퇴한 회원의 리뷰 입니다',
+    set nickname = '탈퇴한 회원의 리뷰입니다',
         withdrawn = true,
         user_id = null
     where user_id = uid;
@@ -193,17 +203,30 @@ create policy wish_stats_select on public.product_wish_stats for select using (t
 grant execute on function public.next_nickname() to authenticated;
 grant execute on function public.withdraw_me() to authenticated;
 
-insert into public.reviews (id, product_id, nickname, skin_type, concerns, rating, body, photos, purchased, created_at)
-values
-  ('11111111-1111-1111-1111-111111111111', 'c1', 'yamyami:)', '복합성', array['트러블/진정'], 4,
-   '가볍게 쓰기 좋은 제품이에요. 크림이다보니 보습에 도움되고 재구매 의향 있어요. 저녁에 얇게 펴발라두면 다음날 당김이 덜해서 계속 쓰고 있습니다. 향도 부담 없고 화장 전에 써도 밀리지 않아서 아침 루틴에 넣었어요.',
-   array['/aestura-thumb.png'], true, '2026-09-01T12:00:00+09:00'),
-  ('22222222-2222-2222-2222-222222222222', 'c1', '젤라도리', '복합성', array['수분/보습'], 5,
-   '피부 자극 없이 매일 쓰기 좋았어요.', '{}', false, '2026-08-31T12:00:00+09:00'),
-  ('33333333-3333-3333-3333-333333333333', 'c1', 'beautyuser1004', '지성', array['트러블/진정'], 3,
-   '제 피부엔 조금 무거웠어요. 겨울엔 좋을 것 같아요.', '{}', false, '2026-08-20T12:00:00+09:00'),
-  ('44444444-4444-4444-4444-444444444444', 'c6', 'yamyami:)', '복합성', array['트러블/진정'], 4,
-   '잔여감 없이 흡수가 빨라서 좋음', '{}', false, '2026-08-28T12:00:00+09:00'),
-  ('55555555-5555-5555-5555-555555555555', 'c2', '수분요정', '건성', array['수분/보습'], 5,
-   '건조한 날에 듬뿍 바르면 하루 종일 촉촉해요.', '{}', false, '2026-08-15T12:00:00+09:00')
-on conflict (id) do nothing;
+create or replace function public.wish_counts_by_age(p_age text)
+returns table(product_id text, n int)
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select w.product_id, count(*)::int as n
+  from public.wishlist w
+  join public.profiles p on p.id = w.user_id
+  where (
+    case
+      when p.birth_year is null then '20대'
+      when extract(year from now())::int - p.birth_year >= 40 then '40대 이상'
+      when extract(year from now())::int - p.birth_year >= 30 then '30대'
+      when extract(year from now())::int - p.birth_year >= 20 then '20대'
+      else '10대'
+    end
+  ) = p_age
+  group by w.product_id;
+$$;
+
+grant execute on function public.wish_counts_by_age(text) to authenticated;
+
+alter table public.profiles add column if not exists gender text;
+alter table public.profiles add column if not exists birth_year int;
+alter table public.reviews add column if not exists tags text[] default '{}';

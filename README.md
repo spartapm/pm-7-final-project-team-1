@@ -1,29 +1,28 @@
-# ONE&BEAUTY — 1조
+# VION — 1조
 
-피부 타입·고민 기반 개인화 스킨케어 랭킹. 계정·리뷰·찜·장바구니는 Supabase에 저장됩니다.
+피부 타입·고민·나이 기반 개인화 스킨케어 랭킹. 계정·리뷰·찜·장바구니는 Supabase에 저장됩니다.
 
 ## 로컬 실행
 
-`npm install && npm run dev`
+Cursor **Terminal → Run Task**에서 `dev: 1조 …`를 고릅니다. (기본 `npm run dev`는 3000 포트가 겹칩니다.)
 
-브라우저에서 http://localhost:3000  
+브라우저에서 http://localhost:3001  
 화면은 390px 폭 + 레터박스입니다. Supabase·GA4·카카오/구글 값은 코드에 들어 있어 `.env.local`이 필요 없습니다.
 
 ## 최초 1회: Supabase SQL
 
-대시보드 → **SQL Editor**에 `supabase/schema.sql` 전체를 붙여 실행합니다.
+대시보드 → **SQL Editor**에 `supabase/schema.sql` 전체를 붙여 실행합니다. 2차 컬럼(gender, birth_year, tags)이 포함됩니다.
 
-그리고 **Authentication → Providers → Email**에서 **Confirm email**을 끕니다. 켜져 있으면 가입 세션이 안 나옵니다.
+그리고 **Authentication → Providers → Email**에서 **Confirm email**을 끕니다.
 
 ## 플로우
 
-앱 진입(1.5초 스플래시) → 카카오/구글 시작 → 약관 동의 → 피부 프로필 → 맞춤 랭킹 → 상세/리뷰/찜/장바구니/마이페이지
+앱 진입(1.5초 스플래시) → 카카오/구글 시작 → 약관 동의 → 닉네임 → 피부 진단 → 홈/맞춤 랭킹 → 상세/리뷰/찜/장바구니/마이페이지
 
-- 닉네임은 서버에서 `beautyuser1001`부터 순차 발급됩니다.
-- 리뷰·찜·장바구니·최근 본 제품·피부 프로필은 계정에 묶여 서버에 저장됩니다.
-- 탈퇴 시 계정은 삭제되고, 리뷰는 “탈퇴한 회원의 리뷰 입니다”로 남습니다.
+- 닉네임은 `형용사+동물+숫자`로 자동 발급되고, 직접 바꿀 수 있습니다.
+- 랭킹은 종합 / 고민 / 타입 / 나이대 규칙서 기준으로 계산합니다.
+- 리뷰 사진은 이후 URL이 오면 붙입니다.
 - 장바구니 주문/결제·바로 구매는 명세상 비활성입니다.
-- 카카오/구글 로그인은 실제 OAuth 창을 엽니다.
 
 ## Vercel
 

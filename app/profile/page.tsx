@@ -1,36 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Avatar, PhoneShell, Stars, TabBar, Thumb } from "@/components/ui";
-import { IconHeart } from "@/components/icons";
+import { Avatar, PhoneShell, TabBar } from "@/components/ui";
 import { useStore } from "@/lib/store";
-import { productById } from "@/lib/products";
-import { formatPrice } from "@/lib/ranking";
-import { setSourceScreen } from "@/lib/analytics";
+import { concernShort } from "@/lib/badges";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { hydrated, account, wishlist, cart, reviews, viewed, logout, withdraw } = useStore();
+  const { hydrated, account, logout, withdraw, viewed, cart, wishlist, reviews } = useStore();
   const [out, setOut] = useState(false);
+  const [bye, setBye] = useState(false);
 
   useEffect(() => {
     if (!hydrated) return;
     if (!account) router.replace("/login");
-    else if (!account.onboardingDone) router.replace("/onboarding");
+    else if (!account.onboardingDone) router.replace("/home");
   }, [hydrated, account, router]);
 
-  const wished = useMemo(
-    () => wishlist.map((w) => productById(w.productId)).filter((p): p is NonNullable<typeof p> => !!p),
-    [wishlist]
-  );
-  const mine = useMemo(
-    () => reviews.filter((r) => r.accountId === account?.id),
-    [reviews, account]
-  );
-  const recent = viewed.map(productById).filter((p): p is NonNullable<typeof p> => !!p).slice(0, 5);
-
   if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
+
+  const myReviewCount = reviews.filter((r) => r.accountId === account.id).length;
 
   return (
     <PhoneShell>
@@ -41,97 +31,58 @@ export default function ProfilePage() {
           </div>
           <div className="profile-card">
             <Avatar name={account.nickname} />
-            <div>
-              <strong>{account.nickname}</strong>
+            <div style={{ flex: 1 }}>
+              <div className="name-row">
+                <strong>{account.nickname}</strong>
+                <button className="edit-link" type="button" onClick={() => router.push("/profile/edit")}>
+                  프로필 수정 ›
+                </button>
+              </div>
               <div className="tags" style={{ padding: "6px 0 0" }}>
                 {account.skinType ? <span className="tag">{account.skinType}</span> : null}
                 {account.concerns.map((c) => (
                   <span className="tag" key={c}>
-                    {c}
+                    {concernShort(c)}
                   </span>
                 ))}
               </div>
-              <button className="skin-link" type="button" onClick={() => router.push("/onboarding?edit=1")}>
-                피부 프로필 ›
-              </button>
             </div>
           </div>
-
+          <div className="section-label">기록</div>
+          <button className="menu-row" type="button" onClick={() => router.push("/recent")}>
+            <span>최근 본 제품</span>
+            <span>
+              {viewed.length} ›
+            </span>
+          </button>
           <button className="menu-row" type="button" onClick={() => router.push("/cart")}>
             <span>장바구니</span>
-            <span>{cart.reduce((n, c) => n + c.qty, 0)}개 ›</span>
+            <span>
+              {cart.length} ›
+            </span>
           </button>
-
-          <div className="section-label">최근 본 제품 · {recent.length}</div>
-          {recent.length === 0 ? (
-            <p className="section-empty">최근 본 제품이 없어요</p>
-          ) : (
-            <div className="viewed">
-              {recent.map((p) => (
-                <button key={p.id} type="button" onClick={() => {
-                  setSourceScreen("profile");
-                  router.push(`/products/${p.id}`);
-                }}>
-                  <Thumb src={p.image} alt={p.name} />
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="section-label">찜한 제품 · {wished.length}</div>
-          {wished.length === 0 ? (
-            <p className="section-empty">아직 찜한 제품이 없어요</p>
-          ) : (
-            <div className="wish-h">
-              {wished.slice(0, 5).map((p) => (
-                <button key={p.id} className="wish-card" type="button" onClick={() => {
-                  setSourceScreen("profile");
-                  router.push(`/products/${p.id}`);
-                }}>
-                  <div className="thumb" style={{ width: "100%", height: 100, borderRadius: 0, backgroundImage: `url("${p.image}")` }}>
-                    <span className="heart"><IconHeart filled size={18} /></span>
-                  </div>
-                  <div className="body">
-                    <h3>{p.name}</h3>
-                    <p>{p.brand} · ★ {p.rating.toFixed(1)}</p>
-                    <strong>{formatPrice(p.price)}</strong>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-
-          <div className="section-label" style={{ marginTop: 18 }}>
-            내가 쓴 리뷰 · {mine.length}
-          </div>
-          {mine.length === 0 ? <p className="section-empty">작성한 리뷰가 없어요</p> : null}
-          {mine.map((r) => {
-            const p = productById(r.productId);
-            return (
-              <article key={r.id} className="my-review">
-                <div className="row">
-                  <h3>{p?.name}</h3>
-                  <Stars value={r.rating} />
-                </div>
-                <p className="review-text">{r.text || "별점만 등록된 리뷰"}</p>
-                <div className="row">
-                  <span />
-                  <button className="edit-link" type="button" onClick={() => router.push(`/products/${r.productId}/reviews/write?edit=${r.id}`)}>
-                    수정
-                  </button>
-                </div>
-              </article>
-            );
-          })}
-
-          <button
-            className="btn-ghost logout"
-            type="button"
-            onClick={async () => {
-              await logout();
-              router.replace("/login");
-            }}
-          >
+          <button className="menu-row" type="button" onClick={() => router.push("/wishlist")}>
+            <span>찜한 제품</span>
+            <span>
+              {wishlist.length} ›
+            </span>
+          </button>
+          <button className="menu-row" type="button" onClick={() => router.push("/reviews")}>
+            <span>내가 쓴 리뷰</span>
+            <span>
+              {myReviewCount} ›
+            </span>
+          </button>
+          <div className="section-label">활동</div>
+          <button className="menu-row" type="button" onClick={() => router.push("/onboarding?edit=1")}>
+            <span>피부 진단 수정</span>
+            <span>›</span>
+          </button>
+          <button className="menu-row" type="button" onClick={() => router.push("/search")}>
+            <span>리뷰 작성</span>
+            <span>›</span>
+          </button>
+          <button className="btn-ghost logout" type="button" onClick={() => setBye(true)}>
             로그아웃
           </button>
           <button className="withdraw-link" type="button" onClick={() => setOut(true)}>
@@ -139,6 +90,29 @@ export default function ProfilePage() {
           </button>
         </div>
         <TabBar />
+
+        {bye ? (
+          <div className="dim center" onClick={() => setBye(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>로그아웃 할까요?</h2>
+              <div className="modal-btns">
+                <button className="sub" type="button" onClick={() => setBye(false)}>
+                  괜찮아요
+                </button>
+                <button
+                  className="main"
+                  type="button"
+                  onClick={async () => {
+                    await logout();
+                    router.replace("/login");
+                  }}
+                >
+                  로그아웃
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {out ? (
           <div className="dim center" onClick={() => setOut(false)}>
