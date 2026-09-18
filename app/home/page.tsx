@@ -78,13 +78,11 @@ export default function HomePage() {
           </div>
 
           <div className="sec-head">
-            <div>
-              <h2>나를 위한 맞춤 제품 랭킹</h2>
-              <p>내 피부 타입에 잘 맞는 제품부터 보여드려요.</p>
-            </div>
+            <h2>나를 위한 맞춤 제품 랭킹</h2>
             <button className="all" type="button" onClick={() => router.push("/ranking")}>
               전체 랭킹보기 &gt;
             </button>
+            <p>내 피부 타입에 잘 맞는 제품부터 보여드려요.</p>
           </div>
           <div className="rank-list">
             {ranked.map((row) => (

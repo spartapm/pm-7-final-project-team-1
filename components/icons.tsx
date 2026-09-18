@@ -307,9 +307,9 @@ export function IconRank({ active }: { active?: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden>
       <path
-        d="M3 6h6M3 12h12M3 18h18"
+        d="M6 20v-5M12 20V9M18 20V4"
         stroke="currentColor"
-        strokeWidth={active ? 2.1 : 1.7}
+        strokeWidth={active ? 2.4 : 2}
         strokeLinecap="round"
       />
     </svg>
