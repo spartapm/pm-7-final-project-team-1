@@ -100,11 +100,9 @@ export default function SearchPage() {
               <IconSearchSm />
             </span>
             <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="정확한 제품명을 입력해 주세요" />
-            {q ? (
-              <button type="button" className="search-clear" onClick={() => setQ("")} aria-label="지우기">
-                <IconClose />
-              </button>
-            ) : null}
+            <button type="button" className="search-clear" onClick={() => setQ("")} aria-label="지우기">
+              <IconClose />
+            </button>
           </div>
         </div>
         <div className="page-scroll bleed">

@@ -14,27 +14,28 @@ export default function TermPage() {
   return (
     <PhoneShell>
       <div className="page">
-        <div className="topbar">
-          <button className="side" type="button" onClick={() => router.back()} aria-label="뒤로">
+        <div className="term-page">
+          <button className="term-back" type="button" onClick={() => router.back()} aria-label="뒤로">
             <IconBack />
           </button>
-          <h1>{page.title}</h1>
-          <span />
-        </div>
-        <div className="page-scroll">
-          {page.blocks.map((b, i) => (
-            <div key={i} style={{ marginBottom: 18 }}>
-              {b.heading ? <h2 style={{ fontSize: 15, margin: "0 0 8px" }}>{b.heading}</h2> : null}
-              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.65, color: "var(--muted)", whiteSpace: "pre-wrap" }}>{b.body}</p>
-            </div>
-          ))}
-          <button
-            className="btn-primary"
-            type="button"
-            onClick={() => router.replace(`/login?terms=1&checked=${id}`)}
-          >
-            확인
-          </button>
+          <h1 className="term-title">{page.title}</h1>
+          <div className="term-body">
+            {page.blocks.map((b, i) => (
+              <div key={i} className="term-block">
+                {b.heading ? <h2>{b.heading}</h2> : null}
+                <p>{b.body}</p>
+              </div>
+            ))}
+          </div>
+          <div className="term-cta">
+            <button
+              className="btn-primary"
+              type="button"
+              onClick={() => router.replace(`/login?terms=1&checked=${id}`)}
+            >
+              확인
+            </button>
+          </div>
         </div>
       </div>
     </PhoneShell>

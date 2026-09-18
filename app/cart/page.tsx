@@ -50,41 +50,40 @@ export default function CartPage() {
           <h1>장바구니</h1>
         </div>
 
-        {rows.length === 0 ? (
-          <div className="empty">
-            <div className="icon-wrap">
-              <IconCart />
-            </div>
-            <h2>아직 담은 제품이 없어요</h2>
-            <p>제품을 둘러보고 장바구니에 담아보세요</p>
-            <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
-              홈으로 가기
+        <div className="page-scroll cart-scroll">
+          <div className="list-meta" style={{ paddingTop: 4 }}>
+            <button type="button" className="agree-row" style={{ padding: 0, border: "none", margin: 0 }} onClick={() => setPicked(allOn ? [] : ids)}>
+              <span className={`chk${allOn ? " on" : ""}`}>✓</span>
+              제품 전체 선택
+            </button>
+            <button
+              className="select-del"
+              type="button"
+              onClick={() => {
+                if (!picked.length) {
+                  showToast("삭제할 제품을 선택해 주세요");
+                  return;
+                }
+                setConfirm(picked);
+              }}
+            >
+              선택 삭제
             </button>
           </div>
-        ) : (
-          <>
-            <div className="page-scroll" style={{ padding: "0 0 8px" }}>
-              <div className="list-meta" style={{ paddingTop: 4 }}>
-                <button type="button" className="agree-row" style={{ padding: 0, border: "none", margin: 0 }} onClick={() => setPicked(allOn ? [] : ids)}>
-                  <span className={`chk${allOn ? " on" : ""}`}>✓</span>
-                  제품 전체 선택
-                </button>
-                <button
-                  className="select-del"
-                  type="button"
-                  onClick={() => {
-                    if (!picked.length) {
-                      showToast("삭제할 제품을 선택해 주세요");
-                      return;
-                    }
-                    setConfirm(picked);
-                  }}
-                >
-                  선택 삭제
-                </button>
+          <p className="cart-count">총 {rows.length}개</p>
+          {rows.length === 0 ? (
+            <div className="empty">
+              <div className="icon-wrap">
+                <IconCart />
               </div>
-              <p className="cart-count">총 {rows.length}개</p>
-              <div className="cart-list">
+              <h2>아직 담은 제품이 없어요</h2>
+              <p>제품을 둘러보고 장바구니에 담아보세요</p>
+              <button className="btn-primary" type="button" onClick={() => router.push("/home")}>
+                홈으로 가기
+              </button>
+            </div>
+          ) : (
+            <div className="cart-list">
                 {rows.map((row) => (
                   <div key={row.productId} className="cart-block">
                     <div className="cart-main">
@@ -151,22 +150,23 @@ export default function CartPage() {
                     </div>
                   </div>
                 ))}
-              </div>
             </div>
-            <div className="cart-bar" style={{ gridTemplateColumns: "1fr" }}>
-              <button
-                className="btn-primary"
-                type="button"
-                onClick={() => {
-                  track("begin_checkout", { value: selectedPrice });
-                  showToast("아직 구현 되지 않은 영역입니다");
-                }}
-              >
-                총 {formatPrice(selectedPrice)} 주문하기
-              </button>
-            </div>
-          </>
-        )}
+          )}
+        </div>
+        {rows.length > 0 ? (
+          <div className="cart-bar" style={{ gridTemplateColumns: "1fr" }}>
+            <button
+              className="btn-primary"
+              type="button"
+              onClick={() => {
+                track("begin_checkout", { value: selectedPrice });
+                showToast("아직 구현 되지 않은 영역입니다");
+              }}
+            >
+              총 {formatPrice(selectedPrice)} 주문하기
+            </button>
+          </div>
+        ) : null}
 
         {confirm ? (
           <div className="dim center" onClick={() => setConfirm(null)}>
