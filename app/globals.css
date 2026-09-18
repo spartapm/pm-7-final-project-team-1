@@ -504,8 +504,83 @@ img { display: block; max-width: 100%; }
   padding: 0 16px 14px;
   overflow-x: auto;
 }
-.recent-cats .chip.soft {
+.recent-cats .chip.soft,
+.review-cats .chip.soft {
   border-color: rgba(116, 106, 102, 0.5);
+}
+.my-rev-list {
+  padding: 0 16px 88px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.my-rev-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #ece8e6;
+  border-radius: 16px;
+  padding: 12px 14px;
+}
+.my-rev-open {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  text-align: left;
+}
+.my-rev-card .thumb {
+  width: 58px;
+  height: 51px;
+  border-radius: 8px;
+}
+.my-rev-main { min-width: 0; }
+.my-rev-brand {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.2;
+}
+.my-rev-card h3 {
+  margin: 2px 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #292524;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.my-rev-vol {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.my-rev-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.my-rev-card .stars {
+  color: #f5c518;
+  letter-spacing: 0;
+}
+.my-rev-date {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+}
+.my-rev-card .edit-link {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
 }
 .cat-bar {
   display: grid;

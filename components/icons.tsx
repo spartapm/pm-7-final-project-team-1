@@ -306,9 +306,9 @@ export function IconClock({ size = 20 }: { size?: number }) {
   );
 }
 
-export function IconComment() {
+export function IconComment({ size = 20 }: { size?: number }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <path d="M5 6.5h14v10H9.2L5 19.4V6.5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
       <path d="M9 11h6M9 14h3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
     </svg>

@@ -137,7 +137,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             accounts: [preview.account],
             currentId: preview.account.id,
             loginAt: Date.now(),
-            reviews,
+            reviews: preview.reviews.length
+              ? [...preview.reviews, ...reviews.filter((r) => r.accountId !== preview.account.id)]
+              : reviews,
             wishlist: preview.wishlist,
             cart: preview.cart,
             viewed: preview.viewed,
