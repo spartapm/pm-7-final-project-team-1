@@ -152,13 +152,15 @@ function OnboardingInner() {
             </div>
           ) : null}
           <div className="field-label">피부 고민 <span className="field-hint">(중복 선택 - 최대 3개)</span></div>
-          <div className="chips" style={{ flexWrap: "wrap" }}>
+          <div className="chips concerns">
             {SKIN_CONCERNS.map((c) => (
               <button key={c} className={`chip${concerns.includes(c) ? " on" : ""}`} type="button" onClick={() => toggleConcern(c)}>
                 {concernShort(c)}
               </button>
             ))}
           </div>
+        </div>
+        <div className="nick-cta">
           <button className="btn-primary" type="button" disabled={!canSubmit} onClick={submit}>
             {edit ? "저장하기" : "시작하기"}
           </button>

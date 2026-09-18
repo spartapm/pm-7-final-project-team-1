@@ -63,7 +63,7 @@ export default function WishlistPage() {
           <div className="list-meta">
             <span>총 {items.length}개</span>
             <button type="button" onClick={() => setDir((d) => (d === "desc" ? "asc" : "desc"))}>
-              {dir === "desc" ? "최신순 ∨" : "오래된순 ∨"}
+              {dir === "desc" ? "최신순 ▾" : "오래된순 ▾"}
             </button>
           </div>
           {all.length > 0 ? (

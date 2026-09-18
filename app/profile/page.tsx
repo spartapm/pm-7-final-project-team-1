@@ -36,7 +36,7 @@ export default function ProfilePage() {
               <div className="name-row">
                 <strong>{account.nickname}</strong>
                 <button className="edit-link" type="button" onClick={() => router.push("/profile/edit")}>
-                  프로필 수정 ›
+                  프로필 수정 &gt;
                 </button>
               </div>
               <div className="tags" style={{ padding: "8px 0 0" }}>

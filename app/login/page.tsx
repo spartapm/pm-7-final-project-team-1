@@ -95,13 +95,7 @@ function LoginInner() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        {params.get("terms") === "1" ? (
-          <div className="terms-head">
-            <h1>{providerLabel} 인증이 완료됐어요</h1>
-            <p>서비스 이용을 위해 약관에 동의해주세요.</p>
-          </div>
-        ) : (
-          <div className="login">
+        <div className="login" aria-hidden={sheet} style={sheet ? { visibility: "hidden" } : undefined}>
             <div className="login-hero">
               <VionLogo className="logo" />
               <p>
@@ -121,10 +115,13 @@ function LoginInner() {
               </button>
             </div>
           </div>
-        )}
 
         {sheet ? (
           <div className="dim" onClick={closeSheet}>
+            <div className="terms-head" onClick={(e) => e.stopPropagation()}>
+              <h1>{providerLabel} 인증이 완료됐어요</h1>
+              <p>서비스 이용을 위해 약관에 동의해주세요.</p>
+            </div>
             <div className="sheet" style={{ marginTop: "auto" }} onClick={(e) => e.stopPropagation()}>
               <div className="sheet-handle" />
               <h2>

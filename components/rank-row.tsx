@@ -40,19 +40,21 @@ export function RankRow({
       <button type="button" onClick={goProduct} aria-label={product.name}>
         <Thumb src={product.image} alt={product.name} />
       </button>
-      <button className="rank-main" type="button" onClick={goProduct}>
-        <h3>{product.name}</h3>
-        <p className="brand-name">{product.brand}</p>
-        <p className="vol-price">
-          {formatVolume(product.volume)}
-          <span>  ·  </span>
-          <strong>{formatPrice(product.price)}</strong>
-        </p>
+      <div className="rank-main">
+        <button type="button" onClick={goProduct}>
+          <h3>{product.name}</h3>
+          <p className="brand-name">{product.brand}</p>
+          <p className="vol-price">
+            {formatVolume(product.volume)}
+            <span>  ·  </span>
+            <strong>{formatPrice(product.price)}</strong>
+          </p>
+        </button>
         <div className="rank-foot">
-          <span className="star-line">
+          <button className="star-line" type="button" onClick={goProduct}>
             <IconStar filled size={11} />
             {rating.toFixed(1)}
-          </span>
+          </button>
           {product.feelTags.length > 0 ? (
             <div className="feel-pills">
               {tags.map((t) => (
@@ -65,10 +67,7 @@ export function RankRow({
                   className={`caret-btn${open ? " open" : ""}`}
                   type="button"
                   aria-label={open ? "태그 접기" : "태그 더보기"}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setOpen((v) => !v);
-                  }}
+                  onClick={() => setOpen((v) => !v)}
                 >
                   <IconUp />
                 </button>
@@ -76,7 +75,7 @@ export function RankRow({
             </div>
           ) : null}
         </div>
-      </button>
+      </div>
       <button
         className={`heart${wished ? " on" : ""}`}
         type="button"

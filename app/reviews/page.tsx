@@ -87,6 +87,8 @@ export default function MyReviewsPage() {
                 <ReviewPhotos photos={r.photos} />
               </>
             ) : null}
+          </div>
+          <div className="nick-cta">
             <button className="btn-primary" type="button" onClick={() => router.push(`/products/${r.productId}/reviews/write?edit=${r.id}`)}>
               수정하기
             </button>
