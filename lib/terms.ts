@@ -1,7 +1,7 @@
 export const TERMS = [
   { id: "service", label: "(필수) 서비스 이용약관 동의" },
   { id: "privacy", label: "(필수) 개인정보 수집 및 이용 동의" },
-  { id: "skin", label: "(필수) 피부 정보 수집·이용 동의" },
+  { id: "skin", label: "(필수) 피부 정보 수집 및 이용 동의" },
   { id: "age", label: "(필수) 만 14세 이상이에요", note: "만 14세 미만은 가입이 제한돼요." },
 ] as const;
 

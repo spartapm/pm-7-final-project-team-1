@@ -253,7 +253,7 @@ img { display: block; max-width: 100%; }
   text-align: left;
   font-size: 13px;
 }
-.agree-row small { display: block; color: var(--muted); margin-top: 4px; font-size: 11px; }
+.agree-row small { display: block; color: #8a6b71; margin-top: 4px; font-size: 11px; }
 .x-btn {
   position: absolute;
   top: 18px;
@@ -267,11 +267,36 @@ img { display: block; max-width: 100%; }
 }
 
 .terms-head {
-  padding: 72px 28px 0;
+  padding: 110px 26px 0;
   flex-shrink: 0;
 }
-.terms-head h1 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text); }
-.terms-head p { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+.terms-head h1 { margin: 0; font-size: 19px; font-weight: 700; line-height: 26px; color: var(--text); }
+.terms-head p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 18px; }
+.dim.terms-dim { background: rgba(58, 31, 39, 0.62); }
+.terms-sheet {
+  padding: 12px 22px calc(24px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 2px -2px 20px rgba(0, 0, 0, 0.16);
+}
+.terms-sheet h2 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--text);
+}
+.terms-sheet .agree-all {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cta);
+}
+.terms-sheet .agree-row {
+  padding: 10px 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
 
 .term-page {
   flex: 1;

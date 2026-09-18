@@ -95,7 +95,7 @@ function LoginInner() {
   return (
     <PhoneShell>
       <div className="page" style={{ position: "relative" }}>
-        <div className="login" aria-hidden={sheet} style={sheet ? { visibility: "hidden" } : undefined}>
+        <div className="login" aria-hidden={sheet}>
             <div className="login-hero">
               <VionLogo className="logo" />
               <p>
@@ -117,12 +117,12 @@ function LoginInner() {
           </div>
 
         {sheet ? (
-          <div className="dim" onClick={closeSheet}>
+          <div className="dim terms-dim" onClick={closeSheet}>
             <div className="terms-head" onClick={(e) => e.stopPropagation()}>
               <h1>{providerLabel} 인증이 완료됐어요</h1>
               <p>서비스 이용을 위해 약관에 동의해주세요.</p>
             </div>
-            <div className="sheet" style={{ marginTop: "auto" }} onClick={(e) => e.stopPropagation()}>
+            <div className="sheet terms-sheet" style={{ marginTop: "auto" }} onClick={(e) => e.stopPropagation()}>
               <div className="sheet-handle" />
               <h2>
                 VION을 이용하려면

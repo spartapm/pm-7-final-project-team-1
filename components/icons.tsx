@@ -281,7 +281,7 @@ export function IconUp() {
 export function IconCheck({ on }: { on?: boolean }) {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <circle cx="10" cy="10" r="9" fill={on ? "#F8845F" : "none"} stroke={on ? "#F8845F" : "#E0D7D3"} strokeWidth="1.4" />
+      <rect x="1.2" y="1.2" width="17.6" height="17.6" rx="5" fill={on ? "#F8845F" : "none"} stroke={on ? "#F8845F" : "#E0D7D3"} strokeWidth="1.4" />
       <path d="M6 10.2 8.6 13l5.4-6" stroke={on ? "#fff" : "#E0D7D3"} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
