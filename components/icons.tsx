@@ -297,9 +297,9 @@ export function IconChevron() {
   );
 }
 
-export function IconClock() {
+export function IconClock({ size = 20 }: { size?: number }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <circle cx="12" cy="12" r="8.2" stroke="currentColor" strokeWidth="1.7" />
       <path d="M12 8v4.4l2.8 1.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>

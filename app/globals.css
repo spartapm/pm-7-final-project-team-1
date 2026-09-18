@@ -504,6 +504,9 @@ img { display: block; max-width: 100%; }
   padding: 0 16px 14px;
   overflow-x: auto;
 }
+.recent-cats .chip.soft {
+  border-color: rgba(116, 106, 102, 0.5);
+}
 .cat-bar {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
