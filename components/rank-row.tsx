@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Thumb } from "@/components/ui";
 import { IconHeart } from "@/components/icons";
 import { useStore } from "@/lib/store";
-import { formatVolumePrice } from "@/lib/ranking";
+import { formatVolumePrice, liveRating } from "@/lib/ranking";
 import { feelPreview } from "@/lib/badges";
 import { setSourceScreen, track } from "@/lib/analytics";
 import type { Product } from "@/lib/types";
@@ -20,11 +20,14 @@ export function RankRow({
   source: string;
 }) {
   const router = useRouter();
-  const { isWished, toggleWish } = useStore();
+  const { isWished, toggleWish, reviews } = useStore();
   const wished = isWished(product.id);
   const [open, setOpen] = useState(false);
   const feel = feelPreview(product);
   const tags = open ? product.feelTags : feel.shown;
+  const mine = reviews.filter((r) => r.productId === product.id);
+  const rating = liveRating(mine, product.rating);
+  const reviewCount = mine.length || product.reviewCount;
 
   return (
     <div className="rank-card">
@@ -51,7 +54,7 @@ export function RankRow({
         <h3>{product.name}</h3>
         <p>{formatVolumePrice(product.volume, product.price)}</p>
         <p>
-          ★ {product.rating.toFixed(1)} · {product.reviewCount.toLocaleString("ko-KR")}
+          ★ {rating.toFixed(1)} · {reviewCount.toLocaleString("ko-KR")}
         </p>
         {product.feelTags.length > 0 ? (
           <div className="feel-row">

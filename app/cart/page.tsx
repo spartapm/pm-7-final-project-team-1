@@ -69,7 +69,17 @@ export default function CartPage() {
                   <span className={`chk${allOn ? " on" : ""}`}>✓</span>
                   제품 전체 선택
                 </button>
-                <button className="accent" type="button" onClick={() => setConfirm(picked.length ? picked : ids)}>
+                <button
+                  className="accent"
+                  type="button"
+                  onClick={() => {
+                    if (!picked.length) {
+                      showToast("삭제할 제품을 선택해 주세요");
+                      return;
+                    }
+                    setConfirm(picked);
+                  }}
+                >
                   선택 삭제
                 </button>
               </div>

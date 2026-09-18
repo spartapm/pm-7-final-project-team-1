@@ -203,6 +203,14 @@ create policy wish_stats_select on public.product_wish_stats for select using (t
 grant execute on function public.next_nickname() to authenticated;
 grant execute on function public.withdraw_me() to authenticated;
 
+alter table public.profiles add column if not exists gender text;
+alter table public.profiles add column if not exists birth_year int;
+alter table public.reviews add column if not exists tags text[] default '{}';
+
+create unique index if not exists reviews_one_per_user_product
+  on public.reviews (user_id, product_id)
+  where user_id is not null;
+
 create or replace function public.wish_counts_by_age(p_age text)
 returns table(product_id text, n int)
 language sql
@@ -226,7 +234,46 @@ as $$
 $$;
 
 grant execute on function public.wish_counts_by_age(text) to authenticated;
+grant execute on function public.wish_counts_by_age(text) to anon;
 
-alter table public.profiles add column if not exists gender text;
-alter table public.profiles add column if not exists birth_year int;
-alter table public.reviews add column if not exists tags text[] default '{}';
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'review-photos',
+  'review-photos',
+  true,
+  5242880,
+  array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
+)
+on conflict (id) do update
+set public = excluded.public,
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
+
+drop policy if exists review_photos_public_read on storage.objects;
+create policy review_photos_public_read
+  on storage.objects for select
+  using (bucket_id = 'review-photos');
+
+drop policy if exists review_photos_auth_insert on storage.objects;
+create policy review_photos_auth_insert
+  on storage.objects for insert to authenticated
+  with check (
+    bucket_id = 'review-photos'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists review_photos_auth_update on storage.objects;
+create policy review_photos_auth_update
+  on storage.objects for update to authenticated
+  using (
+    bucket_id = 'review-photos'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+drop policy if exists review_photos_auth_delete on storage.objects;
+create policy review_photos_auth_delete
+  on storage.objects for delete to authenticated
+  using (
+    bucket_id = 'review-photos'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );

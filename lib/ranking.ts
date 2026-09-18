@@ -218,3 +218,8 @@ export function matchedReviews(reviews: Review[], skin: SkinType | null, _concer
   if (!skin) return [];
   return reviews.filter((r) => r.skinType === skin);
 }
+
+export function liveRating(reviews: Review[], fallback: number) {
+  if (!reviews.length) return fallback;
+  return reviews.reduce((n, r) => n + r.rating, 0) / reviews.length;
+}

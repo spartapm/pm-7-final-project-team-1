@@ -140,11 +140,36 @@ export async function createProfile(userId: string, provider: Provider): Promise
 
 export async function fetchWishCountsByAge(age: string): Promise<Record<string, number>> {
   const { data, error } = await supabase.rpc("wish_counts_by_age", { p_age: age });
-  if (!error && data) {
-    return Object.fromEntries((data as { product_id: string; n: number }[]).map((r) => [r.product_id, r.n]));
+  if (error || !data) return {};
+  return Object.fromEntries((data as { product_id: string; n: number }[]).map((r) => [r.product_id, r.n]));
+}
+
+export async function persistReviewPhotos(userId: string, srcs: string[]) {
+  const out: string[] = [];
+  for (const src of (srcs ?? []).slice(0, 3)) {
+    if (/^https?:\/\//i.test(src)) {
+      out.push(src);
+      continue;
+    }
+    if (!src.startsWith("data:image/")) continue;
+    const blob = await (await fetch(src)).blob();
+    if (!blob.type.startsWith("image/") || blob.size > 5 * 1024 * 1024) continue;
+    const ext = blob.type.includes("png")
+      ? "png"
+      : blob.type.includes("webp")
+        ? "webp"
+        : blob.type.includes("gif")
+          ? "gif"
+          : "jpg";
+    const path = `${userId}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabase.storage.from("review-photos").upload(path, blob, {
+      contentType: blob.type,
+      upsert: false,
+    });
+    if (error) throw error;
+    out.push(supabase.storage.from("review-photos").getPublicUrl(path).data.publicUrl);
   }
-  const { data: stats } = await supabase.from("product_wish_stats").select("product_id, wish_count");
-  return Object.fromEntries((stats ?? []).map((r) => [r.product_id as string, r.wish_count as number]));
+  return out;
 }
 
 export async function nicknameTaken(nickname: string, exceptId?: string) {

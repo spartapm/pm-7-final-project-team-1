@@ -20,6 +20,7 @@ import {
   fetchViewed,
   fetchWishlist,
   nicknameTaken,
+  persistReviewPhotos,
 } from "./db";
 import {
   clearOAuthFlags,
@@ -534,10 +535,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         reviewBusy.current = false;
       }, 500);
       try {
+        const photos = await persistReviewPhotos(account.id, input.photos ?? []);
+        const existing = input.id ? state.reviews.find((r) => r.id === input.id) : state.reviews.find((r) => r.productId === input.productId && r.accountId === account.id);
+        if (existing && !input.id) {
+          input = { ...input, id: existing.id };
+        }
         if (input.id) {
           const { data, error } = await supabase
             .from("reviews")
-            .update({ rating: input.rating, body: input.text, photos: input.photos, tags: input.tags ?? [] })
+            .update({ rating: input.rating, body: input.text, photos, tags: input.tags ?? [] })
             .eq("id", input.id)
             .eq("user_id", account.id)
             .select("*")
@@ -550,7 +556,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             ...state.reviews.find((r) => r.id === input.id)!,
             rating: input.rating,
             text: input.text,
-            photos: input.photos,
+            photos,
             tags: input.tags ?? [],
           };
           setState((s) => ({
@@ -569,7 +575,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             concerns: account.concerns,
             rating: input.rating,
             body: input.text,
-            photos: input.photos,
+            photos,
             tags: input.tags ?? [],
             purchased: !!input.purchased,
           })
@@ -587,7 +593,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           concerns: account.concerns,
           rating: input.rating,
           text: input.text,
-          photos: input.photos,
+          photos,
           tags: input.tags ?? [],
           createdAt: Date.parse(data.created_at),
           purchased: !!input.purchased,

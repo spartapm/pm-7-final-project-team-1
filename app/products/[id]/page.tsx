@@ -12,10 +12,9 @@ import { consumeSourceScreen, trackViewItem } from "@/lib/analytics";
 export default function ProductPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { hydrated, account, addView, reviews } = useStore();
+  const { hydrated, account, addView } = useStore();
   const product = productById(id);
   const [more, setMore] = useState(false);
-  const reviewCount = reviews.filter((r) => r.productId === id).length || product?.reviewCount || 0;
 
   useEffect(() => {
     if (!hydrated) return;
@@ -50,7 +49,7 @@ export default function ProductPage() {
   }
 
   return (
-    <ProductFrame product={product} tab="info" reviewCount={reviewCount}>
+    <ProductFrame product={product} tab="info">
       {product.gallery.length > 0 ? (
         <div className={`detail-gallery${more ? "" : " collapsed"}`}>
           {(more ? product.gallery : product.gallery.slice(0, 1)).map((src) => (

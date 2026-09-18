@@ -133,7 +133,7 @@ function RankingInner() {
           <div className="rank-title">
             <span />
             <button
-              className={`filter-btn${sort !== "match" || price.max != null ? " on" : ""}`}
+              className={`filter-btn${sort !== "match" || price.min > 0 || price.max != null ? " on" : ""}`}
               type="button"
               aria-label="필터"
               onClick={() => {

@@ -7,7 +7,7 @@ import { IconBack, IconPen } from "@/components/icons";
 import { ProductFrame } from "@/components/product-frame";
 import { ReviewPhotos } from "@/components/photo-lightbox";
 import { useStore } from "@/lib/store";
-import { formatDate, matchedReviews } from "@/lib/ranking";
+import { formatDate, liveRating, matchedReviews } from "@/lib/ranking";
 import { ReviewAuthorTags } from "@/lib/badges";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
@@ -64,7 +64,6 @@ export default function ReviewsPage() {
     <ProductFrame
       product={product}
       tab="reviews"
-      reviewCount={all.length || product.reviewCount}
       overlay={
         <button
           className="fab-pen"
@@ -84,7 +83,7 @@ export default function ReviewsPage() {
       </p>
       <div className="review-head-row">
         <strong>
-          {product.rating.toFixed(1)} / 5
+          {liveRating(all, product.rating).toFixed(1)} / 5
           <span> 리뷰 {all.length.toLocaleString("ko-KR")}</span>
         </strong>
         <div className="toggle-inline">

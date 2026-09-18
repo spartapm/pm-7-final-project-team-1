@@ -6,7 +6,7 @@ import { PhoneShell } from "@/components/ui";
 import { IconBack, IconCart, IconHeart, IconShare, IconUp } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
-import { formatVolumePrice } from "@/lib/ranking";
+import { formatVolumePrice, liveRating } from "@/lib/ranking";
 import { track } from "@/lib/analytics";
 import { shareKakao } from "@/lib/share";
 import type { Product } from "@/lib/types";
@@ -14,24 +14,25 @@ import type { Product } from "@/lib/types";
 export function ProductFrame({
   product,
   tab,
-  reviewCount,
   overlay,
   children,
 }: {
   product: Product;
   tab: "info" | "reviews";
-  reviewCount: number;
   overlay?: ReactNode;
   children: ReactNode;
 }) {
   const router = useRouter();
-  const { isWished, toggleWish, isInCart, addToCart, showToast, cart } = useStore();
+  const { isWished, toggleWish, isInCart, addToCart, showToast, cart, reviews } = useStore();
   const [share, setShare] = useState(false);
   const [top, setTop] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
   const wished = isWished(product.id);
   const inCart = isInCart(product.id);
   const cartCount = cart.reduce((n, c) => n + c.qty, 0);
+  const mine = reviews.filter((r) => r.productId === product.id);
+  const rating = liveRating(mine, product.rating);
+  const reviewCount = mine.length || product.reviewCount;
 
   const wish = () => {
     const on = toggleWish(product.id);
@@ -68,7 +69,7 @@ export function ProductFrame({
             </div>
             <p className="vol-price">{formatVolumePrice(product.volume, product.price)}</p>
             <button type="button" onClick={() => router.push(`/products/${product.id}/reviews`)}>
-              ★ {product.rating.toFixed(1)} · 리뷰 {reviewCount.toLocaleString("ko-KR")}
+              ★ {rating.toFixed(1)} · 리뷰 {reviewCount.toLocaleString("ko-KR")}
             </button>
             {product.feelTags.length ? (
               <div className="feel-row">
