@@ -19,6 +19,7 @@ export default function TermPage() {
             <IconBack />
           </button>
           <h1 className="term-title">{page.title}</h1>
+          {page.kicker ? <p className="term-kicker">{page.kicker}</p> : null}
           <div className="term-body">
             {page.blocks.map((b, i) => (
               <div key={i} className="term-block">
