@@ -6,17 +6,18 @@ import { PhoneShell, TabBar, Thumb } from "@/components/ui";
 import { IconHeart } from "@/components/icons";
 import { HeadTools } from "@/components/head-tools";
 import { useStore } from "@/lib/store";
-import { CATEGORIES } from "@/lib/types";
+import { type Category } from "@/lib/types";
 import { productById } from "@/lib/products";
 import { formatVolumePrice } from "@/lib/ranking";
 import { setSourceScreen } from "@/lib/analytics";
 
 const PAGE = 10;
+const CAT_ORDER: Category[] = ["크림", "토너", "클렌징폼"];
 
 export default function WishlistPage() {
   const router = useRouter();
   const { hydrated, account, wishlist, toggleWish } = useStore();
-  const [cat, setCat] = useState<"전체" | (typeof CATEGORIES)[number]>("전체");
+  const [cat, setCat] = useState<"전체" | Category>("전체");
   const [dir, setDir] = useState<"desc" | "asc">("desc");
   const [shown, setShown] = useState(PAGE);
   const scroller = useRef<HTMLDivElement>(null);
@@ -33,7 +34,7 @@ export default function WishlistPage() {
       .map((w) => productById(w.productId))
       .filter((p): p is NonNullable<typeof p> => !!p);
   }, [wishlist, dir]);
-  const filters = ["전체" as const, ...CATEGORIES.filter((c) => all.some((p) => p.category === c))];
+  const filters = ["전체" as const, ...CAT_ORDER.filter((c) => all.some((p) => p.category === c))];
   const items = cat === "전체" ? all : all.filter((p) => p.category === cat);
 
   useEffect(() => {
@@ -60,25 +61,27 @@ export default function WishlistPage() {
             <h1>찜한 제품</h1>
             <HeadTools />
           </div>
-          <div className="list-meta">
-            <span>총 {items.length}개</span>
-            <button type="button" onClick={() => setDir((d) => (d === "desc" ? "asc" : "desc"))}>
-              {dir === "desc" ? "최신순 ▾" : "오래된순 ▾"}
-            </button>
-          </div>
           {all.length > 0 ? (
-            <div className="cats">
-              {filters.map((c) => (
-                <button key={c} className={`chip soft${cat === c ? " on" : ""}`} type="button" onClick={() => setCat(c)}>
-                  {c}
+            <>
+              <div className="list-meta">
+                <span>총 {all.length}개</span>
+                <button type="button" onClick={() => setDir((d) => (d === "desc" ? "asc" : "desc"))}>
+                  {dir === "desc" ? "최신순 ▾" : "오래된순 ▴"}
                 </button>
-              ))}
-            </div>
+              </div>
+              <div className="cats wish-cats">
+                {filters.map((c) => (
+                  <button key={c} className={`chip soft${cat === c ? " on" : ""}`} type="button" onClick={() => setCat(c)}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </>
           ) : null}
           {items.length === 0 ? (
             <div className="empty">
               <div className="icon-wrap">
-                <IconHeart />
+                <IconHeart size={32} />
               </div>
               {wishlist.length === 0 ? (
                 <>

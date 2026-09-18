@@ -59,7 +59,15 @@ export function readLocalPreview(): Preview | null {
   const seed = mode === "full";
   return {
     account,
-    wishlist: seed ? [{ productId: "1", savedAt: Date.now() }] : [],
+    wishlist: seed
+      ? [
+          { productId: "31", savedAt: Date.now() },
+          { productId: "23", savedAt: Date.now() - 1 },
+          { productId: "1", savedAt: Date.now() - 2 },
+          { productId: "56", savedAt: Date.now() - 3 },
+          { productId: "82", savedAt: Date.now() - 4 },
+        ]
+      : [],
     cart: seed ? [{ productId: "1", qty: 1, addedAt: Date.now() }] : [],
     viewed: seed ? ["1"] : [],
     reviews: seed ? qaReviews(account.nickname) : [],
