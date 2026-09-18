@@ -105,7 +105,11 @@ export default function ProfilePage() {
               <span className="menu-right"><i>›</i></span>
             </button>
           </div>
-          <button className="logout-pill" type="button" onClick={() => setBye(true)}>
+          <button
+            className="logout-pill"
+            type="button"
+            onClick={() => setBye(true)}
+          >
             로그아웃
           </button>
           <button className="withdraw-link" type="button" onClick={() => setOut(true)}>
@@ -145,7 +149,7 @@ export default function ProfilePage() {
               <div className="del">탈퇴 시 삭제되는 데이터</div>
               <p>연동된 소셜 로그인 정보</p>
               <div className="del">탈퇴 시 유지되는 데이터</div>
-              <p>작성한 리뷰(닉네임 익명 처리),</p>
+              <p>작성한 리뷰(닉네임 익명 처리)</p>
               <p>찜 통계(개인 연결 정보 삭제)</p>
               <button
                 className="btn-primary"

@@ -89,17 +89,26 @@ export default function ReviewsPage() {
         <div className="dist-h">
           {counts.map((n, i) => (
             <div key={5 - i} className="dist-row">
-              <span>{(5 - i).toFixed(1)}</span>
+              <span>{5 - i}점</span>
               <i>
                 <b style={{ width: `${Math.max(6, (n / max) * 100)}%` }} />
               </i>
+              <em>{n}</em>
             </div>
           ))}
         </div>
       </div>
       <div className="review-head-row">
         <p style={{ margin: 0, fontSize: 12, color: "var(--muted)" }}>
-          {mine ? "나와 같은 피부 타입을 가진 사용자들의 리뷰에요" : "전체 리뷰에요"}
+          {mine ? (
+            <>
+              나와 같은 피부 타입을 가진
+              <br />
+              사용자들의 리뷰예요
+            </>
+          ) : (
+            "전체 리뷰예요"
+          )}
         </p>
         <div className="toggle-inline">
           내 타입만 보기

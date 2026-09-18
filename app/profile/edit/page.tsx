@@ -43,6 +43,15 @@ export default function ProfileEditPage() {
     return () => window.clearTimeout(t);
   }, [value, account]);
 
+  const save = async () => {
+    if (hint !== "ok" || busy) return;
+    setBusy(true);
+    const res = await updateNickname(value.trim());
+    setBusy(false);
+    if (res === "ok") router.back();
+    if (res === "taken") setHint("taken");
+  };
+
   if (!hydrated || !account) return <PhoneShell />;
 
   return (
@@ -53,30 +62,22 @@ export default function ProfileEditPage() {
             <IconBack />
           </button>
           <h1>프로필 수정</h1>
-          <span />
-        </div>
-        <div className="page-scroll">
-          <div className="field-label">아이디</div>
-            <input className="year-select" value={account.provider === "google" ? "구글 계정" : "카카오 계정"} disabled />
-          <div className="nick-field" style={{ margin: "16px 0" }}>
-            <div className="field-label">닉네임</div>
-            <input className={hint === "ok" ? "ok" : hint === "bad" || hint === "taken" ? "bad" : ""} value={value} onChange={(e) => setValue(e.target.value)} />
-            <p className="nick-rule">한글, 영문, 숫자포함 2~10자(특수문자 및 공백 불가)</p>
-          </div>
-          <button
-            className="btn-primary"
-            type="button"
-            disabled={hint !== "ok" || busy}
-            onClick={async () => {
-              setBusy(true);
-              const res = await updateNickname(value.trim());
-              setBusy(false);
-              if (res === "ok") router.back();
-              if (res === "taken") setHint("taken");
-            }}
-          >
+          <button className="side accent" type="button" disabled={hint !== "ok" || busy} onClick={save}>
             저장
           </button>
+        </div>
+        <div className="page-scroll profile-edit">
+          <div className="field-label">아이디</div>
+          <p className="id-value">{account.provider === "google" ? "구글 계정" : "카카오 계정"}</p>
+          <div className="nick-field">
+            <div className="field-label">닉네임</div>
+            <input className={hint === "ok" && value.trim() !== account.nickname ? "ok" : hint === "bad" || hint === "taken" ? "bad" : ""} value={value} onChange={(e) => setValue(e.target.value)} />
+            {hint === "taken" ? <p className="msg bad">이미 사용 중인 닉네임이에요. 다른 닉네임을 입력해주세요</p> : null}
+            {hint === "bad" ? (
+              <p className="msg bad">닉네임은 한글, 영문, 숫자를 포함한 2~10자로 입력해주세요.(특수문자 및 공백 불가)</p>
+            ) : null}
+            <p className="nick-rule">한글, 영문, 숫자포함 2~10자(특수문자 및 공백 불가)</p>
+          </div>
         </div>
       </div>
     </PhoneShell>

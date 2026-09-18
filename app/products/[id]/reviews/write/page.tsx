@@ -7,8 +7,11 @@ import { IconStar } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
-import { FEEL_TAGS } from "@/lib/constants";
+import { SKIN_CONCERNS } from "@/lib/types";
+import { concernShort } from "@/lib/badges";
 import { formatVolumePrice } from "@/lib/ranking";
+
+const WRITE_TAGS = [...SKIN_CONCERNS.map(concernShort), "끈적임 적음", "촉촉함"];
 
 export default function WriteReviewPage() {
   return (
@@ -101,7 +104,7 @@ function WriteInner() {
     <PhoneShell>
       <div className="page">
         <div className="topbar">
-          <button className="side" type="button" onClick={() => setLeave(true)}>
+          <button className="side accent" type="button" onClick={() => setLeave(true)}>
             취소
           </button>
           <h1>{existing ? "리뷰 수정" : "리뷰 작성"}</h1>
@@ -124,9 +127,9 @@ function WriteInner() {
               </button>
             ))}
           </div>
-          <div className="field-label">사용감 (필수 · 최대 5개)</div>
+          <div className="field-label">사용감 (필수)</div>
           <div className="chips" style={{ flexWrap: "wrap", marginBottom: 16 }}>
-            {FEEL_TAGS.map((t) => {
+            {WRITE_TAGS.map((t) => {
               const on = tags.includes(t);
               return (
                 <button
@@ -154,7 +157,7 @@ function WriteInner() {
             placeholder="사용감, 피부 변화 등을 입력"
             onChange={(e) => setText(e.target.value)}
           />
-          <div className="char-count">{text.length}/1,000</div>
+          <div className="char-count">{text.length.toLocaleString("ko-KR")} / 1,000</div>
           <div className="field-label">사진 등록 (선택 · 최대 3장)</div>
           <div className="photos">
             {photos.map((src, i) => (
@@ -167,9 +170,11 @@ function WriteInner() {
             ))}
             {photos.length < 3 ? (
               <button className="photo-add" type="button" disabled={!rated} onClick={() => fileRef.current?.click()}>
-                {photos.length}/3
+                +
               </button>
             ) : null}
+            {photos.length < 2 ? <span className="photo-add ghost" aria-hidden>+</span> : null}
+            {photos.length < 1 ? <span className="photo-add ghost" aria-hidden>+</span> : null}
             <input
               ref={fileRef}
               className="hidden-file"

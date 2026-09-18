@@ -31,7 +31,7 @@ export function readLocalPreview(): Preview | null {
     provider: "kakao",
     nickname: "용감한거북이3764",
     gender: done ? "여성" : null,
-    birthYear: done ? 1995 : null,
+    birthYear: done ? 2001 : null,
     skinType: done ? "복합성" : null,
     concerns: done ? ["보습", "여드름"] : [],
     onboardingDone: done,

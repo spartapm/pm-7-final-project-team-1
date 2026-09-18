@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PhoneShell, TabBar } from "@/components/ui";
-import { IconClose, IconFilter, IconRefresh, IconWarn } from "@/components/icons";
+import { IconClose, IconFilter, IconModeDrop, IconModeFace, IconModePeople, IconModeSpark, IconWarn } from "@/components/icons";
 import { RankRow } from "@/components/rank-row";
 import { useStore } from "@/lib/store";
 import { CATEGORIES, type Category, type PriceFilter, type RankMode, type SortKey } from "@/lib/types";
@@ -60,27 +60,28 @@ function RankingInner() {
     });
   }, [account, category, mode, sort, price, ageGroup, wishByAge]);
 
-  if (bootError) {
-    return (
-      <PhoneShell>
-        <div className="page">
-          <div className="empty">
-            <div className="icon-wrap">
-              <IconWarn />
+  if (!hydrated || !account?.onboardingDone) {
+    if (bootError) {
+      return (
+        <PhoneShell>
+          <div className="page">
+            <div className="empty">
+              <div className="icon-wrap">
+                <IconWarn />
+              </div>
+              <h2>랭킹을 불러오지 못했어요</h2>
+              <p>잠시 후 다시 시도해주세요</p>
+              <button className="btn-primary" type="button" disabled={!hydrated} onClick={retryBoot}>
+                다시 시도
+              </button>
             </div>
-            <h2>랭킹을 불러오지 못했어요</h2>
-            <p>잠시 후 다시 시도해주세요</p>
-            <button className="btn-primary" type="button" disabled={!hydrated} onClick={retryBoot}>
-              다시 시도
-            </button>
+            <TabBar />
           </div>
-          <TabBar />
-        </div>
-      </PhoneShell>
-    );
+        </PhoneShell>
+      );
+    }
+    return <PhoneShell />;
   }
-
-  if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
 
   const priceLabel =
     draftMax >= 50000 && draftMin >= 50000
@@ -139,9 +140,22 @@ function RankingInner() {
             </button>
           </div>
           <div className="rank-list">
-            {ranked.map((row) => (
-              <RankRow key={row.product.id} product={row.product} rank={row.rank} source="home_ranking" />
-            ))}
+            {bootError ? (
+              <div className="empty" style={{ paddingTop: 48 }}>
+                <div className="icon-wrap">
+                  <IconWarn />
+                </div>
+                <h2>랭킹을 불러오지 못했어요</h2>
+                <p>잠시 후 다시 시도해주세요</p>
+                <button className="btn-primary" type="button" onClick={retryBoot}>
+                  다시 시도
+                </button>
+              </div>
+            ) : (
+              ranked.map((row) => (
+                <RankRow key={row.product.id} product={row.product} rank={row.rank} source="home_ranking" />
+              ))
+            )}
           </div>
         </div>
         <TabBar />
@@ -163,8 +177,16 @@ function RankingInner() {
                       window.setTimeout(() => setModeOpen(false), 300);
                     }}
                   >
-                    <strong>{copy.title}</strong>
-                    <span>{copy.desc}</span>
+                    <span className={`mode-ico ${k}`} aria-hidden>
+                      {k === "overall" ? <IconModeSpark /> : null}
+                      {k === "type" ? <IconModeFace /> : null}
+                      {k === "concern" ? <IconModeDrop /> : null}
+                      {k === "age" ? <IconModePeople /> : null}
+                    </span>
+                    <span className="mode-copy">
+                      <strong>{copy.title}</strong>
+                      <span>{copy.desc}</span>
+                    </span>
                   </button>
                 );
               })}
@@ -211,12 +233,11 @@ function RankingInner() {
                     setDraftMax(50000);
                   }}
                 >
-                  <IconRefresh />
                   초기화
                 </button>
               </div>
               <div className="filter-label">정렬 기준</div>
-              <div className="filter-row">
+              <div className="sort-seg">
                 {(
                   [
                     ["match", "맞춤순"],
@@ -224,12 +245,14 @@ function RankingInner() {
                     ["reviews", "리뷰순"],
                   ] as const
                 ).map(([k, label]) => (
-                  <button key={k} className={`pill${draftSort === k ? " on-line" : ""}`} type="button" onClick={() => setDraftSort(k)}>
+                  <button key={k} className={draftSort === k ? "on" : ""} type="button" onClick={() => setDraftSort(k)}>
                     {label}
                   </button>
                 ))}
               </div>
-              <div className="filter-label">가격대 · {priceLabel}</div>
+              <div className="filter-label">
+                가격대 <span>{priceLabel.replace("원~", "원 ~ ")}</span>
+              </div>
               <div className="price-track">
                 <div className="price-rail" />
                 <input
@@ -256,6 +279,10 @@ function RankingInner() {
                     setDraftMax(next.max);
                   }}
                 />
+              </div>
+              <div className="price-ends">
+                <span>0원</span>
+                <span>5만 원 이상</span>
               </div>
               <button
                 className="btn-primary apply"

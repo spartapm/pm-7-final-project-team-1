@@ -57,10 +57,14 @@ export const NICK_ADJECTIVES = [
 export const NICK_RULE = /^[가-힣a-zA-Z0-9]{2,10}$/;
 
 export function suggestNickname() {
-  const adj = NICK_ADJECTIVES[Math.floor(Math.random() * NICK_ADJECTIVES.length)];
-  const animal = NICK_ANIMALS[Math.floor(Math.random() * NICK_ANIMALS.length)];
-  const n = String(Math.floor(1000 + Math.random() * 9000));
-  return `${adj}${animal}${n}`;
+  for (let i = 0; i < 40; i++) {
+    const adj = NICK_ADJECTIVES[Math.floor(Math.random() * NICK_ADJECTIVES.length)];
+    const animal = NICK_ANIMALS[Math.floor(Math.random() * NICK_ANIMALS.length)];
+    const n = String(Math.floor(1000 + Math.random() * 9000));
+    const nick = `${adj}${animal}${n}`;
+    if (NICK_RULE.test(nick)) return nick;
+  }
+  return "용감한사자1001";
 }
 
 export function nicknameError(value: string) {

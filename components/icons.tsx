@@ -283,6 +283,44 @@ export function IconBadgeCheck() {
   );
 }
 
+export function IconModeSpark() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M12 3.5 13.2 8l4.8.2L14.6 11l1.2 4.6L12 13.4 8.2 15.6 9.4 11 6 8.2 10.8 8 12 3.5Z" fill="currentColor" />
+      <path d="M18.2 4.2 18.7 6.2 20.7 6.7 18.7 7.2 18.2 9.2 17.7 7.2 15.7 6.7 17.7 6.2 18.2 4.2Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function IconModeFace() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="7.2" stroke="currentColor" strokeWidth="1.7" />
+      <path d="M9.2 10.2h.1M14.8 10.2h.1" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
+      <path d="M9.2 14.2c.8 1.2 1.8 1.8 2.8 1.8s2-.6 2.8-1.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function IconModeDrop() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <path d="M12 4.4c2.8 3.4 5.4 6.4 5.4 9.2A5.4 5.4 0 0 1 12 19a5.4 5.4 0 0 1-5.4-5.4c0-2.8 2.6-5.8 5.4-9.2Z" fill="currentColor" />
+    </svg>
+  );
+}
+
+export function IconModePeople() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="9" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+      <circle cx="15.4" cy="9.6" r="2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M4.8 17.4c.4-2.4 2.2-3.6 4.2-3.6s3.8 1.2 4.2 3.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <path d="M13.4 13.8c1.6 0 3.2.8 3.6 2.8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function VionLogo({ variant = "orange", className }: { variant?: "orange" | "white" | "black"; className?: string }) {
   return <img className={className} src={`/vion/logo/logo_${variant}.png`} alt="vion" />;
 }

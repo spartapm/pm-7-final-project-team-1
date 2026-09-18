@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Thumb } from "@/components/ui";
 import { IconBack, IconCart, IconClose, IconMinus, IconPlus } from "@/components/icons";
@@ -14,12 +14,23 @@ export default function CartPage() {
   const { hydrated, account, cart, setCartQty, removeFromCart, showToast } = useStore();
   const [picked, setPicked] = useState<string[]>([]);
   const [confirm, setConfirm] = useState<string[] | null>(null);
+  const seeded = useRef(false);
 
   useEffect(() => {
     if (!hydrated) return;
     if (!account) router.replace("/login");
     else if (!account.onboardingDone) router.replace("/home");
   }, [hydrated, account, router]);
+
+  useEffect(() => {
+    const ids = cart.map((c) => c.productId);
+    if (!seeded.current && ids.length) {
+      setPicked(ids);
+      seeded.current = true;
+      return;
+    }
+    setPicked((p) => p.filter((id) => ids.includes(id)));
+  }, [cart]);
 
   const rows = useMemo(
     () =>

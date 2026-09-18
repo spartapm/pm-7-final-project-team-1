@@ -10,7 +10,6 @@ import { useStore } from "@/lib/store";
 import { CATEGORIES, type Category } from "@/lib/types";
 import { productById } from "@/lib/products";
 import { formatDate, formatVolumePrice } from "@/lib/ranking";
-import { ReviewAuthorTags } from "@/lib/badges";
 
 export default function MyReviewsPage() {
   const router = useRouter();
@@ -51,24 +50,43 @@ export default function MyReviewsPage() {
             <button className="side" type="button" onClick={() => setOpen(null)} aria-label="뒤로">
               <IconBack />
             </button>
-            <h1>내가 쓴 리뷰</h1>
+            <h1>리뷰 상세보기</h1>
           </div>
-          <div className="page-scroll">
+          <div className="page-scroll write">
             <div className="write-product">
               <Thumb src={p!.image} alt={p!.name} />
               <div>
-                <h3>{p!.name}</h3>
-                <p>{p!.brand}</p>
+                <h3>
+                  {p!.name} <span className="review-brand">{p!.brand}</span>
+                </h3>
                 <p>{formatVolumePrice(p!.volume, p!.price)}</p>
               </div>
             </div>
-            <article className="review-card">
-              <ReviewAuthorTags skinType={r.skinType} concerns={r.concerns} expanded />
+            <div className="field-label">별점</div>
+            <div className="detail-stars">
               <Stars value={r.rating} />
-              <p>{formatDate(r.createdAt)}</p>
-              <p className="review-text">{r.text || "별점만 등록된 리뷰"}</p>
-              <ReviewPhotos photos={r.photos} />
-            </article>
+              <span>{r.rating.toFixed(1)}</span>
+            </div>
+            {r.tags.length ? (
+              <>
+                <div className="field-label">사용감</div>
+                <div className="chips" style={{ flexWrap: "wrap" }}>
+                  {r.tags.map((t) => (
+                    <span key={t} className="chip">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </>
+            ) : null}
+            <div className="field-label">리뷰 내용</div>
+            <div className="review-body-box">{r.text || "별점만 등록된 리뷰"}</div>
+            {r.photos.length ? (
+              <>
+                <div className="field-label">사진</div>
+                <ReviewPhotos photos={r.photos} />
+              </>
+            ) : null}
             <button className="btn-primary" type="button" onClick={() => router.push(`/products/${r.productId}/reviews/write?edit=${r.id}`)}>
               수정하기
             </button>

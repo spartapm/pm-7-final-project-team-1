@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Thumb } from "@/components/ui";
-import { IconBack, IconClose, IconSearch, IconSearchSm } from "@/components/icons";
+import { IconBack, IconClock, IconClose, IconSearch, IconSearchSm } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { PRODUCTS } from "@/lib/products";
 import { formatVolumePrice } from "@/lib/ranking";
@@ -107,45 +107,44 @@ export default function SearchPage() {
         </div>
         <div className="page-scroll bleed">
           {!q.trim() ? (
-            <div style={{ padding: "0 16px" }}>
-              <div className="section-label" style={{ display: "flex", justifyContent: "space-between" }}>
-                최근 검색어
-                {recent.length ? (
-                  <button className="accent" type="button" onClick={() => { setRecent([]); saveRecent([]); }}>
-                    전체 삭제
-                  </button>
-                ) : null}
-              </div>
-              {recent.length === 0 ? (
-                <p className="search-none">최근 검색어가 없습니다</p>
-              ) : (
-                recent.map((term) => (
-                  <div key={term} className="menu-row">
-                    <button type="button" onClick={() => setQ(term)}>
-                      {term}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const next = recent.filter((x) => x !== term);
-                        setRecent(next);
-                        saveRecent(next);
-                      }}
-                    >
-                      <IconClose />
-                    </button>
-                  </div>
-                ))
-              )}
-            </div>
+            <RecentBlock
+              recent={recent}
+              showEmpty
+              onPick={setQ}
+              onClear={() => {
+                setRecent([]);
+                saveRecent([]);
+              }}
+              onRemove={(term) => {
+                const next = recent.filter((x) => x !== term);
+                setRecent(next);
+                saveRecent(next);
+              }}
+            />
           ) : hits.length === 0 ? (
-            <div className="empty">
-              <div className="icon-wrap">
-                <IconSearch />
+            <>
+              <RecentBlock
+                recent={recent}
+                showEmpty={false}
+                onPick={setQ}
+                onClear={() => {
+                  setRecent([]);
+                  saveRecent([]);
+                }}
+                onRemove={(term) => {
+                  const next = recent.filter((x) => x !== term);
+                  setRecent(next);
+                  saveRecent(next);
+                }}
+              />
+              <div className="empty">
+                <div className="icon-wrap">
+                  <IconSearch />
+                </div>
+                <h2>일치하는 제품이 없어요</h2>
+                <p>검색어를 바꾸거나 다른 제품을 찾아보세요</p>
               </div>
-              <h2>일치하는 제품이 없어요</h2>
-              <p>검색어를 바꾸거나 다른 제품을 찾아보세요</p>
-            </div>
+            </>
           ) : (
             <>
               <div className="rank-list">
@@ -190,5 +189,48 @@ export default function SearchPage() {
         </div>
       </div>
     </PhoneShell>
+  );
+}
+
+function RecentBlock({
+  recent,
+  showEmpty,
+  onPick,
+  onClear,
+  onRemove,
+}: {
+  recent: string[];
+  showEmpty: boolean;
+  onPick: (term: string) => void;
+  onClear: () => void;
+  onRemove: (term: string) => void;
+}) {
+  if (!showEmpty && recent.length === 0) return null;
+  return (
+    <div style={{ padding: "0 16px" }}>
+      <div className="section-label" style={{ display: "flex", justifyContent: "space-between" }}>
+        최근 검색어
+        {recent.length ? (
+          <button className="accent" type="button" onClick={onClear}>
+            전체 삭제
+          </button>
+        ) : null}
+      </div>
+      {recent.length === 0 ? (
+        <p className="search-none">최근 검색어가 없습니다</p>
+      ) : (
+        recent.map((term) => (
+          <div key={term} className="menu-row">
+            <button type="button" className="menu-left" onClick={() => onPick(term)}>
+              <IconClock />
+              {term}
+            </button>
+            <button type="button" onClick={() => onRemove(term)} aria-label="삭제">
+              <IconClose />
+            </button>
+          </div>
+        ))
+      )}
+    </div>
   );
 }
