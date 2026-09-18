@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { PhoneShell } from "@/components/ui";
+import { PhoneShell, SafeImg } from "@/components/ui";
 import { ProductFrame } from "@/components/product-frame";
 import { IconBack } from "@/components/icons";
 import { useStore } from "@/lib/store";
@@ -55,7 +55,7 @@ export default function ProductPage() {
       {product.gallery.length > 0 ? (
         <div className={`detail-gallery${more ? "" : " collapsed"}`}>
           {(more ? product.gallery : product.gallery.slice(0, 1)).map((src) => (
-            <img key={src} className="detail-img" src={src} alt="" referrerPolicy="no-referrer" />
+            <SafeImg key={src} className="detail-img" src={src} />
           ))}
         </div>
       ) : (

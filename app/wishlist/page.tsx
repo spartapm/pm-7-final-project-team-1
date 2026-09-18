@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { PhoneShell, TabBar } from "@/components/ui";
+import { PhoneShell, TabBar, Thumb } from "@/components/ui";
 import { IconHeart } from "@/components/icons";
 import { HeadTools } from "@/components/head-tools";
 import { useStore } from "@/lib/store";
@@ -99,12 +99,11 @@ export default function WishlistPage() {
             <div className="wish-grid">
               {items.slice(0, shown).map((p) => (
                 <div key={p.id} className="wish-card">
-                  <div className="thumb">
-                    <img src={p.image} alt="" referrerPolicy="no-referrer" />
+                  <Thumb src={p.image} alt={p.name}>
                     <button className="heart on" type="button" aria-label="찜 해제" onClick={() => toggleWish(p.id)}>
                       <IconHeart filled />
                     </button>
-                  </div>
+                  </Thumb>
                   <button
                     type="button"
                     onClick={() => {

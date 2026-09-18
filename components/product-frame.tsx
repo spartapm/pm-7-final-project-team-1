@@ -2,7 +2,7 @@
 
 import { useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { PhoneShell } from "@/components/ui";
+import { PhoneShell, SafeImg } from "@/components/ui";
 import { IconBack, IconCart, IconClose, IconHeart, IconKakao, IconLink, IconShare, IconStar, IconUp } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
@@ -48,7 +48,8 @@ export function ProductFrame({
           ref={scroller}
           onScroll={() => setTop((scroller.current?.scrollTop ?? 0) > 240)}
         >
-          <div className="product-hero" style={{ backgroundImage: `url("${product.image}")` }}>
+          <div className="product-hero">
+            <SafeImg src={product.image} className="hero-img" />
             <button className="back-fab" type="button" aria-label="뒤로" onClick={() => router.back()}>
               <IconBack />
             </button>

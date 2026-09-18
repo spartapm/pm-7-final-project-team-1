@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { IconHeart, IconHome, IconRank, IconUser, VionLogo } from "./icons";
 import { useStore } from "@/lib/store";
 import { avatarSrc } from "@/lib/nicknames";
@@ -76,10 +76,51 @@ export function Stars({ value, size = 14 }: { value: number; size?: number }) {
   );
 }
 
-export function Thumb({ src, alt, className }: { src: string; alt: string; className?: string }) {
+function blankSrc(src?: string) {
+  return !src?.trim();
+}
+
+export function SafeImg({ src, alt = "", className }: { src?: string; alt?: string; className?: string }) {
+  const [failed, setFailed] = useState(() => blankSrc(src));
+  useEffect(() => {
+    setFailed(blankSrc(src));
+  }, [src]);
+  if (failed) {
+    return (
+      <span className={`img-ph${className ? ` ${className}` : ""}`} aria-hidden>
+        이미지 준비중..
+      </span>
+    );
+  }
   return (
-    <div className={`thumb ${className ?? ""}`} role="img" aria-label={alt}>
-      <img src={src} alt="" referrerPolicy="no-referrer" />
+    <img
+      className={className}
+      src={src}
+      alt={alt}
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+    />
+  );
+}
+
+export function Thumb({
+  src,
+  alt,
+  className,
+  children,
+}: {
+  src?: string;
+  alt: string;
+  className?: string;
+  children?: ReactNode;
+}) {
+  return (
+    <div
+      className={`thumb ${className ?? ""}`}
+      {...(children ? {} : { role: "img", "aria-label": alt })}
+    >
+      <SafeImg src={src} alt={alt} />
+      {children}
     </div>
   );
 }
