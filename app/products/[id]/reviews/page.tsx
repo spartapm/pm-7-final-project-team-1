@@ -11,13 +11,13 @@ import { formatDate, liveRating, matchedReviews } from "@/lib/ranking";
 import { ReviewAuthorTags } from "@/lib/badges";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
+import type { Review } from "@/lib/types";
 
 export default function ReviewsPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const { hydrated, account, reviews, showToast } = useStore();
   const [mine, setMine] = useState(true);
-  const [openBadges, setOpenBadges] = useState<Record<string, boolean>>({});
   const product = productById(id);
 
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function ReviewsPage() {
           <span> 리뷰 {all.length.toLocaleString("ko-KR")}</span>
         </strong>
         <div className="toggle-inline">
-          {mine ? "내 타입만 보기" : "전체 리뷰에요"}
+          내 타입만 보기
           <button className={`toggle${mine ? " on" : ""}`} type="button" onClick={() => setMine((v) => !v)} aria-label="내 타입만 보기">
             <i />
           </button>
@@ -109,59 +109,58 @@ export default function ReviewsPage() {
           </div>
         ) : null}
         {list.map((r) => (
-          <article key={r.id} className="review-card">
-            <div className="review-user">
-              <Avatar name={r.nickname} />
-              <div>
-                <strong>{r.nickname}</strong>
-                <ReviewAuthorTags
-                  skinType={r.skinType}
-                  concerns={r.concerns}
-                  expanded={!!openBadges[r.id]}
-                  onToggle={() => setOpenBadges((s) => ({ ...s, [r.id]: !s[r.id] }))}
-                />
-                <div className="review-meta">
-                  ★ {r.rating.toFixed(1)}
-                  <span>{formatDate(r.createdAt)}</span>
-                  {r.purchased ? <span className="badge">구매리뷰</span> : null}
-                </div>
-              </div>
-            </div>
-            {r.text ? <ClampedReview text={r.text} /> : null}
-            <ReviewPhotos photos={r.photos} />
-          </article>
+          <ReviewCard key={r.id} r={r} />
         ))}
       </div>
     </ProductFrame>
   );
 }
 
-function ClampedReview({ text }: { text: string }) {
-  const ref = useRef<HTMLParagraphElement>(null);
+function ReviewCard({ r }: { r: Review }) {
   const [expanded, setExpanded] = useState(false);
+  const ref = useRef<HTMLParagraphElement>(null);
   const [showMore, setShowMore] = useState(false);
 
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el || expanded) return;
     setShowMore(el.scrollHeight - el.clientHeight > 1);
-  }, [text, expanded]);
+  }, [r.text, expanded]);
+
+  const tagsOpen = expanded || !showMore;
 
   return (
-    <>
-      <p ref={ref} className={`review-text${expanded ? "" : " clamp"}`}>
-        {text}
-      </p>
-      {showMore && !expanded ? (
-        <button className="more" type="button" onClick={() => setExpanded(true)}>
-          더보기 &gt;
-        </button>
+    <article className="review-card">
+      <div className="review-user">
+        <Avatar name={r.nickname} />
+        <div>
+          <strong>{r.withdrawn ? "탈퇴한 회원의 리뷰입니다" : r.nickname}</strong>
+          <ReviewAuthorTags skinType={r.skinType} concerns={r.concerns} expanded={tagsOpen} />
+          <div className="review-meta">
+            ★ {r.rating.toFixed(1)}
+            <span>{formatDate(r.createdAt)}</span>
+            {r.purchased ? <span className="badge">구매리뷰</span> : null}
+          </div>
+        </div>
+      </div>
+      {r.text ? (
+        <>
+          <p ref={ref} className={`review-text${expanded ? "" : " clamp"}`}>
+            {r.text}
+          </p>
+          {showMore && !expanded ? (
+            <button className="more" type="button" onClick={() => setExpanded(true)}>
+              더보기 &gt;
+            </button>
+          ) : null}
+          {expanded ? (
+            <button className="more" type="button" onClick={() => setExpanded(false)}>
+              닫기
+            </button>
+          ) : null}
+        </>
       ) : null}
-      {expanded ? (
-        <button className="more" type="button" onClick={() => setExpanded(false)}>
-          닫기
-        </button>
-      ) : null}
-    </>
+      <ReviewPhotos photos={r.photos} />
+    </article>
   );
 }

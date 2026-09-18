@@ -215,6 +215,7 @@ export function categoryLabel(cat: Category) {
 }
 
 export function matchedReviews(reviews: Review[], skin: SkinType | null, _concerns: SkinConcern[]) {
+  // 규칙서 3-3: 피부타입은 필수. 고민만 겹치면 비노출. 타입만 같아도 노출.
   if (!skin) return [];
   return reviews.filter((r) => r.skinType === skin);
 }

@@ -63,7 +63,7 @@ export default function MyReviewsPage() {
               </div>
             </div>
             <article className="review-card">
-              <ReviewAuthorTags skinType={r.skinType} concerns={r.concerns} expanded onToggle={() => undefined} />
+              <ReviewAuthorTags skinType={r.skinType} concerns={r.concerns} expanded />
               <Stars value={r.rating} />
               <p>{formatDate(r.createdAt)}</p>
               <p className="review-text">{r.text || "별점만 등록된 리뷰"}</p>

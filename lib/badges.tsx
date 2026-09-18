@@ -47,10 +47,10 @@ export function ReviewAuthorTags({
   skinType: SkinType;
   concerns: SkinConcern[];
   expanded: boolean;
-  onToggle: () => void;
+  onToggle?: () => void;
 }) {
   const extra = concerns.length > 1;
-  const shown = expanded ? concerns : concerns.slice(0, 1);
+  const shown = expanded || !extra ? concerns : concerns.slice(0, 1);
   return (
     <div className="tags">
       <span className="tag">{skinType}</span>
@@ -59,7 +59,7 @@ export function ReviewAuthorTags({
           {concernShort(c)}
         </span>
       ))}
-      {extra ? (
+      {extra && onToggle ? (
         <button className="tag more-tag" type="button" onClick={onToggle}>
           {expanded ? "접기" : "…"}
         </button>

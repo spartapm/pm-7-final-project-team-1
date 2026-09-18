@@ -60,8 +60,6 @@ function RankingInner() {
     });
   }, [account, category, mode, sort, price, ageGroup, wishByAge]);
 
-  if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
-
   if (bootError) {
     return (
       <PhoneShell>
@@ -72,7 +70,7 @@ function RankingInner() {
             </div>
             <h2>랭킹을 불러오지 못했어요</h2>
             <p>네트워크 상태를 확인하고 다시 시도해주세요.</p>
-            <button className="btn-primary" type="button" onClick={retryBoot}>
+            <button className="btn-primary" type="button" disabled={!hydrated} onClick={retryBoot}>
               다시 시도
             </button>
           </div>
@@ -81,6 +79,8 @@ function RankingInner() {
       </PhoneShell>
     );
   }
+
+  if (!hydrated || !account?.onboardingDone) return <PhoneShell />;
 
   const priceLabel =
     draftMax >= 50000 && draftMin >= 50000
