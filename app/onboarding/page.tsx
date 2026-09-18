@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
-import { IconClose } from "@/components/icons";
+import { IconChevron, IconClose } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { GENDERS, SKIN_CONCERNS, SKIN_TYPES, type Gender, type SkinConcern, type SkinType } from "@/lib/types";
 import { BIRTH_YEARS, QUIZ, SKIN_BLURBS, diagnoseSkin } from "@/lib/skin-quiz";
@@ -28,6 +28,9 @@ function OnboardingInner() {
   const [skin, setSkin] = useState<SkinType | "모르겠어요" | null>(null);
   const [concerns, setConcerns] = useState<SkinConcern[]>([]);
   const [answers, setAnswers] = useState<number[]>(Array(8).fill(-1));
+  const [quizOpen, setQuizOpen] = useState(false);
+  const [quizStep, setQuizStep] = useState(0);
+  const quizRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -42,12 +45,34 @@ function OnboardingInner() {
     if (account.concerns.length) setConcerns(account.concerns);
   }, [hydrated, account, edit, router]);
 
-  useEffect(() => {
-    if (skin !== "모르겠어요") return;
-    if (answers.every((n) => n >= 0)) setSkin(diagnoseSkin(answers));
-  }, [answers, skin]);
-
   const canSubmit = !!gender && !!skin && skin !== "모르겠어요" && concerns.length >= 1 && concerns.length <= 3;
+
+  const pickSkin = (t: SkinType) => {
+    setSkin(t);
+    setQuizOpen(false);
+    setQuizStep(0);
+    setAnswers(Array(8).fill(-1));
+  };
+
+  const startQuiz = () => {
+    setSkin("모르겠어요");
+    setQuizOpen(true);
+    setQuizStep(0);
+    setAnswers(Array(8).fill(-1));
+    window.setTimeout(() => quizRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
+  };
+
+  const answerQuiz = (ai: number) => {
+    const next = answers.map((n, i) => (i === quizStep ? ai : n));
+    setAnswers(next);
+    if (quizStep < QUIZ.length - 1) {
+      setQuizStep(quizStep + 1);
+      return;
+    }
+    setSkin(diagnoseSkin(next));
+    setQuizOpen(false);
+    setQuizStep(0);
+  };
 
   const submit = async () => {
     if (!gender || skin == null || skin === "모르겠어요") return;
@@ -117,38 +142,34 @@ function OnboardingInner() {
           </div>
           <div className="chips types">
             {SKIN_TYPES.map((t) => (
-              <button key={t} className={`chip${skin === t ? " on" : ""}`} type="button" onClick={() => setSkin(t)}>
+              <button key={t} className={`chip${skin === t ? " on" : ""}`} type="button" onClick={() => pickSkin(t)}>
                 {t}
               </button>
             ))}
-            <button className={`chip muted${skin === "모르겠어요" ? " on" : ""}`} type="button" onClick={() => setSkin("모르겠어요")}>
+            <button className={`chip muted${skin === "모르겠어요" ? " on" : ""}`} type="button" onClick={startQuiz}>
               모르겠어요
             </button>
           </div>
-          {skin === "모르겠어요" || answers.some((n) => n >= 0) ? (
-            <div className="quiz">
-              {QUIZ.map((item, qi) => (
-                <div key={item.q}>
-                  <p>
-                    Q{qi + 1}. {item.q}
-                  </p>
-                  <div className="chips">
-                    {item.a.map((label, ai) => (
-                      <button
-                        key={label}
-                        className={`chip${answers[qi] === ai ? " on" : ""}`}
-                        type="button"
-                        onClick={() => {
-                          setSkin("모르겠어요");
-                          setAnswers((prev) => prev.map((n, i) => (i === qi ? ai : n)));
-                        }}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
+          {quizOpen ? (
+            <div className="quiz" ref={quizRef}>
+              <div>
+                <p>
+                  Q{quizStep + 1}. {QUIZ[quizStep].q}
+                  <IconChevron />
+                </p>
+                <div className="chips">
+                  {QUIZ[quizStep].a.map((label, ai) => (
+                    <button
+                      key={label}
+                      className={`chip${answers[quizStep] === ai ? " on" : ""}`}
+                      type="button"
+                      onClick={() => answerQuiz(ai)}
+                    >
+                      {label}
+                    </button>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           ) : null}
           <div className="field-label strong">피부 고민 <span className="field-hint">(중복 선택 - 최대 3개)</span></div>

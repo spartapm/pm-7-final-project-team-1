@@ -1,7 +1,7 @@
 import type { AgeGroup, SkinType } from "./types";
 
 export const SKIN_BLURBS: Record<SkinType, string> = {
-  건성: "수분과 유분이 모두 부족한 피부",
+  건성: "수분과 유분 모두 부족한 피부",
   지성: "유분 분비가 많아 번들거리는 피부",
   중성: "유·수분 밸런스가 건강한 피부",
   복합성: "T존과 U존의 피부 타입이 다른 피부",
