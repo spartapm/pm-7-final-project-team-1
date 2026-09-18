@@ -14,10 +14,12 @@ export function RankRow({
   product,
   rank,
   source,
+  onOpen,
 }: {
   product: Product;
-  rank: number;
+  rank?: number;
   source: string;
+  onOpen?: () => void;
 }) {
   const router = useRouter();
   const { isWished, toggleWish, reviews } = useStore();
@@ -29,14 +31,15 @@ export function RankRow({
   const rating = liveRating(mine, product.rating);
 
   const goProduct = () => {
+    onOpen?.();
     track("select_item", { item_id: product.id, item_list_name: product.category });
     setSourceScreen(source);
     router.push(`/products/${product.id}`);
   };
 
   return (
-    <div className="rank-card">
-      <span className="rank-no">{rank}</span>
+    <div className={`rank-card${rank == null ? " no-rank" : ""}`}>
+      {rank != null ? <span className="rank-no">{rank}</span> : null}
       <button className="rank-thumb" type="button" onClick={goProduct} aria-label={product.name}>
         <Thumb src={product.image} alt={product.name} />
       </button>

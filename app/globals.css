@@ -588,6 +588,9 @@ img { display: block; max-width: 100%; }
   width: 100%;
   min-height: 84px;
 }
+.rank-card.no-rank {
+  grid-template-columns: 48px minmax(0, 1fr);
+}
 .rank-no {
   color: #746a66;
   font-weight: 600;
@@ -1608,7 +1611,8 @@ textarea:focus {
 .photo-add { font-size: 28px; color: var(--hint); font-weight: 400; }
 .photo-add.ghost { opacity: 0.85; pointer-events: none; }
 .search-box { margin: 8px 16px 12px; position: relative; }
-.search-box input { width: 100%; height: 44px; border-radius: 999px; border: 1px solid var(--line); padding: 0 40px 0 42px; background: #fff; }
+.search-box input { width: 100%; height: 44px; border-radius: 999px; border: 1px solid #746a66; padding: 0 40px 0 42px; background: #fff; font-size: 16px; }
+.search-box input::placeholder { color: #a39c9c; }
 .search-ico {
   position: absolute;
   left: 14px;
@@ -1681,6 +1685,51 @@ textarea:focus {
   display: grid;
   place-items: center;
   flex-shrink: 0;
+}
+.search-split {
+  border: none;
+  border-top: 1px solid #ece8e6;
+  margin: 16px 16px 18px;
+}
+.search-products h2 {
+  margin: 0 20px 12px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 28px;
+  color: #292524;
+}
+.search-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 28px 48px;
+}
+.search-empty .icon-wrap {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: var(--accent-light);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+}
+.search-empty h2 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #3a1f27;
+}
+.search-empty p {
+  margin: 0;
+  font-size: 12px;
+  color: #8a6b71;
+}
+.search-cta {
+  padding: 12px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+  flex-shrink: 0;
+  background: var(--surface);
 }
 .hl { color: var(--accent); font-weight: 700; }
 .quiz { margin-top: 12px; }
@@ -1791,7 +1840,7 @@ textarea:focus {
   padding: 12px 16px;
 }
 .search-top { display: flex; align-items: center; gap: 4px; padding: 8px 12px 4px; }
-.search-clear { position: absolute; right: 10px; top: 10px; }
+.search-clear { position: absolute; right: 10px; top: 10px; color: var(--muted); }
 .profile-card .edit-link { font-size: 12px; color: var(--muted); font-weight: 400; white-space: nowrap; }
 .nick-wrap { position: relative; }
 .nick-check {

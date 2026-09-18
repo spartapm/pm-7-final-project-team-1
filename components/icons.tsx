@@ -160,6 +160,24 @@ export function IconSearch() {
   );
 }
 
+export function IconSearchX() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+      <circle cx="11" cy="11" r="6.2" stroke="currentColor" strokeWidth="1.6" />
+      <path d="m15.6 15.6 4.2 4.2M9.2 9.2l3.6 3.6M12.8 9.2l-3.6 3.6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+export function IconCircleX() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M9 9l6 6M15 9l-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 export function IconPen() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
