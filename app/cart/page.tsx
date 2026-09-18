@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, Thumb } from "@/components/ui";
-import { IconBack, IconCart, IconClose, IconMinus, IconPlus } from "@/components/icons";
+import { IconBack, IconCart, IconCircleMinus, IconCirclePlus, IconClose } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { formatPrice, formatVolumePrice } from "@/lib/ranking";
@@ -127,7 +127,7 @@ export default function CartPage() {
                         >
                           <p className="cart-brand">{row.product.brand}</p>
                           <h3>{row.product.name}</h3>
-                          <p>{formatVolumePrice(row.product.volume, row.product.price)}</p>
+                          <p className="cart-vol">{formatVolumePrice(row.product.volume, row.product.price)}</p>
                         </button>
                         <button className="cart-del" type="button" onClick={() => setConfirm([row.productId])} aria-label="삭제">
                           <IconClose />
@@ -137,7 +137,7 @@ export default function CartPage() {
                     <div className="cart-qty-bar">
                       <div className="qty">
                         <button type="button" aria-label="수량 줄이기" disabled={row.qty <= 1} onClick={() => setCartQty(row.productId, row.qty - 1)}>
-                          <IconMinus />
+                          <IconCircleMinus />
                         </button>
                         <span>{row.qty}</span>
                         <button
@@ -152,7 +152,7 @@ export default function CartPage() {
                             setCartQty(row.productId, row.qty + 1);
                           }}
                         >
-                          <IconPlus />
+                          <IconCirclePlus />
                         </button>
                       </div>
                       <strong>
@@ -168,7 +168,7 @@ export default function CartPage() {
         {rows.length > 0 ? (
           <div className="cart-bar">
             <button className="btn-disabled" type="button" disabled>
-              아직 구현되지 않은 영역입니다
+              아직 구현 되지 않은 영역입니다
             </button>
             <button
               className="btn-primary"
@@ -180,18 +180,19 @@ export default function CartPage() {
                 showToast("아직 구현되지 않은 영역입니다");
               }}
             >
-              총 {formatPrice(selectedPrice)} 주문하기
+              <span className="cart-cta-sum">총 {formatPrice(selectedPrice)}</span>
+              {" 주문하기"}
             </button>
           </div>
         ) : null}
 
         {confirm ? (
           <div className="dim center" onClick={() => setConfirm(null)}>
-            <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal cart-del-modal" onClick={(e) => e.stopPropagation()}>
               <h2>선택한 제품을 삭제 하시겠어요?</h2>
               <div className="modal-btns">
                 <button className="sub" type="button" onClick={() => setConfirm(null)}>
-                  아니오
+                  아니요
                 </button>
                 <button
                   className="main"
