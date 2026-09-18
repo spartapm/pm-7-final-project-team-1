@@ -228,7 +228,7 @@ function RankingInner() {
 
         {filterOpen ? (
           <div className="dim" onClick={() => setFilterOpen(false)}>
-            <div className="sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="sheet filter-sheet" onClick={(e) => e.stopPropagation()}>
               <div className="sheet-handle" />
               <div className="sheet-head">
                 <h2>필터</h2>
@@ -262,7 +262,15 @@ function RankingInner() {
                 가격대 <span>{priceLabel.replace("원~", "원 ~ ")}</span>
               </div>
               <div className="price-track">
-                <div className="price-rail" />
+                <div className="price-rail">
+                  <span
+                    className="price-fill"
+                    style={{
+                      left: `${(Math.min(draftMin, draftMax) / 50000) * 100}%`,
+                      width: `${(Math.abs(draftMax - draftMin) / 50000) * 100}%`,
+                    }}
+                  />
+                </div>
                 <input
                   type="range"
                   min={0}
