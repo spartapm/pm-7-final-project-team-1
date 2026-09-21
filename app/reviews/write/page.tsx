@@ -3,24 +3,40 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
-import { IconCircleX, IconSearchSm, IconSearchX } from "@/components/icons";
+import { IconCircleX, IconClock, IconClose, IconSearchSm, IconSearchX } from "@/components/icons";
 import { RankRow } from "@/components/rank-row";
 import { useStore } from "@/lib/store";
 import { PRODUCTS, productById } from "@/lib/products";
 
+const KEY = "vion:recent-search";
+
 function fold(s: string) {
   return s.replace(/\s+/g, "").toLowerCase();
+}
+
+function loadRecent() {
+  try {
+    return JSON.parse(localStorage.getItem(KEY) ?? "[]") as string[];
+  } catch {
+    return [];
+  }
+}
+
+function saveRecent(list: string[]) {
+  localStorage.setItem(KEY, JSON.stringify(list.slice(0, 3)));
 }
 
 export default function ReviewPickPage() {
   const router = useRouter();
   const { hydrated, account, viewed } = useStore();
   const [q, setQ] = useState("");
+  const [recent, setRecent] = useState<string[]>([]);
 
   useEffect(() => {
     if (!hydrated) return;
     if (!account) router.replace("/login");
     else if (!account.onboardingDone) router.replace("/home");
+    setRecent(loadRecent());
   }, [hydrated, account, router]);
 
   const recents = useMemo(
@@ -36,7 +52,14 @@ export default function ReviewPickPage() {
 
   const searching = Boolean(q.trim());
 
-  const goWrite = (id: string) => {
+  const remember = (term: string) => {
+    const next = [term, ...recent.filter((x) => x !== term)].slice(0, 3);
+    setRecent(next);
+    saveRecent(next);
+  };
+
+  const goWrite = (id: string, term?: string) => {
+    if (term) remember(term);
     router.push(`/products/${id}/reviews/write`);
   };
 
@@ -63,11 +86,56 @@ export default function ReviewPickPage() {
               <IconCircleX />
             </button>
           </div>
+          {!searching ? (
+            <div className="recent-block">
+              <div className="recent-head">
+                <span>최근 검색어</span>
+                {recent.length ? (
+                  <button
+                    className="recent-clear-all"
+                    type="button"
+                    onClick={() => {
+                      setRecent([]);
+                      saveRecent([]);
+                    }}
+                  >
+                    전체 삭제
+                  </button>
+                ) : null}
+              </div>
+              {recent.length === 0 ? (
+                <p className="search-none">최근 검색어가 없습니다</p>
+              ) : (
+                <ul className="recent-list">
+                  {recent.map((term) => (
+                    <li key={term} className="recent-row">
+                      <button type="button" className="recent-term" onClick={() => setQ(term)}>
+                        <IconClock />
+                        {term}
+                      </button>
+                      <button
+                        type="button"
+                        className="recent-remove"
+                        onClick={() => {
+                          const next = recent.filter((x) => x !== term);
+                          setRecent(next);
+                          saveRecent(next);
+                        }}
+                        aria-label="삭제"
+                      >
+                        <IconClose />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : null}
           {searching ? (
             hits.length ? (
               <div className="rank-list pick-list">
                 {hits.map((p) => (
-                  <RankRow key={p.id} product={p} source="review_pick" onPick={() => goWrite(p.id)} />
+                  <RankRow key={p.id} product={p} source="review_pick" onPick={() => goWrite(p.id, q.trim())} />
                 ))}
               </div>
             ) : (

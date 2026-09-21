@@ -39,8 +39,8 @@ export const FEEL_TAGS = [
   "겉돌지 않음",
   "저자극",
   "적은 유분감",
-  "순한 사용감",
   "쫀쫀함",
+  "순한 사용감",
 ];
 
 export const CATEGORY_IMAGE: Record<Category, string> = {

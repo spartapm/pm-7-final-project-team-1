@@ -36,6 +36,19 @@ export default function ReviewsPage() {
     return matchedReviews(all, account.skinType, account.concerns);
   }, [all, mine, account]);
 
+  const allPhotos = useMemo(() => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const r of all) {
+      for (const src of r.photos) {
+        if (!src || seen.has(src)) continue;
+        seen.add(src);
+        out.push(src);
+      }
+    }
+    return out;
+  }, [all]);
+
   useEffect(() => {
     if (!hydrated || !account || !mine) return;
     const matched = matchedReviews(all, account.skinType, account.concerns);
@@ -109,6 +122,11 @@ export default function ReviewsPage() {
           </div>
         ) : null}
       </div>
+      {allPhotos.length ? (
+        <div className="review-photo-strip" aria-label="제품 리뷰 사진">
+          <ReviewPhotos photos={allPhotos} />
+        </div>
+      ) : null}
       <div className="review-head-row">
         <p>
           {mine ? (
@@ -118,7 +136,7 @@ export default function ReviewsPage() {
               사용자들의 리뷰에요
             </>
           ) : (
-            "전체 리뷰예요"
+            "전체 리뷰에요"
           )}
         </p>
         <div className="toggle-inline">

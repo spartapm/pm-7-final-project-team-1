@@ -11,7 +11,7 @@ export function ReviewPhotos({ photos }: { photos: string[] }) {
     <>
       <div className="review-photos">
         {photos.map((src, idx) => (
-          <button key={src + idx} type="button" onClick={() => setOpen(idx)}>
+          <button key={src + idx} type="button" aria-label={`리뷰 사진 ${idx + 1}`} onClick={() => setOpen(idx)}>
             <Thumb src={src} alt="" />
           </button>
         ))}

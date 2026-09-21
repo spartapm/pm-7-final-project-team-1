@@ -45,6 +45,19 @@ export default function SearchPage() {
     return PRODUCTS.filter((p) => fold(p.name).includes(query) || fold(p.brand).includes(query));
   }, [q]);
 
+  const suggestions = useMemo(() => {
+    const query = fold(q);
+    if (!query) return [];
+    const names: string[] = [];
+    for (const p of PRODUCTS) {
+      if (fold(p.name).includes(query) && !names.includes(p.name)) names.push(p.name);
+      if (names.length >= 8) break;
+    }
+    return names;
+  }, [q]);
+
+  const preview = hits.slice(0, 3);
+
   const remember = (term: string) => {
     const next = [term, ...recent.filter((x) => x !== term)].slice(0, 3);
     setRecent(next);
@@ -87,14 +100,25 @@ export default function SearchPage() {
               saveRecent(next);
             }}
           />
+          {searching && suggestions.length ? (
+            <ul className="search-suggest">
+              {suggestions.map((name) => (
+                <li key={name}>
+                  <button type="button" onClick={() => setQ(name)}>
+                    <Highlight text={name} query={q} />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
           {searching ? (
             <>
               {recent.length ? <hr className="search-split" /> : null}
-              {hits.length ? (
+              {preview.length ? (
                 <div className="search-products">
                   <h2>제품</h2>
                   <div className="rank-list">
-                    {hits.map((p) => (
+                    {preview.map((p) => (
                       <RankRow
                         key={p.id}
                         product={p}
@@ -116,7 +140,7 @@ export default function SearchPage() {
             </>
           ) : null}
         </div>
-        {searching && hits.length ? (
+        {searching && preview.length ? (
           <div className="search-cta">
             <button className="btn-primary" type="button" onClick={() => router.push("/ranking")}>
               내 맞춤 랭킹 보러가기
@@ -125,6 +149,20 @@ export default function SearchPage() {
         ) : null}
       </div>
     </PhoneShell>
+  );
+}
+
+function Highlight({ text, query }: { text: string; query: string }) {
+  const needle = query.trim();
+  if (!needle) return text;
+  const idx = text.toLowerCase().indexOf(needle.toLowerCase());
+  if (idx < 0) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <em>{text.slice(idx, idx + needle.length)}</em>
+      {text.slice(idx + needle.length)}
+    </>
   );
 }
 

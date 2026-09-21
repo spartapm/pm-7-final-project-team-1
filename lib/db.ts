@@ -1,6 +1,7 @@
 import { supabase } from "./supabase";
 import { CATALOG_REVIEWS } from "./catalog-reviews";
 import { PRODUCTS } from "./products";
+import { localizeReviewPhotos } from "./review-photos";
 import { SKIN_CONCERNS, SKIN_TYPES, type Account, type CartItem, type Gender, type Provider, type Review, type SkinConcern, type SkinType, type WishlistItem } from "./types";
 
 export type ProfileRow = {
@@ -68,7 +69,7 @@ export function reviewFromRow(row: ReviewRow): Review {
     rating: row.rating,
     text: row.body ?? "",
     tags: row.tags ?? [],
-    photos: row.photos ?? [],
+    photos: localizeReviewPhotos(row.photos),
     createdAt: Date.parse(row.created_at),
     purchased: row.purchased,
     accountId: row.user_id ?? undefined,
@@ -78,15 +79,25 @@ export function reviewFromRow(row: ReviewRow): Review {
 
 const KNOWN = new Set(PRODUCTS.map((p) => p.id));
 
+function catalogKey(r: { productId: string; nickname: string; createdAt: number }) {
+  return `${r.productId}|${r.nickname}|${r.createdAt}`;
+}
+
+function withCatalogPhotos(review: Review, byId: Map<string, Review>, byKey: Map<string, Review>) {
+  if (review.photos?.length) return review;
+  const photos = byId.get(review.id)?.photos ?? byKey.get(catalogKey(review))?.photos ?? [];
+  return photos.length ? { ...review, photos } : review;
+}
+
 export async function fetchReviews(): Promise<Review[]> {
   const { data, error } = await supabase.from("reviews").select("*").order("created_at", { ascending: false });
   if (error) throw error;
   const catalogById = new Map(CATALOG_REVIEWS.map((r) => [r.id, r]));
-  const server = (data as ReviewRow[]).map(reviewFromRow).filter((r) => KNOWN.has(r.productId)).map((r) => {
-    if (r.photos?.length) return r;
-    const photos = catalogById.get(r.id)?.photos ?? [];
-    return photos.length ? { ...r, photos } : r;
-  });
+  const catalogByKey = new Map(CATALOG_REVIEWS.map((r) => [catalogKey(r), r]));
+  const server = (data as ReviewRow[])
+    .map(reviewFromRow)
+    .filter((r) => KNOWN.has(r.productId))
+    .map((r) => withCatalogPhotos(r, catalogById, catalogByKey));
   const ids = new Set(server.map((r) => r.id));
   const extra = CATALOG_REVIEWS.filter((r) => !ids.has(r.id) && KNOWN.has(r.productId));
   return [...server, ...extra].sort((a, b) => b.createdAt - a.createdAt);

@@ -8,8 +8,7 @@ import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
 import { track } from "@/lib/analytics";
 import { formatVolumePrice } from "@/lib/ranking";
-
-const WRITE_TAGS = ["보습", "끈적임 적음", "탄력·주름", "촉촉함", "모공", "피지·블랙헤드", "여드름"];
+import { FEEL_TAGS } from "@/lib/constants";
 
 export default function WriteReviewPage() {
   return (
@@ -129,7 +128,7 @@ function WriteInner() {
           </div>
           <div className="field-label">사용감 (필수)</div>
           <div className="chips write-tags">
-            {WRITE_TAGS.map((t) => {
+            {FEEL_TAGS.map((t) => {
               const on = tags.includes(t);
               return (
                 <button

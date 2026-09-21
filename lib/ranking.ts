@@ -176,10 +176,25 @@ export function rankProducts(opts: {
   else if (opts.mode === "age") ordered = sortAge(base, opts.ageGroup, opts.wishByAge ?? {});
   else ordered = sortOverall(base, opts.skinType, opts.concerns, opts.ageGroup);
 
-  if (opts.sort === "rating") {
-    ordered = [...ordered].sort((a, b) => b.rating - a.rating || byId(a, b));
-  } else if (opts.sort === "reviews") {
-    ordered = [...ordered].sort((a, b) => b.reviewCount - a.reviewCount || byId(a, b));
+  if (opts.sort === "rating" || opts.sort === "reviews") {
+    const byProduct = new Map<string, Review[]>();
+    for (const review of opts.reviews ?? []) {
+      const list = byProduct.get(review.productId) ?? [];
+      list.push(review);
+      byProduct.set(review.productId, list);
+    }
+    ordered = [...ordered].sort((a, b) => {
+      if (opts.sort === "rating") {
+        const ra = liveRating(byProduct.get(a.id) ?? [], a.rating);
+        const rb = liveRating(byProduct.get(b.id) ?? [], b.rating);
+        if (ra !== rb) return rb - ra;
+        return 0;
+      }
+      const ca = byProduct.get(a.id)?.length ?? a.reviewCount;
+      const cb = byProduct.get(b.id)?.length ?? b.reviewCount;
+      if (ca !== cb) return cb - ca;
+      return 0;
+    });
   }
 
   return ordered.map((product, i) => ({ product, rank: i + 1 }));

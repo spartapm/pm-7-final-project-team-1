@@ -18,7 +18,7 @@ import { SkinBar } from "@/components/skin-bar";
 function RankingInner() {
   const router = useRouter();
   const params = useSearchParams();
-  const { hydrated, account, bootError, retryBoot } = useStore();
+  const { hydrated, account, bootError, retryBoot, reviews } = useStore();
   const startCat = (params.get("cat") as Category) || "토너";
   const startMode = (params.get("mode") as RankMode) || "overall";
   const [category, setCategory] = useState<Category>(CATEGORIES.includes(startCat) ? startCat : "토너");
@@ -57,8 +57,9 @@ function RankingInner() {
       sort,
       price,
       wishByAge,
+      reviews,
     });
-  }, [account, category, mode, sort, price, ageGroup, wishByAge]);
+  }, [account, category, mode, sort, price, ageGroup, wishByAge, reviews]);
 
   if (!hydrated || !account?.onboardingDone) {
     if (bootError) {
