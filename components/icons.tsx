@@ -335,6 +335,20 @@ export function IconChevron() {
   );
 }
 
+export function IconBannerArrow({ dir = "next" }: { dir?: "prev" | "next" }) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
+      <path
+        d={dir === "prev" ? "M11.2 3.5 6 9l5.2 5.5" : "M6.8 3.5 12 9l-5.2 5.5"}
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconClock({ size = 20 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">

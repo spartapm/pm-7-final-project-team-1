@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell, TabBar } from "@/components/ui";
-import { VionLogo } from "@/components/icons";
+import { IconBannerArrow, VionLogo } from "@/components/icons";
 import { RankRow } from "@/components/rank-row";
 import { HeadTools } from "@/components/head-tools";
 import { useStore } from "@/lib/store";
@@ -18,6 +18,9 @@ export default function HomePage() {
   const { hydrated, account } = useStore();
   const [banner, setBanner] = useState(0);
   const [paused, setPaused] = useState(false);
+  const resumeTimer = useRef<number | null>(null);
+  const swipeX = useRef<number | null>(null);
+  const swiped = useRef(false);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -29,6 +32,17 @@ export default function HomePage() {
     const t = window.setInterval(() => setBanner((n) => (n + 1) % BANNERS.length), 5000);
     return () => window.clearInterval(t);
   }, [paused]);
+
+  const holdAuto = () => {
+    setPaused(true);
+    if (resumeTimer.current) window.clearTimeout(resumeTimer.current);
+    resumeTimer.current = window.setTimeout(() => setPaused(false), 5000);
+  };
+
+  const goBanner = (dir: -1 | 1) => {
+    setBanner((n) => (n + dir + BANNERS.length) % BANNERS.length);
+    holdAuto();
+  };
 
   const ranked = useMemo(() => {
     if (!account?.skinType) return [];
@@ -56,15 +70,47 @@ export default function HomePage() {
 
           {account.skinType ? <SkinBar skinType={account.skinType} concerns={account.concerns} /> : null}
 
-          <button
+          <div
             className="banner-wrap"
-            type="button"
-            onClick={() => router.push(BANNERS[banner].href)}
-            onPointerDown={() => setPaused(true)}
-            onPointerUp={() => window.setTimeout(() => setPaused(false), 5000)}
+            onPointerDown={(e) => {
+              swipeX.current = e.clientX;
+            }}
+            onPointerUp={(e) => {
+              const start = swipeX.current;
+              swipeX.current = null;
+              if (start == null) return;
+              const dx = e.clientX - start;
+              if (Math.abs(dx) > 40) {
+                swiped.current = true;
+                goBanner(dx > 0 ? -1 : 1);
+              }
+            }}
           >
-            <img src={BANNERS[banner].src} alt={BANNERS[banner].alt} />
-          </button>
+            <button
+              className="banner-hit"
+              type="button"
+              onClick={() => {
+                if (swiped.current) {
+                  swiped.current = false;
+                  return;
+                }
+                router.push(BANNERS[banner].href);
+              }}
+            >
+              <img src={BANNERS[banner].src} alt={BANNERS[banner].alt} />
+            </button>
+            <button className="banner-nav prev" type="button" aria-label="이전 배너" onClick={() => goBanner(-1)}>
+              <IconBannerArrow dir="prev" />
+            </button>
+            <button className="banner-nav next" type="button" aria-label="다음 배너" onClick={() => goBanner(1)}>
+              <IconBannerArrow dir="next" />
+            </button>
+            <div className="banner-dots" aria-hidden>
+              {BANNERS.map((item, i) => (
+                <i key={item.src} className={i === banner ? "on" : ""} />
+              ))}
+            </div>
+          </div>
 
           <div className="cat-picks">
             {CATEGORIES.map((c) => (

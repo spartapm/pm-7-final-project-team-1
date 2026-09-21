@@ -110,16 +110,36 @@ function RankingInner() {
   const priceLabel =
     draftMax >= 50000 && draftMin >= 50000
       ? "50,000원 이상"
-      : draftMin === draftMax
-        ? `0원~${draftMax.toLocaleString("ko-KR")}원`
-        : `${draftMin.toLocaleString("ko-KR")}원~${draftMax >= 50000 ? "50,000원 이상" : `${draftMax.toLocaleString("ko-KR")}원`}`;
+      : draftMax >= 50000
+        ? `${draftMin.toLocaleString("ko-KR")}원 ~ 50,000원 이상`
+        : `${draftMin.toLocaleString("ko-KR")}원 ~ ${draftMax.toLocaleString("ko-KR")}원`;
 
-  const clampPair = (min: number, max: number) => {
-    let a = min;
-    let b = max;
-    if (a > b) a = b;
-    if (a === 10000 && b === 10000) return { min: 0, max: 10000 };
-    return { min: a, max: b };
+  const onMinChange = (raw: number) => {
+    if (raw >= 50000 && draftMax >= 50000) {
+      setDraftMin(50000);
+      setDraftMax(50000);
+      return;
+    }
+    if (raw >= draftMax) {
+      setDraftMin(Math.max(0, draftMax - 10000));
+      return;
+    }
+    setDraftMin(raw);
+  };
+
+  const onMaxChange = (raw: number) => {
+    if (raw >= 50000 && draftMin >= 50000) {
+      setDraftMin(50000);
+      setDraftMax(50000);
+      return;
+    }
+    if (raw <= draftMin) {
+      const max = Math.max(raw, 10000);
+      setDraftMax(max);
+      setDraftMin(max - 10000);
+      return;
+    }
+    setDraftMax(raw);
   };
 
   return (
@@ -285,7 +305,7 @@ function RankingInner() {
                 ))}
               </div>
               <div className="filter-label price-head">
-                가격대 <span>{priceLabel.replace("원~", "원 ~ ")}</span>
+                가격대 <span>{priceLabel}</span>
               </div>
               <div className="price-track">
                 <div className="price-rail">
@@ -303,11 +323,7 @@ function RankingInner() {
                   max={50000}
                   step={10000}
                   value={draftMin}
-                  onChange={(e) => {
-                    const next = clampPair(Number(e.target.value), draftMax);
-                    setDraftMin(next.min);
-                    setDraftMax(next.max);
-                  }}
+                  onChange={(e) => onMinChange(Number(e.target.value))}
                 />
                 <input
                   type="range"
@@ -315,11 +331,7 @@ function RankingInner() {
                   max={50000}
                   step={10000}
                   value={draftMax}
-                  onChange={(e) => {
-                    const next = clampPair(draftMin, Number(e.target.value));
-                    setDraftMin(next.min);
-                    setDraftMax(next.max);
-                  }}
+                  onChange={(e) => onMaxChange(Number(e.target.value))}
                 />
               </div>
               <div className="price-ends">
@@ -331,14 +343,11 @@ function RankingInner() {
                 type="button"
                 onClick={() => {
                   const both50 = draftMin >= 50000 && draftMax >= 50000;
-                  const both10 = draftMin === 10000 && draftMax === 10000;
                   const next: PriceFilter = both50
                     ? { min: 50000, max: null }
-                    : both10
-                      ? { min: 0, max: 10000 }
-                      : draftMax >= 50000
-                        ? { min: draftMin, max: null }
-                        : { min: draftMin, max: draftMax };
+                    : draftMax >= 50000
+                      ? { min: draftMin, max: null }
+                      : { min: draftMin, max: draftMax };
                   track("apply_filter", { sort_type: draftSort, price_range_list: [priceLabel] });
                   setSort(draftSort);
                   setPrice(next);

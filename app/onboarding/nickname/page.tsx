@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
 import { useStore } from "@/lib/store";
-import { nicknameError } from "@/lib/nicknames";
+import { NICK_RANGE_MSG, nicknameError } from "@/lib/nicknames";
 import { nicknameTaken } from "@/lib/db";
 
 export default function NicknamePage() {
@@ -87,7 +87,7 @@ export default function NicknamePage() {
           {hint === "ok" ? <p className="msg ok">지금 설정하신 닉네임은 가능해요.</p> : null}
           {hint === "taken" ? <p className="msg bad">이미 사용 중인 닉네임이에요. 다른 닉네임을 입력해주세요</p> : null}
           {hint === "bad" ? (
-            <p className="msg bad">닉네임은 한글, 영문, 숫자를 포함한 2~10자로 입력해주세요.(특수문자 및 공백 불가)</p>
+            <p className="msg bad">{NICK_RANGE_MSG}</p>
           ) : null}
           <p className="nick-rule">· 희망하는 닉네임이 없으면 위의 닉네임으로 자동설정 됩니다.</p>
           <p className="nick-rule">· 한글, 영문, 숫자포함 2~10자 (특수문자 및 공백 불가)</p>

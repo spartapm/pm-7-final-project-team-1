@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
 import { IconBack } from "@/components/icons";
 import { useStore } from "@/lib/store";
-import { nicknameError } from "@/lib/nicknames";
+import { NICK_RANGE_MSG, nicknameError } from "@/lib/nicknames";
 import { nicknameTaken } from "@/lib/db";
 
 export default function ProfileEditPage() {
@@ -74,7 +74,7 @@ export default function ProfileEditPage() {
             <input className={hint === "ok" && value.trim() !== account.nickname ? "ok" : hint === "bad" || hint === "taken" ? "bad" : ""} value={value} onChange={(e) => setValue(e.target.value)} />
             {hint === "taken" ? <p className="msg bad">이미 사용 중인 닉네임이에요. 다른 닉네임을 입력해주세요</p> : null}
             {hint === "bad" ? (
-              <p className="msg bad">닉네임은 한글, 영문, 숫자를 포함한 2~10자로 입력해주세요.(특수문자 및 공백 불가)</p>
+              <p className="msg bad">{NICK_RANGE_MSG}</p>
             ) : null}
             <p className="nick-rule">한글, 영문, 숫자포함 2~10자(특수문자 및 공백 불가)</p>
           </div>

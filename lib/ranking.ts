@@ -188,7 +188,8 @@ export function rankProducts(opts: {
         const ra = liveRating(byProduct.get(a.id) ?? [], a.rating);
         const rb = liveRating(byProduct.get(b.id) ?? [], b.rating);
         if (ra !== rb) return rb - ra;
-        return 0;
+        if (a.price !== b.price) return 0;
+        return Number(b.id) - Number(a.id);
       }
       const ca = byProduct.get(a.id)?.length ?? a.reviewCount;
       const cb = byProduct.get(b.id)?.length ?? b.reviewCount;

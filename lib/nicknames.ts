@@ -55,6 +55,7 @@ export const NICK_ADJECTIVES = [
 ];
 
 export const NICK_RULE = /^[가-힣a-zA-Z0-9]{2,10}$/;
+export const NICK_RANGE_MSG = "닉네임은 한글 or 영문 or 숫자를 포함한 2~10자로 입력해 주세요.(특수문자 및 공백 불가)";
 
 export function suggestNickname() {
   for (let i = 0; i < 40; i++) {
@@ -70,7 +71,7 @@ export function suggestNickname() {
 export function nicknameError(value: string) {
   if (!value) return null;
   if (!NICK_RULE.test(value)) {
-    return "닉네임은 한글, 영문, 숫자를 포함한 2~10자로 입력해주세요.(특수문자 및 공백 불가)";
+    return NICK_RANGE_MSG;
   }
   return null;
 }

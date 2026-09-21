@@ -16,7 +16,7 @@ import type { Review } from "@/lib/types";
 export default function ReviewsPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { hydrated, account, reviews, showToast } = useStore();
+  const { hydrated, account, reviews, showToast, myReviewFor } = useStore();
   const [mine, setMine] = useState(true);
   const product = productById(id);
 
@@ -75,6 +75,7 @@ export default function ReviewsPage() {
   const counts = [5, 4, 3, 2, 1].map((n) => all.filter((r) => r.rating === n).length);
   const avg = liveRating(all, product.rating);
   const avgStars = Math.round(avg);
+  const mineReview = myReviewFor(id);
 
   return (
     <ProductFrame
@@ -84,10 +85,10 @@ export default function ReviewsPage() {
         <button
           className="fab-pen"
           type="button"
-          aria-label="리뷰 작성"
+          aria-label={mineReview ? "리뷰 수정" : "리뷰 작성"}
           onClick={() => {
             track("click_write_review", { item_id: id });
-            router.push(`/products/${id}/reviews/write`);
+            router.push(mineReview ? `/products/${id}/reviews/write?edit=${mineReview.id}` : `/products/${id}/reviews/write`);
           }}
         >
           <IconPen />
@@ -157,14 +158,15 @@ export default function ReviewsPage() {
           </div>
         ) : null}
         {list.map((r) => (
-          <ReviewCard key={r.id} r={r} />
+          <ReviewCard key={r.id} r={r} mine={Boolean(account && r.accountId && r.accountId === account.id)} />
         ))}
       </div>
     </ProductFrame>
   );
 }
 
-function ReviewCard({ r }: { r: Review }) {
+function ReviewCard({ r, mine }: { r: Review; mine: boolean }) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
   const ref = useRef<HTMLParagraphElement>(null);
   const [showMore, setShowMore] = useState(false);
@@ -189,6 +191,16 @@ function ReviewCard({ r }: { r: Review }) {
                 ))}
               </span>
               <span className="review-date">{formatShortDate(r.createdAt)}</span>
+              {mine ? (
+                <button
+                  className="review-edit"
+                  type="button"
+                  onClick={() => router.push(`/products/${r.productId}/reviews/write?edit=${r.id}`)}
+                >
+                  <IconPen />
+                  수정하기
+                </button>
+              ) : null}
             </div>
           </div>
           <ReviewAuthorTags

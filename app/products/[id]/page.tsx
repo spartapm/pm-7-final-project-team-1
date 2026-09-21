@@ -15,6 +15,7 @@ export default function ProductPage() {
   const { hydrated, account, addView } = useStore();
   const product = productById(id);
   const [more, setMore] = useState(false);
+  const shots = product?.gallery.length ? product.gallery : product?.image ? [product.image] : [];
 
   useEffect(() => {
     if (!hydrated) return;
@@ -52,9 +53,9 @@ export default function ProductPage() {
 
   return (
     <ProductFrame product={product} tab="info">
-      {product.gallery.length > 0 ? (
+      {shots.length > 0 ? (
         <div className={`detail-gallery${more ? "" : " collapsed"}`}>
-          {(more ? product.gallery : product.gallery.slice(0, 1)).map((src) => (
+          {(more ? shots : shots.slice(0, 1)).map((src) => (
             <SafeImg key={src} className="detail-img" src={src} />
           ))}
         </div>
@@ -64,7 +65,7 @@ export default function ProductPage() {
           <p>주요 성분: {product.keyIngredients.join(", ")}</p>
         </div>
       )}
-      {product.gallery.length > 0 ? (
+      {shots.length > 0 ? (
         <button className="more-btn" type="button" onClick={() => setMore((v) => !v)}>
           {more ? "상세 접기" : "상세 더보기"}
         </button>

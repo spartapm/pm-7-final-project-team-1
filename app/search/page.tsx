@@ -59,10 +59,21 @@ export default function SearchPage() {
   const preview = hits.slice(0, 3);
 
   const remember = (term: string) => {
-    const next = [term, ...recent.filter((x) => x !== term)].slice(0, 3);
-    setRecent(next);
-    saveRecent(next);
+    const nextTerm = term.trim();
+    if (!nextTerm) return;
+    setRecent((prev) => {
+      const next = [nextTerm, ...prev.filter((x) => x !== nextTerm)].slice(0, 3);
+      saveRecent(next);
+      return next;
+    });
   };
+
+  useEffect(() => {
+    const term = q.trim();
+    if (!term || preview.length === 0) return;
+    const t = window.setTimeout(() => remember(term), 400);
+    return () => window.clearTimeout(t);
+  }, [q, preview.length]);
 
   const searching = Boolean(q.trim());
 
@@ -89,7 +100,10 @@ export default function SearchPage() {
           <RecentBlock
             recent={recent}
             showEmpty={!searching}
-            onPick={setQ}
+            onPick={(term) => {
+              remember(term);
+              setQ(term);
+            }}
             onClear={() => {
               setRecent([]);
               saveRecent([]);
@@ -104,7 +118,10 @@ export default function SearchPage() {
             <ul className="search-suggest">
               {suggestions.map((name) => (
                 <li key={name}>
-                  <button type="button" onClick={() => setQ(name)}>
+                  <button type="button" onClick={() => {
+                    remember(name);
+                    setQ(name);
+                  }}>
                     <Highlight text={name} query={q} />
                   </button>
                 </li>
@@ -113,7 +130,7 @@ export default function SearchPage() {
           ) : null}
           {searching ? (
             <>
-              {recent.length ? <hr className="search-split" /> : null}
+              {suggestions.length && preview.length ? <hr className="search-split" /> : null}
               {preview.length ? (
                 <div className="search-products">
                   <h2>제품</h2>
@@ -179,7 +196,7 @@ function RecentBlock({
   onClear: () => void;
   onRemove: (term: string) => void;
 }) {
-  if (!showEmpty && recent.length === 0) return null;
+  if (!showEmpty) return null;
   return (
     <div className="recent-block">
       <div className="recent-head">
