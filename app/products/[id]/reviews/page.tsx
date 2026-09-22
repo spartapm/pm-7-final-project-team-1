@@ -10,7 +10,7 @@ import { useStore } from "@/lib/store";
 import { formatShortDate, liveRating, matchedReviews } from "@/lib/ranking";
 import { ReviewAuthorTags } from "@/lib/badges";
 import { productById } from "@/lib/products";
-import { track } from "@/lib/analytics";
+import { reviewToggleValue, track } from "@/lib/analytics";
 import type { Review } from "@/lib/types";
 
 export default function ReviewsPage() {
@@ -76,11 +76,15 @@ export default function ReviewsPage() {
   const avg = liveRating(all, product.rating);
   const avgStars = Math.round(avg);
   const mineReview = myReviewFor(id);
+  const matchedCount = account ? matchedReviews(all, account.skinType, account.concerns).length : 0;
+  const toggleDisabled = matchedCount === 0;
+  const reviewToggle = reviewToggleValue(matchedCount, mine);
 
   return (
     <ProductFrame
       product={product}
       tab="reviews"
+      reviewToggle={reviewToggle}
       overlay={
         <button
           className="fab-pen"
@@ -142,7 +146,13 @@ export default function ReviewsPage() {
         </p>
         <div className="toggle-inline">
           내 타입만 보기
-          <button className={`toggle${mine ? " on" : ""}`} type="button" onClick={() => setMine((v) => !v)} aria-label="내 타입만 보기">
+          <button
+            className={`toggle${mine ? " on" : ""}`}
+            type="button"
+            disabled={toggleDisabled}
+            onClick={() => setMine((v) => !v)}
+            aria-label="내 타입만 보기"
+          >
             <i />
           </button>
         </div>

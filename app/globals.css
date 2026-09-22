@@ -1209,6 +1209,7 @@ img { display: block; max-width: 100%; }
   flex-shrink: 0;
 }
 .toggle.on { background: var(--accent); }
+.toggle:disabled { opacity: 0.4; }
 .toggle i {
   position: absolute;
   top: 2px;

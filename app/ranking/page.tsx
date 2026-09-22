@@ -147,7 +147,14 @@ function RankingInner() {
       <div className="page" style={{ position: "relative" }}>
         <div className="page-scroll bleed rank-scroll">
           <div className="home-head">
-            <button className="rank-mode-title" type="button" onClick={() => setModeOpen(true)}>
+            <button
+              className="rank-mode-title"
+              type="button"
+              onClick={() => {
+                track("click_ranking_check");
+                setModeOpen(true);
+              }}
+            >
               {rankModeCopy(mode, account.skinType ?? "", ageGroup).title} &gt;
             </button>
             <HeadTools />
@@ -166,7 +173,14 @@ function RankingInner() {
           </div>
           {!bootError ? (
           <div className="rank-tools">
-            <button className="help-link" type="button" onClick={() => setHelpOpen(true)}>
+            <button
+              className="help-link"
+              type="button"
+              onClick={() => {
+                track("click_ranking_rule");
+                setHelpOpen(true);
+              }}
+            >
               랭킹 추천 기준 보러가기 &gt;
             </button>
             <button
@@ -207,7 +221,7 @@ function RankingInner() {
               </div>
             ) : (
               ranked.map((row) => (
-                <RankRow key={row.product.id} product={row.product} rank={row.rank} source="home_ranking" />
+                <RankRow key={row.product.id} product={row.product} rank={row.rank} source="ranking" />
               ))
             )}
           </div>

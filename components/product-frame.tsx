@@ -6,9 +6,9 @@ import { PhoneShell, SafeImg } from "@/components/ui";
 import { IconBack, IconCart, IconClose, IconHeart, IconKakao, IconLink, IconShare, IconStar, IconUp } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import { productById } from "@/lib/products";
-import { formatPrice, formatVolume, liveRating } from "@/lib/ranking";
+import { formatPrice, formatVolume, liveRating, matchedReviews } from "@/lib/ranking";
 import { feelTone } from "@/lib/badges";
-import { track } from "@/lib/analytics";
+import { reviewToggleValue, track, type ReviewToggle } from "@/lib/analytics";
 import { shareKakao } from "@/lib/share";
 import type { Product } from "@/lib/types";
 
@@ -16,15 +16,17 @@ export function ProductFrame({
   product,
   tab,
   overlay,
+  reviewToggle,
   children,
 }: {
   product: Product;
   tab: "info" | "reviews";
   overlay?: ReactNode;
+  reviewToggle?: ReviewToggle;
   children: ReactNode;
 }) {
   const router = useRouter();
-  const { isWished, toggleWish, isInCart, addToCart, showToast, cart, reviews } = useStore();
+  const { isWished, toggleWish, isInCart, addToCart, showToast, cart, reviews, account } = useStore();
   const [share, setShare] = useState(false);
   const [top, setTop] = useState(false);
   const scroller = useRef<HTMLDivElement>(null);
@@ -38,6 +40,14 @@ export function ProductFrame({
   const wish = () => {
     const on = toggleWish(product.id);
     if (on) track("add_to_wishlist", { item_id: product.id, item_name: product.name, price: product.price });
+  };
+
+  const clickItemReview = () => {
+    const matched = matchedReviews(mine, account?.skinType ?? null, account?.concerns ?? []);
+    track("click_item_review", {
+      toggle: reviewToggle ?? reviewToggleValue(matched.length, true),
+    });
+    if (tab !== "reviews") router.replace(`/products/${product.id}/reviews`);
   };
 
   return (
@@ -80,7 +90,7 @@ export function ProductFrame({
               <span>  ·  </span>
               <strong>{formatPrice(product.price)}</strong>
             </p>
-            <button className="product-rating" type="button" onClick={() => router.push(`/products/${product.id}/reviews`)}>
+            <button className="product-rating" type="button" onClick={clickItemReview}>
               <span className="stars">
                 {[1, 2, 3, 4, 5].map((n) => (
                   <IconStar key={n} filled={n <= Math.round(rating)} size={12} />
@@ -109,7 +119,7 @@ export function ProductFrame({
             <button
               className={`cat${tab === "reviews" ? " on" : ""}`}
               type="button"
-              onClick={() => router.replace(`/products/${product.id}/reviews`)}
+              onClick={clickItemReview}
             >
               리뷰 ({reviewCount.toLocaleString("ko-KR")})
             </button>

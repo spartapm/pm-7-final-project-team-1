@@ -1,6 +1,7 @@
 export const GA4_MEASUREMENT_ID = "G-EY6SBKRBM5";
 
-export type AnalyticsParams = Record<string, string | number | boolean | string[] | undefined>;
+export type ReviewToggle = "on" | "off" | "null";
+export type AnalyticsParams = Record<string, string | number | boolean | string[] | null | undefined>;
 
 declare global {
   interface Window {
@@ -20,7 +21,8 @@ function send(...args: unknown[]) {
   window.gtag(...args);
 }
 
-function flatten(value: string | number | boolean | string[]) {
+function flatten(value: string | number | boolean | string[] | null) {
+  if (value === null) return "null";
   return Array.isArray(value) ? value.join(",") : value;
 }
 
@@ -33,6 +35,11 @@ export function track(event: string, params: AnalyticsParams = {}) {
     if (value !== undefined) payload[key] = flatten(value);
   }
   send("event", event, payload);
+}
+
+export function reviewToggleValue(matchedCount: number, mineOn: boolean): ReviewToggle {
+  if (matchedCount === 0) return "null";
+  return mineOn ? "on" : "off";
 }
 
 const SOURCE_KEY = "ob:source_screen";

@@ -30,6 +30,7 @@ function OnboardingInner() {
   const [answers, setAnswers] = useState<number[]>(Array(8).fill(-1));
   const [quizOpen, setQuizOpen] = useState(false);
   const [quizStep, setQuizStep] = useState(0);
+  const [exitOpen, setExitOpen] = useState(false);
   const quizRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,6 +45,17 @@ function OnboardingInner() {
     if (account.skinType) setSkin(account.skinType);
     if (account.concerns.length) setConcerns(account.concerns);
   }, [hydrated, account, edit, router]);
+
+  useEffect(() => {
+    if (edit) return;
+    history.pushState({ onboard: 1 }, "", location.href);
+    const onPop = () => {
+      setExitOpen(true);
+      history.pushState({ onboard: 1 }, "", location.href);
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [edit]);
 
   const canSubmit = !!gender && !!skin && skin !== "모르겠어요" && concerns.length >= 1 && concerns.length <= 3;
 
@@ -96,18 +108,16 @@ function OnboardingInner() {
   return (
     <PhoneShell>
       <div className="page">
-        {edit ? (
-          <div className="close-bar">
-            <button
-              className="close-bar-btn"
-              type="button"
-              aria-label="닫기"
-              onClick={() => router.replace("/profile")}
-            >
-              <IconClose />
-            </button>
-          </div>
-        ) : null}
+        <div className="close-bar">
+          <button
+            className="close-bar-btn"
+            type="button"
+            aria-label={edit ? "닫기" : "종료"}
+            onClick={() => (edit ? router.replace("/profile") : setExitOpen(true))}
+          >
+            <IconClose />
+          </button>
+        </div>
         <div className="page-scroll onboard">
           <div className="onboard-hero">
             <h1>
@@ -186,6 +196,33 @@ function OnboardingInner() {
             {edit ? "저장하기" : "시작하기"}
           </button>
         </div>
+        {exitOpen && !edit ? (
+          <div className="dim center" onClick={() => setExitOpen(false)}>
+            <div className="modal" onClick={(e) => e.stopPropagation()}>
+              <h2>잠깐만요!</h2>
+              <p>
+                지금 나가면 맞춤 추천을
+                <br />
+                받을 수 없어요
+              </p>
+              <div className="modal-btns">
+                <button className="sub" type="button" onClick={() => setExitOpen(false)}>
+                  계속하기
+                </button>
+                <button
+                  className="main"
+                  type="button"
+                  onClick={() => {
+                    track("onboarding_exit");
+                    router.replace("/home");
+                  }}
+                >
+                  앱 종료
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </PhoneShell>
   );

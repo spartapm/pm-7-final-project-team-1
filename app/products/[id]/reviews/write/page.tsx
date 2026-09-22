@@ -86,10 +86,7 @@ function WriteInner() {
     track("write_review_complete", {
       item_id: product.id,
       rating,
-      tag_list: [
-        ...(account?.skinType ? [account.skinType] : []),
-        ...(account?.concerns ?? []),
-      ],
+      tag_list: tags,
     });
     if (existing) router.replace("/reviews");
     else router.replace(`/products/${product.id}`);

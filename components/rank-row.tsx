@@ -38,7 +38,7 @@ export function RankRow({
       onPick();
       return;
     }
-    track("select_item", { item_id: product.id, item_list_name: product.category });
+    track("select_item", { item_id: product.id, item_list_name: source });
     setSourceScreen(source);
     router.push(`/products/${product.id}`);
   };
