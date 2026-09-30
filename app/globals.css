@@ -794,10 +794,10 @@ img { display: block; max-width: 100%; }
 }
 .product-info .feel-pills { justify-content: flex-start; margin-top: 10px; }
 .feel-pill {
-  height: 20px;
-  padding: 0 8px;
+  height: 16px;
+  padding: 0 6px;
   border-radius: 999px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -817,6 +817,11 @@ img { display: block; max-width: 100%; }
   flex-shrink: 0;
 }
 .caret-btn svg { width: 10px; height: 10px; }
+.rank-card .caret-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+}
 .caret-btn.open { transform: rotate(180deg); }
 
 .thumb {
@@ -1757,15 +1762,31 @@ textarea:focus {
   font-weight: 400;
 }
 .skin-bar .redo { color: var(--redo); font-weight: 700; font-size: 12px; white-space: nowrap; flex-shrink: 0; padding-top: 2px; }
-.banner-wrap { position: relative; margin: 0; border-radius: 0; overflow: hidden; height: 276px; background: #111; }
-.banner-wrap img { width: 100%; height: 276px; object-fit: cover; object-position: left center; }
+.banner-wrap { position: relative; margin: 0; border-radius: 0; overflow: hidden; height: 253px; background: #f6f3ef; }
+.banner-wrap img { width: 100%; height: 253px; object-fit: cover; object-position: center; }
 .banner-hit {
+  position: relative;
   display: block;
   width: 100%;
-  height: 276px;
+  height: 253px;
   padding: 0;
   border: 0;
   background: none;
+}
+.banner-copy {
+  position: absolute;
+  left: 18px;
+  top: 28px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  color: #000;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 31px;
+  letter-spacing: -0.4px;
+  text-align: left;
+  pointer-events: none;
 }
 .banner-nav {
   position: absolute;
@@ -1809,9 +1830,10 @@ textarea:focus {
   z-index: 3;
   background: transparent;
 }
+.home-skin { margin-bottom: 16px; }
 .cat-circle {
-  width: 72px;
-  height: 72px;
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
   background: #f3eee9;
   display: grid;
@@ -1827,7 +1849,9 @@ textarea:focus {
   background: transparent;
 }
 .cat-picks { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 22px 24px 10px; }
-.cat-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; font-weight: 400; letter-spacing: 0.8px; }
+.cat-pick { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; font-weight: 400; letter-spacing: 0.96px; }
+.cat-pick.on { font-weight: 700; }
+.cat-picks .cat-pick.on .cat-circle { background: #fde7df; }
 .sec-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1888,7 +1912,7 @@ textarea:focus {
 .price-rail { position: absolute; left: 0; right: 0; top: 16px; height: 4px; background: #ece8e6; border-radius: 4px; }
 .price-fill { position: absolute; top: 0; height: 100%; background: var(--accent); border-radius: 4px; }
 .rank-cats { display: flex; justify-content: space-around; padding: 18px 12px 8px; }
-.rank-cats button { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; color: var(--text); font-weight: 400; letter-spacing: 0.8px; }
+.rank-cats button { display: flex; flex-direction: column; align-items: center; gap: 8px; font-size: 12px; color: var(--text); font-weight: 400; letter-spacing: 0.96px; }
 .rank-cats button.on { color: var(--text); font-weight: 700; }
 .rank-cats img { width: 42px; height: 42px; border-radius: 0; object-fit: contain; border: 0; }
 .rank-tools {

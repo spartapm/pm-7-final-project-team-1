@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PhoneShell, SafeImg } from "@/components/ui";
 import { ProductFrame } from "@/components/product-frame";
@@ -14,7 +14,6 @@ export default function ProductPage() {
   const router = useRouter();
   const { hydrated, account, addView } = useStore();
   const product = productById(id);
-  const [more, setMore] = useState(false);
   const shots = product?.gallery.length ? product.gallery : product?.image ? [product.image] : [];
 
   useEffect(() => {
@@ -54,8 +53,8 @@ export default function ProductPage() {
   return (
     <ProductFrame product={product} tab="info">
       {shots.length > 0 ? (
-        <div className={`detail-gallery${more ? "" : " collapsed"}`}>
-          {(more ? shots : shots.slice(0, 1)).map((src) => (
+        <div className="detail-gallery">
+          {shots.map((src) => (
             <SafeImg key={src} className="detail-img" src={src} />
           ))}
         </div>
@@ -65,11 +64,6 @@ export default function ProductPage() {
           <p>주요 성분: {product.keyIngredients.join(", ")}</p>
         </div>
       )}
-      {shots.length > 0 ? (
-        <button className="more-btn" type="button" onClick={() => setMore((v) => !v)}>
-          {more ? "상세 접기" : "상세 더보기"}
-        </button>
-      ) : null}
     </ProductFrame>
   );
 }

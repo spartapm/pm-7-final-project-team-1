@@ -8,7 +8,7 @@ import { RankRow } from "@/components/rank-row";
 import { HeadTools } from "@/components/head-tools";
 import { useStore } from "@/lib/store";
 import { CATEGORIES } from "@/lib/types";
-import { BANNERS, CATEGORY_IMAGE } from "@/lib/constants";
+import { CATEGORY_IMAGE, homeBanners } from "@/lib/constants";
 import { DEFAULT_PRICE, rankProducts } from "@/lib/ranking";
 import { ageGroupFromYear } from "@/lib/skin-quiz";
 import { SkinBar } from "@/components/skin-bar";
@@ -21,6 +21,10 @@ export default function HomePage() {
   const resumeTimer = useRef<number | null>(null);
   const swipeX = useRef<number | null>(null);
   const swiped = useRef(false);
+  const banners = useMemo(() => {
+    const age = account?.birthYear ? ageGroupFromYear(account.birthYear) : "20대";
+    return homeBanners(account?.skinType ?? "", age);
+  }, [account]);
 
   useEffect(() => {
     if (!hydrated) return;
@@ -28,10 +32,10 @@ export default function HomePage() {
   }, [hydrated, account, router]);
 
   useEffect(() => {
-    if (paused || BANNERS.length < 2) return;
-    const t = window.setInterval(() => setBanner((n) => (n + 1) % BANNERS.length), 5000);
+    if (paused || banners.length < 2) return;
+    const t = window.setInterval(() => setBanner((n) => (n + 1) % banners.length), 5000);
     return () => window.clearInterval(t);
-  }, [paused]);
+  }, [paused, banners.length]);
 
   const holdAuto = () => {
     setPaused(true);
@@ -40,7 +44,7 @@ export default function HomePage() {
   };
 
   const goBanner = (dir: -1 | 1) => {
-    setBanner((n) => (n + dir + BANNERS.length) % BANNERS.length);
+    setBanner((n) => (n + dir + banners.length) % banners.length);
     holdAuto();
   };
 
@@ -68,7 +72,11 @@ export default function HomePage() {
             <HeadTools />
           </div>
 
-          {account.skinType ? <SkinBar skinType={account.skinType} concerns={account.concerns} /> : null}
+          {account.skinType ? (
+            <div className="home-skin">
+              <SkinBar skinType={account.skinType} concerns={account.concerns} />
+            </div>
+          ) : null}
 
           <div
             className="banner-wrap"
@@ -94,10 +102,15 @@ export default function HomePage() {
                   swiped.current = false;
                   return;
                 }
-                router.push(BANNERS[banner].href);
+                router.push(banners[banner].href);
               }}
             >
-              <img src={BANNERS[banner].src} alt={BANNERS[banner].alt} />
+              <img src={banners[banner].src} alt={banners[banner].alt} />
+              <span className="banner-copy">
+                {banners[banner].lines.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
+              </span>
             </button>
             <button className="banner-nav prev" type="button" aria-label="이전 배너" onClick={() => goBanner(-1)}>
               <IconBannerArrow dir="prev" />
@@ -106,7 +119,7 @@ export default function HomePage() {
               <IconBannerArrow dir="next" />
             </button>
             <div className="banner-dots" aria-hidden>
-              {BANNERS.map((item, i) => (
+              {banners.map((item, i) => (
                 <i key={item.src} className={i === banner ? "on" : ""} />
               ))}
             </div>
@@ -114,7 +127,7 @@ export default function HomePage() {
 
           <div className="cat-picks">
             {CATEGORIES.map((c) => (
-              <button key={c} className="cat-pick" type="button" onClick={() => router.push(`/ranking?cat=${encodeURIComponent(c)}`)}>
+              <button key={c} className={`cat-pick${c === "토너" ? " on" : ""}`} type="button" onClick={() => router.push(`/ranking?cat=${encodeURIComponent(c)}`)}>
                 <span className="cat-circle">
                   <img src={CATEGORY_IMAGE[c]} alt="" />
                 </span>

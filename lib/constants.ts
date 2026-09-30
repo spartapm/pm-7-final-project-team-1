@@ -1,22 +1,23 @@
 import type { Category, RankMode } from "./types";
 
-export const BANNERS = [
-  {
-    src: "/vion/banners/banner-1.png",
-    href: "/ranking?mode=age",
-    alt: "20대가 가장 많이 찾는 제품. 토너 크림 클렌징폼 내 피부에 맞는 것만 골라 드려요.",
-  },
-  {
-    src: "/vion/banners/banner-2.png",
-    href: "/ranking",
-    alt: "보습이 필요할 때. 피부 보습에 도움을 주는 제품을 모았어요.",
-  },
-  {
-    src: "/vion/banners/banner-3.png",
-    href: "/ranking?mode=concern",
-    alt: "복합성 피부가 많이 찾는 제품. 유분과 건조함을 함께 고려해 추천해요.",
-  },
-];
+export function homeBanners(skin: string, age: string) {
+  const skinLabel = skin || "내";
+  const ageLabel = age || "20대";
+  return [
+    {
+      src: "/vion/banners/banner-type.png",
+      href: "/ranking?mode=type",
+      lines: [`${skinLabel} 피부`, "추천 제품"],
+      alt: `${skinLabel} 피부 추천 제품`,
+    },
+    {
+      src: "/vion/banners/banner-age.png",
+      href: "/ranking?mode=age",
+      lines: [ageLabel, "추천제품"],
+      alt: `${ageLabel} 추천제품`,
+    },
+  ];
+}
 
 export const FEEL_TAGS = [
   "가벼움",
@@ -89,16 +90,5 @@ export function preferredFeel(skin: string) {
 }
 
 export function rankingUpdatedLabel() {
-  const now = new Date();
-  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  const day = kst.getUTCDay();
-  const hour = kst.getUTCHours();
-  const daysBack = day === 3 && hour >= 5 ? 0 : (day + 4) % 7 || 7;
-  const wed = new Date(kst);
-  wed.setUTCDate(kst.getUTCDate() - daysBack);
-  if (day === 3 && hour < 5) wed.setUTCDate(kst.getUTCDate() - 7);
-  const y = wed.getUTCFullYear();
-  const m = String(wed.getUTCMonth() + 1).padStart(2, "0");
-  const d = String(wed.getUTCDate()).padStart(2, "0");
-  return `업데이트 ${y}.${m}.${d}`;
+  return "업데이트 2026.09.30";
 }
