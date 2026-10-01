@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { PhoneShell } from "@/components/ui";
-import { IconCheck, IconChevron, IconGoogle, IconKakao, VionLogo } from "@/components/icons";
+import { IconCheck, IconChevron, IconGoogle, VionLogo } from "@/components/icons";
 import { useStore } from "@/lib/store";
 import type { Provider } from "@/lib/types";
 import { track } from "@/lib/analytics";
@@ -105,10 +105,6 @@ function LoginInner() {
               </p>
             </div>
             <div className="login-actions">
-              <button className="btn-kakao" type="button" disabled={busy} onClick={() => onSocial("kakao")}>
-                <IconKakao />
-                카카오로 시작하기
-              </button>
               <button className="btn-google" type="button" disabled={busy} onClick={() => onSocial("google")}>
                 <IconGoogle />
                 구글로 시작하기
